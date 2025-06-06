@@ -21,7 +21,7 @@ export default function Login() {
 
   useEffect(() => {
     try {
-      axios.get<UserProps[]>("http://localhost:3001/user").then((response) => {
+      axios.get<UserProps[]>("http://localhost:3001/login.php").then((response) => {
         setUserData(response.data);
       });
     } catch (error) {
@@ -47,33 +47,41 @@ export default function Login() {
 
     if (!userData) return;
 
-    const matchedUser = userData.find(
-      (user) =>
-        user.username === formData.username.trim() &&
-        user.password === formData.password.trim(),
-    );
-
-    if (matchedUser) {
+    axios
+  .post("http://localhost:3001/login.php", {
+    username: formData.username,
+    password: formData.password,
+  })
+  .then((response) => {
+    if (response.data.success) {
       setIsSuccess(true);
 
       setTimeout(() => {
-        if (matchedUser.role === 1) {
+        const role = response.data.user.role;
+        if (role === 1) {
           router.push("/super_admin_dashboard");
         } else {
           router.push("/sub_admin_dashboard");
         }
-
         setIsSuccess(false);
       }, 1500);
     } else {
       setIsWrong(true);
-
       setTimeout(() => {
         setIsWrong(false);
       }, 2000);
     }
-  };
+  })
+  .catch((error) => {
+    console.error("Login error:", error);
+    setIsWrong(true);
+    setTimeout(() => {
+      setIsWrong(false);
+    }, 2000);
+  });
 
+
+  }
   /* ----------   LOGIN NOW BUTTON CLICK ---------- */
 
   const usernameRef = useRef<HTMLInputElement | null>(null);
