@@ -1,6 +1,6 @@
 "use client";
 
-import { ModeToggle } from "@/components/darkmode-toggle";
+import { ModeToggleLogin } from "@/components/darkmode-toggle";
 import { FaUserTie, FaKey } from "react-icons/fa6";
 import { IoMdEyeOff, IoMdEye } from "react-icons/io";
 import { useState, useEffect, useRef } from "react";
@@ -58,7 +58,7 @@ export default function Login() {
 
       setTimeout(() => {
         if (matchedUser.role === 1) {
-          router.push("/super_admin_dashboard");
+          router.push("/super-dashboard");
         } else {
           router.push("/sub_admin_dashboard");
         }
@@ -145,7 +145,7 @@ export default function Login() {
             {/* ----------  TOGGLE BUTTON NG DARKMODE ----------  */}
 
             <div>
-              <ModeToggle />
+              <ModeToggleLogin />
             </div>
           </div>
         </div>
@@ -212,7 +212,7 @@ export default function Login() {
               <input
                 type="submit"
                 value="Login"
-                className="bg-itim dark:bg-puti dark:text-itim text-light mt-3 h-12 w-full cursor-pointer rounded-sm text-sm shadow-sm transition-all duration-300 hover:opacity-90"
+                className="bg-itim dark:bg-puti dark:text-itim text-light mt-3 h-12 w-full cursor-pointer rounded-sm text-sm shadow-sm hover:opacity-90"
               />
 
               <button
