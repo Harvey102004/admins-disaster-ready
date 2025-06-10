@@ -10,7 +10,8 @@ import { FaUserEdit } from "react-icons/fa";
 import { IoSettings } from "react-icons/io5";
 import { PiResizeFill } from "react-icons/pi";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { UserProps } from "../../types";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -18,6 +19,11 @@ export default function NavbarSuperAdmin() {
   const pathname = usePathname();
 
   const [isResize, setIsResize] = useState<boolean>(false);
+  const [storedAccount, setStoredAccount] = useState<UserProps | null>(null);
+
+  useEffect(() => {
+    setStoredAccount(JSON.parse(localStorage.getItem("user") || "{}"));
+  }, []);
 
   const navLinks = [
     {
@@ -102,10 +108,12 @@ export default function NavbarSuperAdmin() {
 
         {!isResize && (
           <div className="flex flex-col gap-1 text-nowrap">
-            <h1 className="text-xs">Municipal of Losbaños</h1>
+            <h1 className="text-xs">
+              {storedAccount?.barangay ?? "Loading..."}
+            </h1>
             <p className="text-[10px] font-light">Super Admin</p>
             <p className="text-[9px] text-gray-700 dark:text-gray-400">
-              lbmunicipality@gmail.com
+              {storedAccount?.email ?? "Loading..."}
             </p>
           </div>
         )}
@@ -138,7 +146,7 @@ export default function NavbarSuperAdmin() {
         </ul>
       </nav>
       <p
-        className={` ${isResize ? "mt-0" : "mt-auto pl-4"} hover:text-dark-blue flex cursor-pointer items-center gap-4 text-xs`}
+        className={` ${isResize ? "" : "pl-4"} hover:text-dark-blue mt-auto flex cursor-pointer items-center gap-4 text-xs`}
       >
         <RiLogoutCircleLine
           className={`${isResize ? "text-2xl" : "text-xl"}`}

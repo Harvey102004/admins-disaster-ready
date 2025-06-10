@@ -4,7 +4,6 @@ import { ModeToggleLogin } from "@/components/darkmode-toggle";
 import { FaUserTie, FaKey } from "react-icons/fa6";
 import { IoMdEyeOff, IoMdEye } from "react-icons/io";
 import { useState, useEffect, useRef } from "react";
-import { UserProps } from "../../../../types";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { WrongPassword, SuccessLogin } from "@/components/pop-up";
@@ -13,21 +12,10 @@ import gsap from "gsap";
 export default function Login() {
   /* ----------   FETCH USER DATA ---------- */
 
-  const [userData, setUserData] = useState<UserProps[] | null>(null);
   const [formData, setFormData] = useState({
     username: "",
     password: "",
   });
-
-  useEffect(() => {
-    try {
-      axios.get<UserProps[]>("http://localhost:3001/user").then((response) => {
-        setUserData(response.data);
-      });
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  }, []);
 
   const handleChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -45,33 +33,44 @@ export default function Login() {
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!userData) return;
+    axios
+      .post("http://localhost:3001/login.php", {
+        username: formData.username,
+        password: formData.password,
+      })
+      .then((response) => {
+        if (response.data.success) {
+          const account = response.data.user;
 
-    const matchedUser = userData.find(
-      (user) =>
-        user.username === formData.username.trim() &&
-        user.password === formData.password.trim(),
-    );
+          const { username, password, id, role, ...safeAccount } = account;
 
-    if (matchedUser) {
-      setIsSuccess(true);
+          localStorage.setItem("user", JSON.stringify(safeAccount));
 
-      setTimeout(() => {
-        if (matchedUser.role === 1) {
-          router.push("/super-dashboard");
+          setIsSuccess(true);
+
+          setTimeout(() => {
+            const role = response.data.user.role;
+            if (role === 1) {
+              router.push("/super-dashboard");
+            } else {
+              router.push("/sub-dashboard");
+            }
+            setIsSuccess(false);
+          }, 1500);
         } else {
-          router.push("/sub_admin_dashboard");
+          setIsWrong(true);
+          setTimeout(() => {
+            setIsWrong(false);
+          }, 2000);
         }
-
-        setIsSuccess(false);
-      }, 1500);
-    } else {
-      setIsWrong(true);
-
-      setTimeout(() => {
-        setIsWrong(false);
-      }, 2000);
-    }
+      })
+      .catch((error) => {
+        console.error("Login error:", error);
+        setIsWrong(true);
+        setTimeout(() => {
+          setIsWrong(false);
+        }, 2000);
+      });
   };
 
   /* ----------   LOGIN NOW BUTTON CLICK ---------- */
