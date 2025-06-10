@@ -42,27 +42,27 @@ export default function NavbarSuperAdmin() {
     },
     {
       name: "Barangay Contact",
-      path: "/",
+      path: "/super-brgy-contact",
       icon: <BsFillTelephoneFill />,
     },
     {
       name: "Updates & News",
-      path: "/",
+      path: "/super-update-news",
       icon: <MdAnnouncement />,
     },
     {
       name: "Donation Management",
-      path: "/",
+      path: "/super-donation-management",
       icon: <RiCoinsFill />,
     },
     {
       name: "Users Management",
-      path: "/",
+      path: "/super-user-management",
       icon: <FaUserEdit />,
     },
     {
       name: "Account Settings",
-      path: "/",
+      path: "/super-account-settings",
       icon: <IoSettings />,
     },
   ];
@@ -125,7 +125,7 @@ export default function NavbarSuperAdmin() {
               <Link
                 key={i}
                 href={link.path}
-                className={`flex items-center gap-4 text-xs text-nowrap ${isActive ? "text-dark-blue" : "hover:text-dark-blue"}`}
+                className={`flex items-center gap-4 text-xs text-nowrap ${isActive ? "text-dark-blue font-semibold" : "hover:text-dark-blue"}`}
               >
                 <div className={`${isResize ? "text-xl" : "pl-4 text-lg"}`}>
                   {link.icon}
