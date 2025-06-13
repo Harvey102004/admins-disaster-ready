@@ -44,9 +44,10 @@
   --color-blur-blue: rgba(51, 78, 172, 0.75);
   --color-light: #f9fcff;
   --color-light-blue: #e7f1ff;
-  --color-light-black: #1a1a1a;
+  --color-light-black: #11121f;
   --color-puti: #fdfdfd;
   --color-itim: #0a0b1a;
+  --color-transparent-blue: #d3e0fb;
 }
 
 :root {

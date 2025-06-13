@@ -75,7 +75,7 @@ export default function NavbarSuperAdmin() {
 
   return (
     <div
-      className={`x-translate-y-1/2 bg-dark-blue/20 border-dark-blue relative top-[1vh] left-[0.5vw] flex h-[98vh] overflow-hidden ${isResize ? "w-[5vw] items-center" : "w-[35vw]"} flex-col gap-6 rounded-2xl border px-10 py-7 transition-all duration-300 dark:border-white/5 dark:bg-[#11121f]`}
+      className={`x-translate-y-1/2 bg-dark-blue/20 border-dark-blue relative top-[1vh] left-[0.5vw] flex h-[98vh] overflow-hidden ${isResize ? "w-[5vw] items-center" : "w-[35vw]"} dark:bg-light-black flex-col gap-6 rounded-2xl border px-10 py-7 transition-all duration-300 dark:border-white/5`}
     >
       <div className="border-b-dark-blue/50 flex items-center justify-between border-b pb-4 dark:border-b-gray-500">
         {!isResize && (
