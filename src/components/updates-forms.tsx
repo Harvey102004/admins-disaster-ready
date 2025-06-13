@@ -302,7 +302,7 @@ export const DisasterUpdatesForm = ({ onclick }: { onclick: () => void }) => {
               type="file"
               name="image"
               onChange={handleImageChange}
-              className="border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none file:rounded-xs file:bg-gray-800 file:p-1 file:px-2 file:text-xs dark:border-gray-500/30"
+              className="border-dark-blue/50 file:bg-dark-blue/10 w-full border px-4 py-3 text-sm outline-none file:rounded-xs file:p-1 file:px-2 file:text-xs dark:border-gray-500/30 dark:file:bg-gray-800"
             />
           </div>
 
