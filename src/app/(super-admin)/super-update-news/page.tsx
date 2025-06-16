@@ -219,7 +219,8 @@ export default function SuperAdminUpdateNews() {
               />
             )}
 
-            {updatesRoad.map((data) => (
+            {Array.isArray(updatesRoad) &&
+              updatesRoad.map((data) => (
               <RoadAdvisoryCard
                 key={data.id}
                 title={data.title}

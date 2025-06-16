@@ -34,7 +34,7 @@ export default function Login() {
     e.preventDefault();
 
     axios
-      .post("http://localhost:3001/login.php", {
+      .post("http://localhost:3001/public/login.php", {
         username: formData.username,
         password: formData.password,
       })
