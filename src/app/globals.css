@@ -131,3 +131,15 @@
 .box-shadow-1 {
   box-shadow: 0px 4px 20px rgba(51, 78, 172, 0.25);
 }
+
+.scrollBar::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollBar::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: 100px;
+}
+.scrollBar::-webkit-scrollbar-thumb {
+  background-color: var(--color-dark-blue);
+  border-radius: 100px;
+}

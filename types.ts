@@ -37,3 +37,41 @@ export interface CommunityNoticeProps {
   details: string;
   dateTime: string;
 }
+
+export interface GetWeatherProps {
+  id?: string;
+  title: string;
+  details: string;
+  date_time: string;
+  onclick: () => void;
+}
+
+export interface GetRoadProps {
+  id?: string;
+  title: string;
+  details: string;
+  date_time: string;
+  status: string;
+  onclick: () => void;
+}
+
+export interface GetDisasterProps {
+  id?: string;
+  img_path?: string;
+  title: string;
+  details: string;
+  date_time: string;
+  disaster_type: string;
+}
+
+export interface GetCommunityProps {
+  id?: string;
+  title: string;
+  details: string;
+  date_time: string;
+}
+
+export interface GetAdvisoryDetails {
+  id: string | undefined;
+  onclick: () => void;
+}

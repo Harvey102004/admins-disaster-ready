@@ -1,12 +1,17 @@
+"use client";
+
 import { FaCloud, FaRoad, FaHeading, FaImages } from "react-icons/fa";
 import { HiOutlineX } from "react-icons/hi";
 import { FaClock, FaEarthAmericas, FaUsers } from "react-icons/fa6";
 import { PiWarningFill } from "react-icons/pi";
 import { MdOutlineNotes } from "react-icons/md";
 import { ImSpinner6 } from "react-icons/im";
-import { useState } from "react";
-
-import { WeatherProps } from "../../types";
+import { useState, useEffect } from "react";
+import { CompleteFormAlert, SuccessPost } from "../pop-up";
+import Loader from "../loading";
+import { WeatherProps } from "../../../types";
+import axios from "axios";
+import gsap from "gsap";
 
 // ------------ FORM NG WEATHER ADVISORY UPDATES -------------- //
 
@@ -30,16 +35,75 @@ export const WeatherAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
 
   // ----------- DITO YUNG LOGIC NG SUBMIT FORM ----------- //
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log(formData);
+    if (formData.title && formData.details && formData.dateTime) {
+      try {
+        setisLoading(true);
 
-    onclick();
+        await axios.post(
+          "http://localhost/disaster-backend/controllers/advisoryController.php?type=weather",
+          formData,
+        );
+
+        setisPosted(true);
+
+        setTimeout(() => {
+          setisPosted(false);
+          onclick();
+        }, 1500);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setisLoading(false);
+      }
+
+      setTimeout(() => {
+        onclick();
+      }, 2000);
+    } else {
+      setisComplete(true);
+
+      setTimeout(() => {
+        setisComplete(false);
+      }, 2500);
+    }
   };
 
+  // ------------- GSAP ANIMATION -------------- //
+
+  const [isComplete, setisComplete] = useState<boolean>(false);
+  const [isPosted, setisPosted] = useState<boolean>(false);
+  const [isLoading, setisLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    gsap.fromTo(
+      ".popUp",
+      {
+        opacity: 0,
+        y: -20,
+        duration: 300,
+      },
+      {
+        opacity: 1,
+        y: 0,
+      },
+    );
+  }, [isComplete, isPosted]);
+
   return (
-    <div className="dark:bg-itim/70 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center bg-white/20 shadow-2xl">
+    <div className="dark:bg-itim/70 absolute inset-0 z-50 flex items-center justify-center bg-white/30">
+      {isComplete && (
+        <div className="popUp absolute top-8 z-50">
+          <CompleteFormAlert />
+        </div>
+      )}
+      {isPosted && (
+        <div className="popUp absolute top-8 z-50">
+          <SuccessPost advisory="Weather Advisory" />
+        </div>
+      )}
       <form
         onSubmit={handleSubmit}
         className="bg-transparent-blue border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex w-[600px] flex-col gap-5 rounded-xl border px-10 py-8 backdrop-blur-sm"
@@ -77,9 +141,9 @@ export const WeatherAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
             name="details"
             value={formData?.details}
             onChange={handleChange}
-            maxLength={600}
-            className="focus:border-dark-blue border-dark-blue/50 h-[150px] w-full resize-none border px-4 py-3 text-xs outline-none placeholder:text-xs dark:border-gray-500/30"
-            placeholder="Enter Advisory Details... ( up to 600 characters )"
+            maxLength={1000}
+            className="focus:border-dark-blue scrollBar border-dark-blue/50 h-[150px] w-full resize-none border px-4 py-3 text-xs outline-none placeholder:text-xs dark:border-gray-500/30"
+            placeholder="Enter Advisory Details... ( up to 1000 characters )"
           ></textarea>
         </div>
 
@@ -97,11 +161,22 @@ export const WeatherAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
           />
         </div>
 
-        <input
+        <button
           type="submit"
-          value="Post"
-          className="bg-dark-blue text-puti mt-3 cursor-pointer rounded-md border py-3 transition-all duration-300 hover:opacity-90"
-        />
+          disabled={isLoading}
+          className={`bg-dark-blue text-puti mt-3 cursor-pointer rounded-md border py-3 transition-all duration-300 ${
+            isLoading ? "cursor-not-allowed opacity-60" : "hover:opacity-90"
+          }`}
+        >
+          {isLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <Loader />
+              Posting...
+            </span>
+          ) : (
+            "Post"
+          )}
+        </button>
       </form>
     </div>
   );
@@ -109,7 +184,7 @@ export const WeatherAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
 
 // ------------ FORM NG ROAD ADVISORY UPDATES -------------- //
 
-import { RoadProps } from "../../types";
+import { RoadProps } from "../../../types";
 
 export const RoadAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
   const [formData, setFormData] = useState<RoadProps>({
@@ -134,16 +209,82 @@ export const RoadAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
 
   // ----------- DITO YUNG LOGIC NG SUBMIT FORM ----------- //
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log(formData);
+    if (
+      formData.title &&
+      formData.details &&
+      formData.status &&
+      formData.dateTime
+    ) {
+      try {
+        setisLoading(true);
 
-    onclick();
+        await axios.post(
+          "http://localhost/disaster-backend/controllers/advisoryController.php?type=road",
+          formData,
+        );
+
+        setisPosted(true);
+
+        setTimeout(() => {
+          setisPosted(false);
+          onclick();
+        }, 1500);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setisLoading(false);
+      }
+
+      setTimeout(() => {
+        onclick();
+      }, 2000);
+    } else {
+      setisComplete(true);
+
+      setTimeout(() => {
+        setisComplete(false);
+      }, 2500);
+    }
   };
 
+  // ------------- GSAP ANIMATION -------------- //
+
+  const [isComplete, setisComplete] = useState<boolean>(false);
+  const [isPosted, setisPosted] = useState<boolean>(false);
+  const [isLoading, setisLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    gsap.fromTo(
+      ".popUp",
+      {
+        opacity: 0,
+        y: -20,
+        duration: 300,
+      },
+      {
+        opacity: 1,
+        y: 0,
+      },
+    );
+  }, [isComplete, isPosted]);
+
   return (
-    <div className="dark:bg-itim/70 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center bg-white/20 shadow-2xl">
+    <div className="dark:bg-itim/70 absolute inset-0 flex items-center justify-center bg-white/20 shadow-2xl">
+      {isComplete && (
+        <div className="popUp absolute top-8 z-50">
+          <CompleteFormAlert />
+        </div>
+      )}
+
+      {isPosted && (
+        <div className="popUp absolute top-8 z-50">
+          <SuccessPost advisory="Road Advisory" />
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         className="bg-transparent-blue border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex w-[600px] flex-col gap-5 rounded-xl border px-10 py-8 backdrop-blur-sm"
@@ -223,11 +364,22 @@ export const RoadAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
           </div>
         </div>
 
-        <input
+        <button
           type="submit"
-          value="Post"
-          className="bg-dark-blue text-puti mt-3 cursor-pointer rounded-md border py-3 transition-all duration-300 hover:opacity-90"
-        />
+          disabled={isLoading}
+          className={`bg-dark-blue text-puti mt-3 cursor-pointer rounded-md border py-3 transition-all duration-300 ${
+            isLoading ? "cursor-not-allowed opacity-60" : "hover:opacity-90"
+          }`}
+        >
+          {isLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <Loader />
+              Posting...
+            </span>
+          ) : (
+            "Post"
+          )}
+        </button>
       </form>
     </div>
   );
@@ -235,7 +387,7 @@ export const RoadAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
 
 // ------------ FORM NG DISASTER UPDATES -------------- //
 
-import { DisasterProps } from "../../types";
+import { DisasterProps } from "../../../types";
 
 export const DisasterUpdatesForm = ({ onclick }: { onclick: () => void }) => {
   const [formData, setFormData] = useState<DisasterProps>({
@@ -269,16 +421,83 @@ export const DisasterUpdatesForm = ({ onclick }: { onclick: () => void }) => {
 
   // ----------- DITO YUNG LOGIC NG SUBMIT FORM ----------- //
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log(formData);
+    if (
+      formData.title &&
+      formData.details &&
+      formData.dateTime &&
+      formData.disasterType &&
+      formData.image
+    ) {
+      try {
+        setisLoading(true);
 
-    onclick();
+        await axios.post(
+          "http://localhost/disaster-backend/controllers/advisoryController.php?type=disaster",
+          formData,
+        );
+
+        setisPosted(true);
+
+        setTimeout(() => {
+          setisPosted(false);
+          onclick();
+        }, 1500);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setisLoading(false);
+      }
+
+      setTimeout(() => {
+        onclick();
+      }, 2000);
+    } else {
+      setisComplete(true);
+
+      setTimeout(() => {
+        setisComplete(false);
+      }, 2500);
+    }
   };
+
+  // ------------- GSAP ANIMATION -------------- //
+
+  const [isComplete, setisComplete] = useState<boolean>(false);
+  const [isPosted, setisPosted] = useState<boolean>(false);
+  const [isLoading, setisLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    gsap.fromTo(
+      ".popUp",
+      {
+        opacity: 0,
+        y: -20,
+        duration: 300,
+      },
+      {
+        opacity: 1,
+        y: 0,
+      },
+    );
+  }, [isComplete, isPosted]);
 
   return (
     <div className="dark:bg-itim/70 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center bg-white/20 shadow-2xl">
+      {isComplete && (
+        <div className="popUp absolute top-8 z-50">
+          <CompleteFormAlert />
+        </div>
+      )}
+
+      {isPosted && (
+        <div className="popUp absolute top-8 z-50">
+          <SuccessPost advisory="Disaster updates" />
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         className="bg-transparent-blue border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex w-[600px] flex-col gap-5 rounded-xl border px-10 py-8 backdrop-blur-sm"
@@ -375,11 +594,22 @@ export const DisasterUpdatesForm = ({ onclick }: { onclick: () => void }) => {
           </div>
         </div>
 
-        <input
+        <button
           type="submit"
-          value="Post"
-          className="bg-dark-blue text-puti mt-3 cursor-pointer rounded-md border py-3 transition-all duration-300 hover:opacity-90"
-        />
+          disabled={isLoading}
+          className={`bg-dark-blue text-puti mt-3 cursor-pointer rounded-md border py-3 transition-all duration-300 ${
+            isLoading ? "cursor-not-allowed opacity-60" : "hover:opacity-90"
+          }`}
+        >
+          {isLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <Loader />
+              Posting...
+            </span>
+          ) : (
+            "Post"
+          )}
+        </button>
       </form>
     </div>
   );
@@ -387,7 +617,7 @@ export const DisasterUpdatesForm = ({ onclick }: { onclick: () => void }) => {
 
 // ------------ FORM NG COMMUNITY NOTICE UPDATES -------------- //
 
-import { CommunityNoticeProps } from "../../types";
+import { CommunityNoticeProps } from "../../../types";
 
 export const CommunityNoticeForm = ({ onclick }: { onclick: () => void }) => {
   const [formData, setFormData] = useState<CommunityNoticeProps>({
@@ -409,16 +639,77 @@ export const CommunityNoticeForm = ({ onclick }: { onclick: () => void }) => {
 
   // ----------- DITO YUNG LOGIC NG SUBMIT FORM ----------- //
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log(formData);
+    if (formData.title && formData.details && formData.dateTime) {
+      try {
+        setisLoading(true);
 
-    onclick();
+        await axios.post(
+          "http://localhost/disaster-backend/controllers/advisoryController.php?type=community",
+          formData,
+        );
+
+        setisPosted(true);
+
+        setTimeout(() => {
+          setisPosted(false);
+          onclick();
+        }, 1500);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setisLoading(false);
+      }
+
+      setTimeout(() => {
+        onclick();
+      }, 2000);
+    } else {
+      setisComplete(true);
+
+      setTimeout(() => {
+        setisComplete(false);
+      }, 2500);
+    }
   };
+
+  // ------------- GSAP ANIMATION -------------- //
+
+  const [isComplete, setisComplete] = useState<boolean>(false);
+  const [isPosted, setisPosted] = useState<boolean>(false);
+  const [isLoading, setisLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    gsap.fromTo(
+      ".popUp",
+      {
+        opacity: 0,
+        y: -20,
+        duration: 300,
+      },
+      {
+        opacity: 1,
+        y: 0,
+      },
+    );
+  }, [isComplete, isPosted]);
 
   return (
     <div className="dark:bg-itim/70 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center bg-white/20 shadow-2xl">
+      {isComplete && (
+        <div className="popUp absolute top-8 z-50">
+          <CompleteFormAlert />
+        </div>
+      )}
+
+      {isPosted && (
+        <div className="popUp absolute top-8 z-50">
+          <SuccessPost advisory="Community Notice" />
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         className="bg-transparent-blue border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex w-[600px] flex-col gap-5 rounded-xl border px-10 py-8 backdrop-blur-sm"
