@@ -75,7 +75,7 @@ export interface GetDisasterProps {
 
 export interface GetDisasterProps {
   id?: string;
-  img_path?: string;
+  image_url: string;
   title: string;
   details: string;
   date_time: string;

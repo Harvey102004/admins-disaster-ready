@@ -6,6 +6,7 @@ import { AiFillDelete } from "react-icons/ai";
 import { LiaEditSolid } from "react-icons/lia";
 import { PiWarningFill } from "react-icons/pi";
 import { FaCloud, FaRoad } from "react-icons/fa";
+import Image from "next/image";
 
 import {
   GetAdvisoryDetails,
@@ -547,6 +548,7 @@ export const DisasterUpdatesDetails = ({
   const [loading, setLoading] = useState<boolean>(false);
   const [isDeleted, setIsDeleted] = useState<boolean>(false);
   const [isSuccessDelete, setIsSuccessDelete] = useState<boolean>(false);
+  const [isImageOpen, setIsImageOpen] = useState(false);
 
   useEffect(() => {
     const fetchDetail = async () => {
@@ -554,7 +556,7 @@ export const DisasterUpdatesDetails = ({
         setLoading(true);
 
         const response = await axios.get<GetDisasterProps>(
-          `http://localhost/Disaster-backend/public/getAdvisories.php?type=disaster&id=${id}`,
+          `http://localhost/disaster-backend/public/getAdvisories.php?type=disaster&id=${id}`,
         );
 
         setFetchAdvisory(response.data);
@@ -633,7 +635,7 @@ export const DisasterUpdatesDetails = ({
         />
 
         {isDeleted && (
-          <div className="popUp absolute top-1/2 left-1/2 -translate-1/2">
+          <div className="popUp absolute top-1/2 left-1/2 z-50 -translate-1/2">
             <DeletePopUp
               advisory="Community Notice"
               ondelete={() => {
@@ -647,7 +649,7 @@ export const DisasterUpdatesDetails = ({
         )}
 
         {isSuccessDelete && (
-          <div className="popUp absolute top-1/2 left-1/2 -translate-1/2">
+          <div className="popUp absolute top-1/2 left-1/2 z-50 -translate-1/2">
             <DeleteSuccessfully />
           </div>
         )}
@@ -664,10 +666,25 @@ export const DisasterUpdatesDetails = ({
         ) : (
           <>
             <div className="flex items-center gap-10">
-              <div className="flex h-[300px] w-[300px] min-w-[300px] flex-col items-center justify-center gap-5 rounded-sm bg-gray-800/10 dark:bg-white/10">
-                <FaImage className="text-4xl" />
-                <p className="text-sm">No image</p>
-              </div>
+              {fetchAdvisory?.img_path ? (
+                <div
+                  className="relative h-[300px] w-[300px] min-w-[300px]"
+                  onClick={() => setIsImageOpen(true)}
+                >
+                  <Image
+                    src={fetchAdvisory.image_url}
+                    alt=""
+                    fill
+                    className="object-cover object-center"
+                  />
+                </div>
+              ) : (
+                <div className="flex h-[300px] w-[300px] min-w-[300px] flex-col items-center justify-center gap-5 rounded-sm bg-gray-800/10 dark:bg-white/10">
+                  <FaImage className="text-4xl" />
+                  <p className="text-sm">No image</p>
+                </div>
+              )}
+
               <div className="flex flex-col justify-between self-stretch">
                 <div>
                   <p className="pb-3 text-lg font-bold">
@@ -707,6 +724,26 @@ export const DisasterUpdatesDetails = ({
           </>
         )}
       </div>
+
+      {isImageOpen && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div
+            className="absolute top-5 right-5 cursor-pointer text-3xl text-white"
+            onClick={() => setIsImageOpen(false)}
+          >
+            <HiOutlineX />
+          </div>
+          <div className="relative max-h-[75vh] w-[80vw] max-w-[800px]">
+            <Image
+              src={fetchAdvisory?.image_url ?? ""}
+              alt="Enlarged Image"
+              width={800}
+              height={600}
+              className="h-auto max-h-[75vh] w-full rounded-lg object-contain"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
