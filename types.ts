@@ -55,6 +55,24 @@ export interface GetRoadProps {
   onclick: () => void;
 }
 
+export interface GetCommunityProps {
+  id?: string;
+  title: string;
+  details: string;
+  date_time: string;
+  onclick: () => void;
+}
+
+export interface GetDisasterProps {
+  id?: string;
+  img_path?: string;
+  title: string;
+  details: string;
+  date_time: string;
+  disaster_type: string;
+  onclick: () => void;
+}
+
 export interface GetDisasterProps {
   id?: string;
   img_path?: string;
@@ -74,4 +92,5 @@ export interface GetCommunityProps {
 export interface GetAdvisoryDetails {
   id: string | undefined;
   onclick: () => void;
+  triggerRefresh: () => void;
 }

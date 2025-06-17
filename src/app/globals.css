@@ -140,6 +140,6 @@
   border-radius: 100px;
 }
 .scrollBar::-webkit-scrollbar-thumb {
-  background-color: var(--color-dark-blue);
+  background-color: rgba(37, 99, 235, 0.3);
   border-radius: 100px;
 }

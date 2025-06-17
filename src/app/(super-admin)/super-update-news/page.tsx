@@ -24,11 +24,14 @@ import {
   RoadAdvisoryCard,
   WeatherAdvisoryCard,
   DisasterUpdatesCard,
+  CommunityNoticeCard,
 } from "@/components/update-news/update-card";
 
 import {
   RoadAdvisoryDetails,
   WeatherAdvisoryDetails,
+  DisasterUpdatesDetails,
+  CommunityNoticeDetails,
 } from "@/components/update-news/details";
 
 const EmptyUpdates = ({ text, icon, onclick }: EmptyUpdatesProps) => {
@@ -79,6 +82,8 @@ export default function SuperAdminUpdateNews() {
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
+  const [refreshKey, setRefreshKey] = useState(0);
+
   useEffect(() => {
     const fetchWeather = async () => {
       try {
@@ -111,7 +116,7 @@ export default function SuperAdminUpdateNews() {
     };
 
     fetchWeather();
-  }, [addUpdates]);
+  }, [addUpdates, refreshKey]);
 
   const formatDateTime = (datetime: string) => {
     const date = new Date(datetime);
@@ -127,6 +132,10 @@ export default function SuperAdminUpdateNews() {
 
   const [detailWeatherPopUp, setDetailWeatherPopUp] = useState<boolean>(false);
   const [detailRoadPopUp, setDetailRoadPopUp] = useState<boolean>(false);
+  const [detailCommunityPopUp, setDetailCommunityPopUp] =
+    useState<boolean>(false);
+  const [detailDisasterPopUp, setDetailDisasterPopUp] =
+    useState<boolean>(false);
 
   const [detailId, setDetailId] = useState<string | undefined>("0");
 
@@ -186,7 +195,9 @@ export default function SuperAdminUpdateNews() {
 
         {isActive === 0 && (
           <div className="mt-10 flex flex-wrap items-center justify-start gap-6 px-10">
-            {updatesWeather.length === 0 && (
+            {(!updatesWeather ||
+              !Array.isArray(updatesWeather) ||
+              updatesWeather.length < 1) && (
               <EmptyUpdates
                 text="Weather Advisory"
                 icon={<FaCloud />}
@@ -194,24 +205,28 @@ export default function SuperAdminUpdateNews() {
               />
             )}
 
-            {updatesWeather.map((data) => (
-              <WeatherAdvisoryCard
-                key={data.id}
-                title={data.title}
-                details={data.details}
-                date_time={formatDateTime(data.date_time)}
-                onclick={() => {
-                  setDetailWeatherPopUp((prev) => !prev);
-                  setDetailId(data.id);
-                }}
-              />
-            ))}
+            {Array.isArray(updatesWeather) &&
+              updatesWeather.map((data) => (
+                <WeatherAdvisoryCard
+                  key={data.id}
+                  id={data.id}
+                  title={data.title}
+                  details={data.details}
+                  date_time={formatDateTime(data.date_time)}
+                  onclick={() => {
+                    setDetailWeatherPopUp((prev) => !prev);
+                    setDetailId(data.id);
+                  }}
+                />
+              ))}
           </div>
         )}
 
         {isActive === 1 && (
           <div className="mt-10 flex flex-wrap items-center justify-start gap-6 px-10">
-            {updatesRoad.length === 0 && (
+            {(!updatesRoad ||
+              !Array.isArray(updatesRoad) ||
+              updatesRoad.length < 1) && (
               <EmptyUpdates
                 text="Road Advisory"
                 icon={<FaRoad />}
@@ -221,44 +236,53 @@ export default function SuperAdminUpdateNews() {
 
             {Array.isArray(updatesRoad) &&
               updatesRoad.map((data) => (
-              <RoadAdvisoryCard
-                key={data.id}
-                title={data.title}
-                details={data.details}
-                date_time={formatDateTime(data.date_time)}
-                status={data.status}
-                onclick={() => {
-                  setDetailRoadPopUp((prev) => !prev);
-                  setDetailId(data.id);
-                }}
-              />
-            ))}
+                <RoadAdvisoryCard
+                  key={data.id}
+                  title={data.title}
+                  details={data.details}
+                  date_time={formatDateTime(data.date_time)}
+                  status={data.status}
+                  onclick={() => {
+                    setDetailRoadPopUp((prev) => !prev);
+                    setDetailId(data.id);
+                  }}
+                />
+              ))}
           </div>
         )}
 
         {isActive === 2 && (
           <div className="mt-10 flex flex-wrap items-center justify-start gap-6 px-10">
-            {updatesDisaster.length === 0 && (
+            {(!updatesDisaster ||
+              !Array.isArray(updatesDisaster) ||
+              updatesDisaster.length < 1) && (
               <EmptyUpdates
                 text="Disaster Updates"
                 icon={<PiWarningFill />}
                 onclick={() => setAddUpdates(2)}
               />
             )}
-            {updatesDisaster.map((data) => (
-              <DisasterUpdatesCard
-                key={data.id}
-                title={data.title}
-                details={data.details}
-                date_time={formatDateTime(data.date_time)}
-                disaster_type={data.disaster_type}
-              />
-            ))}
+            {Array.isArray(updatesDisaster) &&
+              updatesDisaster.map((data) => (
+                <DisasterUpdatesCard
+                  key={data.id}
+                  title={data.title}
+                  details={data.details}
+                  date_time={formatDateTime(data.date_time)}
+                  disaster_type={data.disaster_type}
+                  onclick={() => {
+                    setDetailDisasterPopUp((prev) => !prev);
+                    setDetailId(data.id);
+                  }}
+                />
+              ))}
           </div>
         )}
         {isActive === 3 && (
           <div className="mt-10 flex flex-wrap items-center justify-start gap-6 px-10">
-            {updatesCommunity.length === 0 && (
+            {(!updatesCommunity ||
+              !Array.isArray(updatesCommunity) ||
+              updatesCommunity.length < 1) && (
               <EmptyUpdates
                 text="Community Notice"
                 icon={<FaUsers />}
@@ -266,15 +290,19 @@ export default function SuperAdminUpdateNews() {
               />
             )}
 
-            {updatesCommunity.map((data) => (
-              <WeatherAdvisoryCard
-                key={data.id}
-                title={data.title}
-                details={data.details}
-                date_time={formatDateTime(data.date_time)}
-                onclick={() => console.log("Hello World")}
-              />
-            ))}
+            {Array.isArray(updatesCommunity) &&
+              updatesCommunity.map((data) => (
+                <CommunityNoticeCard
+                  key={data.id}
+                  title={data.title}
+                  details={data.details}
+                  date_time={formatDateTime(data.date_time)}
+                  onclick={() => {
+                    setDetailCommunityPopUp((prev) => !prev);
+                    setDetailId(data.id);
+                  }}
+                />
+              ))}
           </div>
         )}
       </div>
@@ -299,6 +327,7 @@ export default function SuperAdminUpdateNews() {
         <WeatherAdvisoryDetails
           id={detailId}
           onclick={() => setDetailWeatherPopUp((prev) => !prev)}
+          triggerRefresh={() => setRefreshKey((prev) => prev + 1)}
         />
       )}
 
@@ -306,6 +335,23 @@ export default function SuperAdminUpdateNews() {
         <RoadAdvisoryDetails
           id={detailId}
           onclick={() => setDetailRoadPopUp((prev) => !prev)}
+          triggerRefresh={() => setRefreshKey((prev) => prev + 1)}
+        />
+      )}
+
+      {detailCommunityPopUp && (
+        <CommunityNoticeDetails
+          id={detailId}
+          onclick={() => setDetailCommunityPopUp((prev) => !prev)}
+          triggerRefresh={() => setRefreshKey((prev) => prev + 1)}
+        />
+      )}
+
+      {detailDisasterPopUp && (
+        <DisasterUpdatesDetails
+          id={detailId}
+          onclick={() => setDetailDisasterPopUp((prev) => !prev)}
+          triggerRefresh={() => setRefreshKey((prev) => prev + 1)}
         />
       )}
     </>

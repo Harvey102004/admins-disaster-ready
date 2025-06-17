@@ -322,9 +322,9 @@ export const RoadAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
             name="details"
             value={formData?.details}
             onChange={handleChange}
-            maxLength={600}
-            className="focus:border-dark-blue border-dark-blue/50 h-[150px] w-full resize-none border px-4 py-3 text-xs outline-none placeholder:text-xs dark:border-gray-500/30"
-            placeholder="Enter Advisory Details... ( up to 600 characters )"
+            maxLength={1000}
+            className="focus:border-dark-blue scrollBar border-dark-blue/50 h-[150px] w-full resize-none border px-4 py-3 text-xs outline-none placeholder:text-xs dark:border-gray-500/30"
+            placeholder="Enter Advisory Details... ( up to 1000 characters )"
           ></textarea>
         </div>
 
@@ -550,9 +550,9 @@ export const DisasterUpdatesForm = ({ onclick }: { onclick: () => void }) => {
             name="details"
             value={formData?.details}
             onChange={handleChange}
-            maxLength={600}
-            className="focus:border-dark-blue border-dark-blue/50 h-[150px] w-full resize-none border px-4 py-3 text-xs outline-none placeholder:text-xs dark:border-gray-500/30"
-            placeholder="Enter Details... ( up to 600 characters )"
+            maxLength={1000}
+            className="focus:border-dark-blue scrollBar border-dark-blue/50 h-[150px] w-full resize-none border px-4 py-3 text-xs outline-none placeholder:text-xs dark:border-gray-500/30"
+            placeholder="Enter Details... ( up to 1000 characters )"
           ></textarea>
         </div>
 
@@ -747,9 +747,9 @@ export const CommunityNoticeForm = ({ onclick }: { onclick: () => void }) => {
             name="details"
             value={formData?.details}
             onChange={handleChange}
-            maxLength={600}
-            className="focus:border-dark-blue border-dark-blue/50 h-[150px] w-full resize-none border px-4 py-3 text-xs outline-none placeholder:text-xs dark:border-gray-500/30"
-            placeholder="Enter Details... ( up to 600 characters )"
+            maxLength={1000}
+            className="focus:border-dark-blue scrollBar border-dark-blue/50 h-[150px] w-full resize-none border px-4 py-3 text-xs outline-none placeholder:text-xs dark:border-gray-500/30"
+            placeholder="Enter Details... ( up to 1000 characters )"
           ></textarea>
         </div>
 
