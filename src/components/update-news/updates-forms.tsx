@@ -422,46 +422,55 @@ export const DisasterUpdatesForm = ({ onclick }: { onclick: () => void }) => {
   // ----------- DITO YUNG LOGIC NG SUBMIT FORM ----------- //
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (
-      formData.title &&
-      formData.details &&
-      formData.dateTime &&
-      formData.disasterType &&
-      formData.image
-    ) {
-      try {
-        setisLoading(true);
+  if (
+    formData.title &&
+    formData.details &&
+    formData.dateTime &&
+    formData.disasterType &&
+    formData.image
+  ) {
+    try {
+      setisLoading(true);
 
-        await axios.post(
-          "http://localhost/disaster-backend/controllers/advisoryController.php?type=disaster",
-          formData,
-        );
+      // Create a FormData object for multipart/form-data
+      const formPayload = new FormData();
+      formPayload.append("title", formData.title);
+      formPayload.append("details", formData.details);
+      formPayload.append("dateTime", formData.dateTime);
+      formPayload.append("disasterType", formData.disasterType);
+      formPayload.append("image", formData.image);
 
-        setisPosted(true);
+      await axios.post(
+        "http://localhost/disaster-backend/controllers/advisoryController.php?type=disaster",
+        formPayload,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-        setTimeout(() => {
-          setisPosted(false);
-          onclick();
-        }, 1500);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setisLoading(false);
-      }
+      setisPosted(true);
 
       setTimeout(() => {
+        setisPosted(false);
         onclick();
-      }, 2000);
-    } else {
-      setisComplete(true);
-
-      setTimeout(() => {
-        setisComplete(false);
-      }, 2500);
+      }, 1500);
+    } catch (error) {
+      console.error("Submission error:", error);
+    } finally {
+      setisLoading(false);
     }
-  };
+  } else {
+    setisComplete(true);
+
+    setTimeout(() => {
+      setisComplete(false);
+    }, 2500);
+  }
+};
 
   // ------------- GSAP ANIMATION -------------- //
 
