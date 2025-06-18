@@ -163,7 +163,7 @@ export default function SuperAdminUpdateNews() {
   return (
     <>
       <div
-        className={`relative h-screen w-full px-8 py-10 transition-all duration-300 ${
+        className={`relative h-screen w-full px-8 pt-10 transition-all duration-300 ${
           addUpdates !== null ? "overflow-hidden" : "overflow-auto"
         }`}
       >
@@ -217,7 +217,7 @@ export default function SuperAdminUpdateNews() {
         {/* ------------ WEATHER ADVISORY PAGE --------------- */}
 
         {isActive === 0 && (
-          <div className="mt-10 flex flex-wrap items-center justify-start gap-6 px-10">
+          <div className="scrollBar mt-10 flex h-[65vh] flex-wrap justify-start gap-5 overflow-auto px-6">
             {(!updatesWeather ||
               !Array.isArray(updatesWeather) ||
               updatesWeather.length < 1) && (
@@ -252,7 +252,7 @@ export default function SuperAdminUpdateNews() {
         {/* ------------ ROAD ADVISORY PAGE --------------- */}
 
         {isActive === 1 && (
-          <div className="mt-10 flex flex-wrap items-center justify-start gap-6 px-10">
+          <div className="scrollBar mt-10 flex h-[65vh] flex-wrap justify-start gap-5 overflow-auto px-6">
             {(!updatesRoad ||
               !Array.isArray(updatesRoad) ||
               updatesRoad.length < 1) && (
@@ -287,7 +287,7 @@ export default function SuperAdminUpdateNews() {
         {/* ------------ DISASTER UPDATES PAGE --------------- */}
 
         {isActive === 2 && (
-          <div className="mt-10 flex flex-wrap items-center justify-start gap-6 px-10">
+          <div className="scrollBar mt-10 flex h-[65vh] flex-wrap justify-start gap-5 overflow-auto px-6">
             {(!updatesDisaster ||
               !Array.isArray(updatesDisaster) ||
               updatesDisaster.length < 1) && (
@@ -321,7 +321,7 @@ export default function SuperAdminUpdateNews() {
         {/* ------------ COMMUNITY NOTICE PAGE --------------- */}
 
         {isActive === 3 && (
-          <div className="mt-10 flex flex-wrap items-center justify-start gap-6 px-10">
+          <div className="scrollBar mt-10 flex h-[65vh] flex-wrap justify-start gap-5 overflow-auto px-6">
             {(!updatesCommunity ||
               !Array.isArray(updatesCommunity) ||
               updatesCommunity.length < 1) && (
