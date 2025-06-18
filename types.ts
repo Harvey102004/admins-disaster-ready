@@ -29,7 +29,7 @@ export interface DisasterProps {
   title: string;
   details: string;
   dateTime: string;
-  image: File | null;
+  image: File | null | string;
 }
 
 export interface CommunityNoticeProps {
@@ -43,7 +43,8 @@ export interface GetWeatherProps {
   title: string;
   details: string;
   date_time: string;
-  onclick: () => void;
+  onclick?: () => void;
+  onedit?: () => void;
 }
 
 export interface GetRoadProps {
@@ -53,6 +54,7 @@ export interface GetRoadProps {
   date_time: string;
   status: string;
   onclick: () => void;
+  onedit: () => void;
 }
 
 export interface GetCommunityProps {
@@ -61,6 +63,7 @@ export interface GetCommunityProps {
   details: string;
   date_time: string;
   onclick: () => void;
+  onedit: () => void;
 }
 
 export interface GetDisasterProps {
@@ -71,11 +74,12 @@ export interface GetDisasterProps {
   date_time: string;
   disaster_type: string;
   onclick: () => void;
+  onedit: () => void;
 }
 
 export interface GetDisasterProps {
   id?: string;
-  image_url: string;
+  image_url?: string;
   title: string;
   details: string;
   date_time: string;
@@ -90,6 +94,13 @@ export interface GetCommunityProps {
 }
 
 export interface GetAdvisoryDetails {
+  id: string | undefined;
+  onclick: () => void;
+  triggerRefresh: () => void;
+  onEdit: () => void;
+}
+
+export interface AdvisoryEditProps {
   id: string | undefined;
   onclick: () => void;
   triggerRefresh: () => void;

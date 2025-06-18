@@ -5,6 +5,7 @@ import { FaCloud, FaRoad } from "react-icons/fa";
 import { PiWarningFill } from "react-icons/pi";
 import { MdOutlineAdd } from "react-icons/md";
 import { useEffect, useState } from "react";
+import { formatDateTime } from "../../../../reusable-function";
 import {
   EmptyUpdatesProps,
   GetWeatherProps,
@@ -34,6 +35,15 @@ import {
   CommunityNoticeDetails,
 } from "@/components/update-news/details";
 
+import {
+  WeatherAdvisoryEdit,
+  RoadAdvisoryEdit,
+  CommunityNoticeEdit,
+  DisasterUpdatesEdit,
+} from "@/components/update-news/updates-edit";
+
+// ---------- EMPTY UPDATES COMPONENT ---------- //
+
 const EmptyUpdates = ({ text, icon, onclick }: EmptyUpdatesProps) => {
   return (
     <div className="flex h-full w-full items-center justify-center">
@@ -52,10 +62,53 @@ const EmptyUpdates = ({ text, icon, onclick }: EmptyUpdatesProps) => {
 };
 
 export default function SuperAdminUpdateNews() {
+  // ------ TOGGLE SA BUTTON NG ADD UPDATES -------- //
+
   const [isHide, setIsHide] = useState<boolean>(false);
 
+  // ------ PANGSHOW NG FORM ------- //
+
   const [addUpdates, setAddUpdates] = useState<number | null>(null);
+
+  // -----  PANG SHOW NG EDIT FORM ------- //
+
+  const [isEdit, setIsEdit] = useState<number | null>(null);
+
+  // ----- TOGGLE PARA MASHOW YUNG ADVISORY ------ //
+
   const [isActive, setIsActive] = useState<number>(0);
+
+  // ----- LAGAYAN TO NG MGA DATA NG ADVISORY ------ //
+
+  const [updatesWeather, setUpdatesWeather] = useState<GetWeatherProps[]>([]);
+  const [updatesRoad, setUpdatesRoad] = useState<GetRoadProps[]>([]);
+  const [updatesDisaster, setUpdatesDisaster] = useState<GetDisasterProps[]>(
+    [],
+  );
+  const [updatesCommunity, setUpdatesCommunity] = useState<GetCommunityProps[]>(
+    [],
+  );
+
+  // ----- STATE PARA SA POPUP NG DETAILS CONTAINER --------- //
+
+  const [detailWeatherPopUp, setDetailWeatherPopUp] = useState<boolean>(false);
+  const [detailRoadPopUp, setDetailRoadPopUp] = useState<boolean>(false);
+  const [detailCommunityPopUp, setDetailCommunityPopUp] =
+    useState<boolean>(false);
+  const [detailDisasterPopUp, setDetailDisasterPopUp] =
+    useState<boolean>(false);
+
+  // ----- STATE PARA SA DETAIL ID PANG FETCH NG SPECIFIC NA DATA ------- //
+
+  const [detailId, setDetailId] = useState<string | undefined>("0");
+
+  // ----- LOADING TOGGLE ------- //
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  // ----- REFRESH STATE PARA MAG RELOAD -------- //
+
+  const [refreshKey, setRefreshKey] = useState(0);
 
   const advisories = [
     { name: "Weather", icon: <FaCloud /> },
@@ -71,18 +124,7 @@ export default function SuperAdminUpdateNews() {
     "Community Notice",
   ];
 
-  const [updatesWeather, setUpdatesWeather] = useState<GetWeatherProps[]>([]);
-  const [updatesRoad, setUpdatesRoad] = useState<GetRoadProps[]>([]);
-  const [updatesDisaster, setUpdatesDisaster] = useState<GetDisasterProps[]>(
-    [],
-  );
-  const [updatesCommunity, setUpdatesCommunity] = useState<GetCommunityProps[]>(
-    [],
-  );
-
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-
-  const [refreshKey, setRefreshKey] = useState(0);
+  // ----------- FETCHING NG MGA ADVISORY ------------ //
 
   useEffect(() => {
     const fetchWeather = async () => {
@@ -117,27 +159,6 @@ export default function SuperAdminUpdateNews() {
 
     fetchWeather();
   }, [addUpdates, refreshKey]);
-
-  const formatDateTime = (datetime: string) => {
-    const date = new Date(datetime);
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
-
-  const [detailWeatherPopUp, setDetailWeatherPopUp] = useState<boolean>(false);
-  const [detailRoadPopUp, setDetailRoadPopUp] = useState<boolean>(false);
-  const [detailCommunityPopUp, setDetailCommunityPopUp] =
-    useState<boolean>(false);
-  const [detailDisasterPopUp, setDetailDisasterPopUp] =
-    useState<boolean>(false);
-
-  const [detailId, setDetailId] = useState<string | undefined>("0");
 
   return (
     <>
@@ -193,6 +214,8 @@ export default function SuperAdminUpdateNews() {
           </div>
         </div>
 
+        {/* ------------ WEATHER ADVISORY PAGE --------------- */}
+
         {isActive === 0 && (
           <div className="mt-10 flex flex-wrap items-center justify-start gap-6 px-10">
             {(!updatesWeather ||
@@ -217,10 +240,16 @@ export default function SuperAdminUpdateNews() {
                     setDetailWeatherPopUp((prev) => !prev);
                     setDetailId(data.id);
                   }}
+                  onedit={() => {
+                    setIsEdit(1);
+                    setDetailId(data.id);
+                  }}
                 />
               ))}
           </div>
         )}
+
+        {/* ------------ ROAD ADVISORY PAGE --------------- */}
 
         {isActive === 1 && (
           <div className="mt-10 flex flex-wrap items-center justify-start gap-6 px-10">
@@ -246,10 +275,16 @@ export default function SuperAdminUpdateNews() {
                     setDetailRoadPopUp((prev) => !prev);
                     setDetailId(data.id);
                   }}
+                  onedit={() => {
+                    setIsEdit(2);
+                    setDetailId(data.id);
+                  }}
                 />
               ))}
           </div>
         )}
+
+        {/* ------------ DISASTER UPDATES PAGE --------------- */}
 
         {isActive === 2 && (
           <div className="mt-10 flex flex-wrap items-center justify-start gap-6 px-10">
@@ -274,10 +309,17 @@ export default function SuperAdminUpdateNews() {
                     setDetailDisasterPopUp((prev) => !prev);
                     setDetailId(data.id);
                   }}
+                  onedit={() => {
+                    setIsEdit(3);
+                    setDetailId(data.id);
+                  }}
                 />
               ))}
           </div>
         )}
+
+        {/* ------------ COMMUNITY NOTICE PAGE --------------- */}
+
         {isActive === 3 && (
           <div className="mt-10 flex flex-wrap items-center justify-start gap-6 px-10">
             {(!updatesCommunity ||
@@ -301,56 +343,132 @@ export default function SuperAdminUpdateNews() {
                     setDetailCommunityPopUp((prev) => !prev);
                     setDetailId(data.id);
                   }}
+                  onedit={() => {
+                    setIsEdit(4);
+                    setDetailId(data.id);
+                  }}
                 />
               ))}
           </div>
         )}
       </div>
 
+      {/* ------------ WEATHER ADVISORY FORM --------------- */}
+
       {addUpdates === 0 && (
         <WeatherAdvisoryForm onclick={() => setAddUpdates(null)} />
       )}
+
+      {/* ------------ ROAD ADVISORY FORM --------------- */}
 
       {addUpdates === 1 && (
         <RoadAdvisoryForm onclick={() => setAddUpdates(null)} />
       )}
 
+      {/* ------------ DISASTER UPDATES FORM --------------- */}
+
       {addUpdates === 2 && (
         <DisasterUpdatesForm onclick={() => setAddUpdates(null)} />
       )}
 
+      {/* ------------ COMMUNITY NOTICE FORM --------------- */}
+
       {addUpdates === 3 && (
         <CommunityNoticeForm onclick={() => setAddUpdates(null)} />
       )}
+
+      {/* ------------ WEATHER ADVISORY DETAILS --------------- */}
 
       {detailWeatherPopUp && (
         <WeatherAdvisoryDetails
           id={detailId}
           onclick={() => setDetailWeatherPopUp((prev) => !prev)}
           triggerRefresh={() => setRefreshKey((prev) => prev + 1)}
+          onEdit={() => {
+            setIsEdit(1);
+            setDetailWeatherPopUp(false);
+          }}
         />
       )}
+
+      {/* ------------ ROAD ADVISORY DETAILS --------------- */}
 
       {detailRoadPopUp && (
         <RoadAdvisoryDetails
           id={detailId}
           onclick={() => setDetailRoadPopUp((prev) => !prev)}
           triggerRefresh={() => setRefreshKey((prev) => prev + 1)}
+          onEdit={() => {
+            setIsEdit(2);
+            setDetailRoadPopUp(false);
+          }}
         />
       )}
+
+      {/* ------------ COMMUNITY NOTICE DETAILS --------------- */}
 
       {detailCommunityPopUp && (
         <CommunityNoticeDetails
           id={detailId}
           onclick={() => setDetailCommunityPopUp((prev) => !prev)}
           triggerRefresh={() => setRefreshKey((prev) => prev + 1)}
+          onEdit={() => {
+            setIsEdit(4);
+            setDetailCommunityPopUp(false);
+          }}
         />
       )}
+
+      {/* ------------ DISASTER UPDATES DETAILS --------------- */}
 
       {detailDisasterPopUp && (
         <DisasterUpdatesDetails
           id={detailId}
           onclick={() => setDetailDisasterPopUp((prev) => !prev)}
+          triggerRefresh={() => setRefreshKey((prev) => prev + 1)}
+          onEdit={() => {
+            setIsEdit(3);
+            setDetailDisasterPopUp(false);
+          }}
+        />
+      )}
+
+      {/* ------------ WEATHER ADVISORY EDIT FORM --------------- */}
+
+      {isEdit === 1 && detailId && (
+        <WeatherAdvisoryEdit
+          id={detailId}
+          onclick={() => setIsEdit(null)}
+          triggerRefresh={() => setRefreshKey((prev) => prev + 1)}
+        />
+      )}
+
+      {/* ------------ ROAD ADVISORY EDIT FORM --------------- */}
+
+      {isEdit === 2 && detailId && (
+        <RoadAdvisoryEdit
+          id={detailId}
+          onclick={() => setIsEdit(null)}
+          triggerRefresh={() => setRefreshKey((prev) => prev + 1)}
+        />
+      )}
+
+      {/* ------------ DISASTER UPDATES EDIT FORM --------------- */}
+
+      {isEdit === 3 && detailId && (
+        <DisasterUpdatesEdit
+          id={detailId}
+          onclick={() => setIsEdit(null)}
+          triggerRefresh={() => setRefreshKey((prev) => prev + 1)}
+        />
+      )}
+
+      {/* ------------ COMMUNITY NOTICE EDIT FORM --------------- */}
+
+      {isEdit === 4 && detailId && (
+        <CommunityNoticeEdit
+          id={detailId}
+          onclick={() => setIsEdit(null)}
           triggerRefresh={() => setRefreshKey((prev) => prev + 1)}
         />
       )}

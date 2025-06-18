@@ -17,11 +17,14 @@ import {
 } from "../../../types";
 
 import { DeleteSuccessfully } from "../pop-up";
+import { formatDateTime } from "../../../reusable-function";
 
 import { useState, useEffect } from "react";
 import Loader from "../loading";
 import axios from "axios";
 import gsap from "gsap";
+
+// --------------- DELETE POP UP COMPONENT ------------- //
 
 const DeletePopUp = ({
   advisory,
@@ -33,14 +36,14 @@ const DeletePopUp = ({
   oncancel: () => void;
 }) => {
   return (
-    <div className="dark:bg-light-black/90 flex flex-col items-center justify-center gap-5 rounded-md border bg-blue-400/70 p-10 backdrop-blur-sm">
-      <p className="text-center text-sm leading-7 text-nowrap">
+    <div className="dark:bg-light-black/90 bg-dark-blue flex flex-col items-center justify-center gap-5 rounded-md border p-10 backdrop-blur-sm">
+      <p className="text-puti text-center text-sm leading-7 text-nowrap">
         This action cannot be undone. <br /> Are you sure you want to delete
         this {advisory}?
       </p>
       <div className="text-puti flex gap-3 text-sm">
         <button
-          className="bg-dark-blue cursor-pointer rounded-sm px-6 py-2 transition-all duration-300 hover:opacity-80"
+          className="dark:bg-dark-blue bg-light-blue text-itim dark:text-puti cursor-pointer rounded-sm px-6 py-2 transition-all duration-300 hover:opacity-80"
           onClick={ondelete}
         >
           Yes
@@ -62,6 +65,7 @@ export const WeatherAdvisoryDetails = ({
   onclick,
   id,
   triggerRefresh,
+  onEdit,
 }: GetAdvisoryDetails) => {
   const [fetchAdvisory, setFetchAdvisory] = useState<GetWeatherProps>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -114,18 +118,6 @@ export const WeatherAdvisoryDetails = ({
       });
   };
 
-  const formatDateTime = (datetime: string) => {
-    const date = new Date(datetime);
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
-
   // ---------- GSAP ANIMATION ------------ //
 
   useEffect(() => {
@@ -145,7 +137,7 @@ export const WeatherAdvisoryDetails = ({
   }, [isDeleted]);
 
   return (
-    <div className="dark:bg-itim/70 absolute inset-0 z-50 flex items-center justify-center bg-white/30">
+    <div className="dark:bg-itim/70 absolute inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-transparent-blue border-dark-blue/50 dark:border-puti/10 dark:bg-light-black relative flex max-h-[80vh] max-w-[800px] flex-col gap-7 rounded-xl border px-10 py-8 backdrop-blur-sm">
         <HiOutlineX
           className={`absolute ${isDeleted ? "pointer-events-none opacity-80" : "hover:text-red-500"} top-6 right-6 text-xl transition-colors duration-300`}
@@ -153,7 +145,7 @@ export const WeatherAdvisoryDetails = ({
         />
 
         {isDeleted && (
-          <div className="popUp absolute top-1/2 left-1/2 -translate-1/2">
+          <div className="popUp absolute top-1/2 left-1/2 z-50 -translate-1/2">
             <DeletePopUp
               advisory="Weather Advisory"
               ondelete={() => {
@@ -167,7 +159,7 @@ export const WeatherAdvisoryDetails = ({
         )}
 
         {isSuccessDelete && (
-          <div className="popUp absolute top-1/2 left-1/2 -translate-1/2">
+          <div className="popUp absolute top-1/2 left-1/2 z-50 -translate-1/2">
             <DeleteSuccessfully />
           </div>
         )}
@@ -194,6 +186,7 @@ export const WeatherAdvisoryDetails = ({
                 <button
                   disabled={isDeleted || isSuccessDelete}
                   className={`bg-dark-blue flex items-center gap-1 ${isDeleted ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:opacity-80"} text-puti rounded-sm px-6 py-2 text-xs transition-all duration-300`}
+                  onClick={onEdit}
                 >
                   <LiaEditSolid className="text-sm" />
                   Edit
@@ -221,6 +214,7 @@ export const RoadAdvisoryDetails = ({
   onclick,
   id,
   triggerRefresh,
+  onEdit,
 }: GetAdvisoryDetails) => {
   const [fetchAdvisory, setFetchAdvisory] = useState<GetRoadProps>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -273,18 +267,6 @@ export const RoadAdvisoryDetails = ({
       });
   };
 
-  const formatDateTime = (datetime: string) => {
-    const date = new Date(datetime);
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
-
   // ---------- GSAP ANIMATION ------------ //
 
   useEffect(() => {
@@ -304,7 +286,7 @@ export const RoadAdvisoryDetails = ({
   }, [isDeleted]);
 
   return (
-    <div className="dark:bg-itim/70 absolute inset-0 z-50 flex items-center justify-center bg-white/30">
+    <div className="dark:bg-itim/70 absolute inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-transparent-blue border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex max-h-[80vh] max-w-[600px] flex-col gap-7 rounded-xl border px-10 py-8 backdrop-blur-sm">
         <HiOutlineX
           className={`absolute ${isDeleted ? "pointer-events-none opacity-80" : "hover:text-red-500"} top-6 right-6 text-xl transition-colors duration-300`}
@@ -358,6 +340,7 @@ export const RoadAdvisoryDetails = ({
                 <button
                   disabled={isDeleted || isSuccessDelete}
                   className={`bg-dark-blue flex items-center gap-1 ${isDeleted ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:opacity-80"} text-puti rounded-sm px-6 py-2 text-xs transition-all duration-300`}
+                  onClick={onEdit}
                 >
                   <LiaEditSolid className="text-sm" />
                   Edit
@@ -385,6 +368,7 @@ export const CommunityNoticeDetails = ({
   onclick,
   id,
   triggerRefresh,
+  onEdit,
 }: GetAdvisoryDetails) => {
   const [fetchAdvisory, setFetchAdvisory] = useState<GetCommunityProps>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -410,18 +394,6 @@ export const CommunityNoticeDetails = ({
 
     fetchDetail();
   }, []);
-
-  const formatDateTime = (datetime: string) => {
-    const date = new Date(datetime);
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
 
   const handleDelete = (id?: string) => {
     if (!id) {
@@ -467,7 +439,7 @@ export const CommunityNoticeDetails = ({
     );
   }, [isDeleted]);
   return (
-    <div className="dark:bg-itim/70 absolute inset-0 z-50 flex items-center justify-center bg-white/30">
+    <div className="dark:bg-itim/70 absolute inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-transparent-blue border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex max-h-[80vh] max-w-[600px] flex-col gap-7 rounded-xl border px-10 py-8 backdrop-blur-sm">
         <HiOutlineX
           className={`absolute ${isDeleted ? "pointer-events-none opacity-80" : "hover:text-red-500"} top-6 right-6 text-xl transition-colors duration-300`}
@@ -516,6 +488,7 @@ export const CommunityNoticeDetails = ({
                 <button
                   disabled={isDeleted || isSuccessDelete}
                   className={`bg-dark-blue flex items-center gap-1 ${isDeleted ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:opacity-80"} text-puti rounded-sm px-6 py-2 text-xs transition-all duration-300`}
+                  onClick={onEdit}
                 >
                   <LiaEditSolid className="text-sm" />
                   Edit
@@ -543,6 +516,7 @@ export const DisasterUpdatesDetails = ({
   onclick,
   id,
   triggerRefresh,
+  onEdit,
 }: GetAdvisoryDetails) => {
   const [fetchAdvisory, setFetchAdvisory] = useState<GetDisasterProps>();
   const [loading, setLoading] = useState<boolean>(false);
@@ -596,18 +570,6 @@ export const DisasterUpdatesDetails = ({
       });
   };
 
-  const formatDateTime = (datetime: string) => {
-    const date = new Date(datetime);
-    return date.toLocaleString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
-    });
-  };
-
   // ---------- GSAP ANIMATION ------------ //
 
   useEffect(() => {
@@ -627,7 +589,7 @@ export const DisasterUpdatesDetails = ({
   }, [isDeleted]);
 
   return (
-    <div className="dark:bg-itim/70 absolute inset-0 z-50 flex items-center justify-center bg-white/30">
+    <div className="dark:bg-itim/70 absolute inset-0 z-50 flex items-center justify-center bg-black/40">
       <div className="bg-transparent-blue border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex max-h-[80vh] max-w-[800px] flex-col gap-7 rounded-xl border px-10 py-8 backdrop-blur-sm">
         <HiOutlineX
           className={`absolute ${isDeleted ? "pointer-events-none opacity-80" : "hover:text-red-500"} top-6 right-6 text-xl transition-colors duration-300`}
@@ -637,7 +599,7 @@ export const DisasterUpdatesDetails = ({
         {isDeleted && (
           <div className="popUp absolute top-1/2 left-1/2 z-50 -translate-1/2">
             <DeletePopUp
-              advisory="Community Notice"
+              advisory="Disaster Updates"
               ondelete={() => {
                 setIsDeleted(false);
                 setIsSuccessDelete(true);
@@ -668,11 +630,11 @@ export const DisasterUpdatesDetails = ({
             <div className="flex items-center gap-10">
               {fetchAdvisory?.img_path ? (
                 <div
-                  className="relative h-[300px] w-[300px] min-w-[300px]"
+                  className="relative h-[300px] w-[300px] min-w-[300px] overflow-hidden rounded-md"
                   onClick={() => setIsImageOpen(true)}
                 >
                   <Image
-                    src={fetchAdvisory.image_url}
+                    src={fetchAdvisory.image_url ?? ""}
                     alt=""
                     fill
                     className="object-cover object-center"
@@ -706,6 +668,7 @@ export const DisasterUpdatesDetails = ({
                   <button
                     disabled={isDeleted || isSuccessDelete}
                     className={`bg-dark-blue flex items-center gap-1 ${isDeleted ? "cursor-not-allowed opacity-60" : "cursor-pointer hover:opacity-80"} text-puti rounded-sm px-6 py-2 text-xs transition-all duration-300`}
+                    onClick={onEdit}
                   >
                     <LiaEditSolid className="text-sm" />
                     Edit
@@ -739,7 +702,7 @@ export const DisasterUpdatesDetails = ({
               alt="Enlarged Image"
               width={800}
               height={600}
-              className="h-auto max-h-[75vh] w-full rounded-lg object-contain"
+              className="h-auto max-h-[75vh] w-full object-contain"
             />
           </div>
         </div>

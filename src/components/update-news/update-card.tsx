@@ -14,6 +14,7 @@ export const WeatherAdvisoryCard = ({
   details,
   date_time,
   onclick,
+  onedit,
 }: GetWeatherProps) => {
   return (
     <div className="dark:bg-itim bg-light-blue border-dark-blue relative flex h-[300px] max-w-[300px] min-w-[300px] flex-1 flex-col gap-5 overflow-hidden rounded-md border p-7 dark:border-gray-500/20">
@@ -24,7 +25,7 @@ export const WeatherAdvisoryCard = ({
           {title}
         </h1>
 
-        <LiaEditSolid className="text-xl" />
+        <LiaEditSolid className="text-xl" onClick={onedit} />
       </div>
 
       <div className="border-dark-blue/30 h-[60%] border-b pb-5 dark:border-gray-500/20">
@@ -54,6 +55,7 @@ export const RoadAdvisoryCard = ({
   date_time,
   status,
   onclick,
+  onedit,
 }: GetRoadProps) => {
   return (
     <div className="dark:bg-itim bg-light-blue border-dark-blue relative flex h-[300px] max-w-[300px] min-w-[300px] flex-1 flex-col gap-5 overflow-hidden rounded-md border p-7 dark:border-gray-500/20">
@@ -64,7 +66,7 @@ export const RoadAdvisoryCard = ({
           {title}
         </h1>
 
-        <LiaEditSolid className="text-xl" />
+        <LiaEditSolid className="text-xl" onClick={onedit} />
       </div>
 
       <div className="border-dark-blue/30 h-[60%] border-b pb-5 dark:border-gray-500/20">
@@ -92,12 +94,12 @@ export const RoadAdvisoryCard = ({
 // ------------- DISASTER UPDATES CARD ------------------ //
 
 export const DisasterUpdatesCard = ({
-  img_path,
   title,
   details,
   date_time,
   disaster_type,
   onclick,
+  onedit,
 }: GetDisasterProps) => {
   return (
     <div className="dark:bg-itim bg-light-blue border-dark-blue relative flex h-[300px] max-w-[300px] min-w-[300px] flex-1 flex-col gap-5 overflow-hidden rounded-md border p-7 dark:border-gray-500/20">
@@ -113,7 +115,7 @@ export const DisasterUpdatesCard = ({
           </p>
         </div>
 
-        <LiaEditSolid className="text-xl" />
+        <LiaEditSolid className="text-xl" onClick={onedit} />
       </div>
 
       <div className="border-dark-blue/30 h-[60%] border-b pb-5 dark:border-gray-500/20">
@@ -144,6 +146,7 @@ export const CommunityNoticeCard = ({
   details,
   date_time,
   onclick,
+  onedit,
 }: GetCommunityProps) => {
   return (
     <div className="dark:bg-itim bg-light-blue border-dark-blue relative flex h-[300px] max-w-[300px] min-w-[300px] flex-1 flex-col gap-5 overflow-hidden rounded-md border p-7 dark:border-gray-500/20">
@@ -154,7 +157,7 @@ export const CommunityNoticeCard = ({
           {title}
         </h1>
 
-        <LiaEditSolid className="text-xl" />
+        <LiaEditSolid className="text-xl" onClick={onedit} />
       </div>
 
       <div className="border-dark-blue/30 h-[60%] border-b pb-5 dark:border-gray-500/20">

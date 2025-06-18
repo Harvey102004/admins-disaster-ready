@@ -59,3 +59,29 @@ export function DeleteSuccessfully() {
     </div>
   );
 }
+
+// ---------- POP UP SUCCESS EDIT  ------------- //
+
+export function SuccessEdit({ advisory }: { advisory: string }) {
+  return (
+    <div className="flex h-16 items-center justify-center gap-2 rounded-md border border-green-500 bg-green-500/50 px-10 py-2 backdrop-blur-sm dark:bg-green-800/70">
+      <FaCircleCheck className="text-xl dark:text-green-300" />
+      <p className="text-sm text-nowrap">
+        Success! {advisory} has been Updated.
+      </p>
+    </div>
+  );
+}
+
+// ---------- POP UP EDIT NOT CHANGE FORM ------------- //
+
+export function EditNotChange() {
+  return (
+    <div className="flex h-16 items-center justify-center gap-2 rounded-md border border-red-500 bg-red-500/50 px-10 py-2 backdrop-blur-sm dark:bg-red-800/70">
+      <RiErrorWarningFill className="text-2xl" />
+      <p className="text-sm text-nowrap">
+        It seems like there were no changes made.
+      </p>
+    </div>
+  );
+}

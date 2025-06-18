@@ -9,7 +9,12 @@ import { ImSpinner6 } from "react-icons/im";
 import { useState, useEffect } from "react";
 import { CompleteFormAlert, SuccessPost } from "../pop-up";
 import Loader from "../loading";
-import { WeatherProps } from "../../../types";
+import {
+  WeatherProps,
+  RoadProps,
+  DisasterProps,
+  CommunityNoticeProps,
+} from "../../../types";
 import axios from "axios";
 import gsap from "gsap";
 
@@ -21,6 +26,10 @@ export const WeatherAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
     details: "",
     dateTime: "",
   });
+
+  const [isComplete, setisComplete] = useState<boolean>(false);
+  const [isPosted, setisPosted] = useState<boolean>(false);
+  const [isLoading, setisLoading] = useState<boolean>(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -72,10 +81,6 @@ export const WeatherAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
   };
 
   // ------------- GSAP ANIMATION -------------- //
-
-  const [isComplete, setisComplete] = useState<boolean>(false);
-  const [isPosted, setisPosted] = useState<boolean>(false);
-  const [isLoading, setisLoading] = useState<boolean>(false);
 
   useEffect(() => {
     gsap.fromTo(
@@ -184,8 +189,6 @@ export const WeatherAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
 
 // ------------ FORM NG ROAD ADVISORY UPDATES -------------- //
 
-import { RoadProps } from "../../../types";
-
 export const RoadAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
   const [formData, setFormData] = useState<RoadProps>({
     title: "",
@@ -193,6 +196,10 @@ export const RoadAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
     dateTime: "",
     status: "",
   });
+
+  const [isComplete, setisComplete] = useState<boolean>(false);
+  const [isPosted, setisPosted] = useState<boolean>(false);
+  const [isLoading, setisLoading] = useState<boolean>(false);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -251,10 +258,6 @@ export const RoadAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
   };
 
   // ------------- GSAP ANIMATION -------------- //
-
-  const [isComplete, setisComplete] = useState<boolean>(false);
-  const [isPosted, setisPosted] = useState<boolean>(false);
-  const [isLoading, setisLoading] = useState<boolean>(false);
 
   useEffect(() => {
     gsap.fromTo(
@@ -387,8 +390,6 @@ export const RoadAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
 
 // ------------ FORM NG DISASTER UPDATES -------------- //
 
-import { DisasterProps } from "../../../types";
-
 export const DisasterUpdatesForm = ({ onclick }: { onclick: () => void }) => {
   const [formData, setFormData] = useState<DisasterProps>({
     disasterType: "",
@@ -397,6 +398,10 @@ export const DisasterUpdatesForm = ({ onclick }: { onclick: () => void }) => {
     dateTime: "",
     image: null,
   });
+
+  const [isComplete, setisComplete] = useState<boolean>(false);
+  const [isPosted, setisPosted] = useState<boolean>(false);
+  const [isLoading, setisLoading] = useState<boolean>(false);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -422,61 +427,56 @@ export const DisasterUpdatesForm = ({ onclick }: { onclick: () => void }) => {
   // ----------- DITO YUNG LOGIC NG SUBMIT FORM ----------- //
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (
-    formData.title &&
-    formData.details &&
-    formData.dateTime &&
-    formData.disasterType &&
-    formData.image
-  ) {
-    try {
-      setisLoading(true);
+    if (
+      formData.title &&
+      formData.details &&
+      formData.dateTime &&
+      formData.disasterType &&
+      formData.image
+    ) {
+      try {
+        setisLoading(true);
 
-      // Create a FormData object for multipart/form-data
-      const formPayload = new FormData();
-      formPayload.append("title", formData.title);
-      formPayload.append("details", formData.details);
-      formPayload.append("dateTime", formData.dateTime);
-      formPayload.append("disasterType", formData.disasterType);
-      formPayload.append("image", formData.image);
+        const formPayload = new FormData();
+        formPayload.append("title", formData.title);
+        formPayload.append("details", formData.details);
+        formPayload.append("dateTime", formData.dateTime);
+        formPayload.append("disasterType", formData.disasterType);
+        formPayload.append("image", formData.image);
 
-      await axios.post(
-        "http://localhost/disaster-backend/controllers/advisoryController.php?type=disaster",
-        formPayload,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
+        await axios.post(
+          "http://localhost/disaster-backend/controllers/advisoryController.php?type=disaster",
+          formPayload,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
           },
-        }
-      );
+        );
 
-      setisPosted(true);
+        setisPosted(true);
+
+        setTimeout(() => {
+          setisPosted(false);
+          onclick();
+        }, 1500);
+      } catch (error) {
+        console.error("Submission error:", error);
+      } finally {
+        setisLoading(false);
+      }
+    } else {
+      setisComplete(true);
 
       setTimeout(() => {
-        setisPosted(false);
-        onclick();
-      }, 1500);
-    } catch (error) {
-      console.error("Submission error:", error);
-    } finally {
-      setisLoading(false);
+        setisComplete(false);
+      }, 2500);
     }
-  } else {
-    setisComplete(true);
-
-    setTimeout(() => {
-      setisComplete(false);
-    }, 2500);
-  }
-};
+  };
 
   // ------------- GSAP ANIMATION -------------- //
-
-  const [isComplete, setisComplete] = useState<boolean>(false);
-  const [isPosted, setisPosted] = useState<boolean>(false);
-  const [isLoading, setisLoading] = useState<boolean>(false);
 
   useEffect(() => {
     gsap.fromTo(
@@ -626,14 +626,16 @@ export const DisasterUpdatesForm = ({ onclick }: { onclick: () => void }) => {
 
 // ------------ FORM NG COMMUNITY NOTICE UPDATES -------------- //
 
-import { CommunityNoticeProps } from "../../../types";
-
 export const CommunityNoticeForm = ({ onclick }: { onclick: () => void }) => {
   const [formData, setFormData] = useState<CommunityNoticeProps>({
     title: "",
     details: "",
     dateTime: "",
   });
+
+  const [isComplete, setisComplete] = useState<boolean>(false);
+  const [isPosted, setisPosted] = useState<boolean>(false);
+  const [isLoading, setisLoading] = useState<boolean>(false);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -685,10 +687,6 @@ export const CommunityNoticeForm = ({ onclick }: { onclick: () => void }) => {
   };
 
   // ------------- GSAP ANIMATION -------------- //
-
-  const [isComplete, setisComplete] = useState<boolean>(false);
-  const [isPosted, setisPosted] = useState<boolean>(false);
-  const [isLoading, setisLoading] = useState<boolean>(false);
 
   useEffect(() => {
     gsap.fromTo(
@@ -776,11 +774,22 @@ export const CommunityNoticeForm = ({ onclick }: { onclick: () => void }) => {
           />
         </div>
 
-        <input
+        <button
           type="submit"
-          value="Post"
-          className="bg-dark-blue text-puti mt-3 cursor-pointer rounded-md border py-3 transition-all duration-300 hover:opacity-90"
-        />
+          disabled={isLoading}
+          className={`bg-dark-blue text-puti mt-3 cursor-pointer rounded-md border py-3 transition-all duration-300 ${
+            isLoading ? "cursor-not-allowed opacity-60" : "hover:opacity-90"
+          }`}
+        >
+          {isLoading ? (
+            <span className="flex items-center justify-center gap-2">
+              <Loader />
+              Posting...
+            </span>
+          ) : (
+            "Post"
+          )}
+        </button>
       </form>
     </div>
   );
