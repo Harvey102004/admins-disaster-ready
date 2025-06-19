@@ -143,3 +143,8 @@
   background-color: rgba(37, 99, 235, 0.3);
   border-radius: 100px;
 }
+
+.search-input::-webkit-search-cancel-button {
+  display: none;
+  -webkit-appearance: none;
+}

@@ -12,6 +12,7 @@ export const metadata: Metadata = {
     default: "DisasterReady",
     template: "%s | DisasterReady",
   },
+  icons: { icon: "/logos/lb-logo.png" },
 };
 
 export default function RootLayout({

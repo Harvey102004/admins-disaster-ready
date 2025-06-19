@@ -193,7 +193,7 @@ export default function SuperAdminUpdateNews() {
           <div className="relative ml-auto">
             <button
               onClick={() => setIsHide((prev) => !prev)}
-              className="bg-dark-blue text-puti flex cursor-pointer items-center gap-2 rounded-full px-4 py-3 pl-6 text-xs"
+              className="bg-dark-blue text-puti flex cursor-pointer items-center gap-2 rounded-full px-4 py-3 pl-6 text-xs transition-all duration-300 hover:opacity-75"
             >
               Add Updates <MdOutlineAdd />
             </button>

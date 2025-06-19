@@ -630,7 +630,7 @@ export const DisasterUpdatesDetails = ({
             <div className="flex items-center gap-10">
               {fetchAdvisory?.img_path ? (
                 <div
-                  className="relative h-[300px] w-[300px] min-w-[300px] overflow-hidden rounded-md"
+                  className="relative h-[300px] w-[300px] min-w-[300px] overflow-hidden rounded-md transition-all duration-300 hover:opacity-70"
                   onClick={() => setIsImageOpen(true)}
                 >
                   <Image

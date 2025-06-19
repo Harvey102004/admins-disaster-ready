@@ -98,7 +98,7 @@ export const WeatherAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
   }, [isComplete, isPosted]);
 
   return (
-    <div className="dark:bg-itim/70 absolute inset-0 z-50 flex items-center justify-center bg-white/30">
+    <div className="dark:bg-itim/70 bg-itim/50 absolute inset-0 z-50 flex items-center justify-center">
       {isComplete && (
         <div className="popUp absolute top-8 z-50">
           <CompleteFormAlert />
@@ -275,7 +275,7 @@ export const RoadAdvisoryForm = ({ onclick }: { onclick: () => void }) => {
   }, [isComplete, isPosted]);
 
   return (
-    <div className="dark:bg-itim/70 absolute inset-0 flex items-center justify-center bg-white/20 shadow-2xl">
+    <div className="dark:bg-itim/70 bg-itim/50 absolute inset-0 flex items-center justify-center shadow-2xl">
       {isComplete && (
         <div className="popUp absolute top-8 z-50">
           <CompleteFormAlert />
@@ -494,7 +494,7 @@ export const DisasterUpdatesForm = ({ onclick }: { onclick: () => void }) => {
   }, [isComplete, isPosted]);
 
   return (
-    <div className="dark:bg-itim/70 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center bg-white/20 shadow-2xl">
+    <div className="dark:bg-itim/70 bg-itim/50 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center shadow-2xl">
       {isComplete && (
         <div className="popUp absolute top-8 z-50">
           <CompleteFormAlert />
@@ -704,7 +704,7 @@ export const CommunityNoticeForm = ({ onclick }: { onclick: () => void }) => {
   }, [isComplete, isPosted]);
 
   return (
-    <div className="dark:bg-itim/70 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center bg-white/20 shadow-2xl">
+    <div className="dark:bg-itim/70 bg-itim/50 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center shadow-2xl">
       {isComplete && (
         <div className="popUp absolute top-8 z-50">
           <CompleteFormAlert />

@@ -105,3 +105,12 @@ export interface AdvisoryEditProps {
   onclick: () => void;
   triggerRefresh: () => void;
 }
+
+export interface EvacuationCenterProps {
+  evac_name: string;
+  evac_capacity: number;
+  evac_location: string;
+  evac_evacuees?: number;
+  evac_contact_person: string;
+  evac_contact_number: string;
+}

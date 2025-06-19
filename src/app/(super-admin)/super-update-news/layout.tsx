@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Update & News",
-  icons: { icon: "/logos/lb-logo.png" },
 };
 
 export default function UpdateNewsLayout({
