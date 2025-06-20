@@ -255,7 +255,7 @@ export default function SuperAdminEvacuationCenter() {
                     </div>
                     <input
                       type="number"
-                      name="evac_contact_person"
+                      name="evac_evacuees"
                       onChange={handleChange}
                       value={formData.evac_evacuees ?? 0}
                       className="focus:border-dark-blue dark:focus:border-dark-blue/60 border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none placeholder:text-[11px] dark:border-gray-500/30"
