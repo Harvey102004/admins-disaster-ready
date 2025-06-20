@@ -1,6 +1,7 @@
 import "@/app/globals.css";
 import { Poppins } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import "leaflet/dist/leaflet.css";
 import { Metadata } from "next";
 const poppins = Poppins({
   subsets: ["latin"],
@@ -12,7 +13,6 @@ export const metadata: Metadata = {
     default: "DisasterReady",
     template: "%s | DisasterReady",
   },
-  icons: { icon: "/logos/lb-logo.png" },
 };
 
 export default function RootLayout({

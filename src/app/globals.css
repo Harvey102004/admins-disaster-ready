@@ -148,3 +148,8 @@
   display: none;
   -webkit-appearance: none;
 }
+
+.leaflet-control-attribution {
+  font-size: 10px !important; /* mas maliit */
+  opacity: 0.7; /* optional, parang dimmed */
+}

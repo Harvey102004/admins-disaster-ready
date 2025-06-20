@@ -5,11 +5,19 @@ import { FaHouseCircleCheck, FaUsers, FaUser, FaPhone } from "react-icons/fa6";
 import { GoHomeFill } from "react-icons/go";
 import { HiOutlineX, HiLocationMarker } from "react-icons/hi";
 import { PiUsersFourFill } from "react-icons/pi";
+import dynamic from "next/dynamic";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import gsap from "gsap";
+import axios from "axios";
 
 import SearchInput from "@/components/search-input";
 import { EvacuationCenterProps } from "../../../../types";
+import { CompleteFormAlert, SuccessPostEvac } from "@/components/pop-up";
+
+const EvacuationMap = dynamic(() => import("@/components/evacuationMap"), {
+  ssr: false,
+});
 
 export default function SuperAdminEvacuationCenter() {
   const [search, setSearch] = useState<string>("");
@@ -18,6 +26,10 @@ export default function SuperAdminEvacuationCenter() {
 
   const [isEvacOpen, setisEvacOpen] = useState<boolean>(false);
 
+  const [isComplete, setisComplete] = useState<boolean>(false);
+  const [isPosted, setisPosted] = useState<boolean>(false);
+  const [isLoading, setisLoading] = useState<boolean>(false);
+
   const [formData, setFormData] = useState<EvacuationCenterProps>({
     evac_name: "",
     evac_capacity: 0,
@@ -25,7 +37,92 @@ export default function SuperAdminEvacuationCenter() {
     evac_evacuees: 0,
     evac_contact_person: "",
     evac_contact_number: "",
+    lat: null,
+    long: null,
   });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const {
+      evac_name,
+      evac_location,
+      evac_capacity,
+      evac_evacuees,
+      evac_contact_person,
+      evac_contact_number,
+      lat,
+      long,
+    } = formData;
+
+    const isComplete =
+      evac_name &&
+      evac_location &&
+      evac_capacity &&
+      evac_evacuees &&
+      evac_contact_person &&
+      evac_contact_number &&
+      lat !== null &&
+      long !== null;
+
+    if (!isComplete) {
+      try {
+        setisLoading(true);
+
+        const response = await axios.post(
+          "http://localhost/Disaster-backend/controllers/evacuationCenterController.php",
+          formData,
+          {
+            headers: {
+              "Content-Type": "application/json",
+            },
+          },
+        );
+
+        setEvaucations(response.data);
+        setisPosted(true);
+        setTimeout(() => {
+          setisPosted(false);
+          setisEvacOpen(false);
+        }, 1800);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setisLoading(false);
+      }
+    } else {
+      setisComplete(true);
+      setTimeout(() => {
+        setisComplete(false);
+      }, 1500);
+    }
+  };
+
+  // ------------- GSAP ANIMATION -------------- //
+
+  useEffect(() => {
+    gsap.fromTo(
+      ".popUp",
+      {
+        opacity: 0,
+        y: -20,
+        duration: 300,
+      },
+      {
+        opacity: 1,
+        y: 0,
+      },
+    );
+  }, [isComplete, isPosted]);
 
   return (
     <>
@@ -73,9 +170,24 @@ export default function SuperAdminEvacuationCenter() {
         </div>
       </div>
 
+      {isComplete && (
+        <div className="popUp absolute top-8 z-50">
+          <CompleteFormAlert />
+        </div>
+      )}
+
+      {isPosted && (
+        <div className="popUp absolute top-8 z-50">
+          <SuccessPostEvac />
+        </div>
+      )}
+
       {isEvacOpen && (
         <div className="bg-itim/70 fixed inset-0 z-50 flex items-center justify-center">
-          <form className="bg-transparent-blue border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex w-[600px] flex-col gap-8 rounded-xl border px-10 py-8 backdrop-blur-sm">
+          <form
+            onSubmit={handleSubmit}
+            className="bg-transparent-blue border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex w-[1000px] flex-col gap-8 rounded-xl border px-10 py-8 backdrop-blur-sm"
+          >
             <HiOutlineX
               className="absolute top-5 right-5 text-xl transition-all duration-300 hover:text-red-500"
               onClick={() => setisEvacOpen(false)}
@@ -86,93 +198,126 @@ export default function SuperAdminEvacuationCenter() {
               <h2>Add Evacuation Center</h2>
             </div>
 
-            <div className="mt-5 flex items-center justify-between gap-5">
-              <div className="flex-1">
-                <div className="mb-3 flex items-center gap-3">
-                  <GoHomeFill className="text-dark-blue text-lg" />
-                  <p className="text-xs">Evacuation Center name</p>
+            <div className="flex gap-8">
+              <div className="flex flex-1 flex-col justify-evenly">
+                <div className="flex items-center justify-between gap-5">
+                  <div className="flex-1">
+                    <div className="mb-3 flex items-center gap-3">
+                      <GoHomeFill className="text-dark-blue text-lg" />
+                      <p className="text-xs">Evacuation Center name</p>
+                    </div>
+                    <input
+                      type="text"
+                      name="evac_name"
+                      onChange={handleChange}
+                      value={formData.evac_name ?? ""}
+                      className="focus:border-dark-blue dark:focus:border-dark-blue/60 border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none placeholder:text-[11px] dark:border-gray-500/30"
+                      placeholder="Enter Evacuation center name"
+                    />
+                  </div>
+
+                  <div className="flex-1">
+                    <div className="mb-3 flex items-center gap-3">
+                      <FaUsers className="text-dark-blue text-lg" />
+                      <p className="text-xs">Capacity</p>
+                    </div>
+                    <input
+                      type="number"
+                      name="evac_capacity"
+                      onChange={handleChange}
+                      value={formData.evac_capacity ?? 0}
+                      className="focus:border-dark-blue dark:focus:border-dark-blue/60 border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none placeholder:text-[11px] dark:border-gray-500/30"
+                      placeholder="Enter Evacuation center capacity"
+                    />
+                  </div>
                 </div>
-                <input
-                  type="text"
-                  name="evac_name"
-                  value={formData.evac_name ?? ""}
-                  className="focus:border-dark-blue dark:focus:border-dark-blue/60 border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none placeholder:text-[11px] dark:border-gray-500/30"
-                  placeholder="Enter Evacuation center name"
-                />
+
+                <div className="flex items-center justify-between gap-5">
+                  <div className="flex-1">
+                    <div className="mb-3 flex items-center gap-3">
+                      <HiLocationMarker className="text-dark-blue text-lg" />
+                      <p className="text-xs">Location</p>
+                    </div>
+                    <input
+                      type="text"
+                      name="evac_location"
+                      onChange={handleChange}
+                      value={formData.evac_location ?? ""}
+                      className="focus:border-dark-blue dark:focus:border-dark-blue/60 border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none placeholder:text-[11px] dark:border-gray-500/30"
+                      placeholder="Enter Evacuation center location"
+                    />
+                  </div>
+
+                  <div className="flex-1">
+                    <div className="mb-3 flex items-center gap-3">
+                      <PiUsersFourFill className="text-dark-blue text-lg" />
+                      <p className="text-xs">Current number of evacuees</p>
+                    </div>
+                    <input
+                      type="number"
+                      name="evac_contact_person"
+                      onChange={handleChange}
+                      value={formData.evac_evacuees ?? 0}
+                      className="focus:border-dark-blue dark:focus:border-dark-blue/60 border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none placeholder:text-[11px] dark:border-gray-500/30"
+                      placeholder="Enter current number of evacuees"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-5">
+                  <div className="flex-1">
+                    <div className="mb-3 flex items-center gap-3">
+                      <FaUser className="text-dark-blue" />
+                      <p className="text-xs">Contact person</p>
+                    </div>
+                    <input
+                      type="text"
+                      name="evac_contact_person"
+                      onChange={handleChange}
+                      value={formData.evac_contact_person ?? ""}
+                      className="focus:border-dark-blue dark:focus:border-dark-blue/60 border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none placeholder:text-[11px] dark:border-gray-500/30"
+                      placeholder="Enter contact person name"
+                    />
+                  </div>
+
+                  <div className="flex-1">
+                    <div className="mb-3 flex items-center gap-3">
+                      <FaPhone className="text-dark-blue" />
+                      <p className="text-xs">Contact person number #</p>
+                    </div>
+                    <input
+                      type="number"
+                      name="evac_contact_number"
+                      onChange={handleChange}
+                      value={formData.evac_contact_number ?? ""}
+                      className="focus:border-dark-blue dark:focus:border-dark-blue/60 border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none placeholder:text-[11px] dark:border-gray-500/30"
+                      placeholder="Enter contact person number"
+                    />
+                  </div>
+                </div>
               </div>
 
-              <div className="flex-1">
-                <div className="mb-3 flex items-center gap-3">
-                  <FaUsers className="text-dark-blue text-lg" />
-                  <p className="text-xs">Capacity</p>
-                </div>
-                <input
-                  type="number"
-                  name="evac_capacity"
-                  value={formData.evac_capacity ?? 0}
-                  className="focus:border-dark-blue dark:focus:border-dark-blue/60 border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none placeholder:text-[11px] dark:border-gray-500/30"
-                  placeholder="Enter Evacuation center capacity"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between gap-5">
               <div className="flex-1">
                 <div className="mb-3 flex items-center gap-3">
                   <HiLocationMarker className="text-dark-blue text-lg" />
-                  <p className="text-xs">Location</p>
+                  <p className="text-xs">Pin Location on Map</p>
                 </div>
-                <input
-                  type="text"
-                  name="evac_location"
-                  value={formData.evac_location ?? ""}
-                  className="focus:border-dark-blue dark:focus:border-dark-blue/60 border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none placeholder:text-[11px] dark:border-gray-500/30"
-                  placeholder="Enter Evacuation center location"
-                />
-              </div>
 
-              <div className="flex-1">
-                <div className="mb-3 flex items-center gap-3">
-                  <PiUsersFourFill className="text-dark-blue text-lg" />
-                  <p className="text-xs">Current number of evacuees</p>
+                {/* Map Component */}
+                <div className="h-[300px] w-full overflow-hidden rounded-lg">
+                  <EvacuationMap
+                    lat={formData.lat || 14.17}
+                    lng={formData.long || 121.2436}
+                    onChange={({ lat, lng }) =>
+                      setFormData((prev) => ({ ...prev, lat, long: lng }))
+                    }
+                  />
                 </div>
-                <input
-                  type="number"
-                  name="evac_contact_person"
-                  value={formData.evac_evacuees ?? 0}
-                  className="focus:border-dark-blue dark:focus:border-dark-blue/60 border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none placeholder:text-[11px] dark:border-gray-500/30"
-                  placeholder="Enter current number of evacuees"
-                />
-              </div>
-            </div>
 
-            <div className="flex items-center justify-between gap-5">
-              <div className="flex-1">
-                <div className="mb-3 flex items-center gap-3">
-                  <FaUser className="text-dark-blue" />
-                  <p className="text-xs">Contact person</p>
-                </div>
-                <input
-                  type="text"
-                  name="evac_contact_person"
-                  value={formData.evac_contact_person ?? ""}
-                  className="focus:border-dark-blue dark:focus:border-dark-blue/60 border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none placeholder:text-[11px] dark:border-gray-500/30"
-                  placeholder="Enter contact person name"
-                />
-              </div>
-
-              <div className="flex-1">
-                <div className="mb-3 flex items-center gap-3">
-                  <FaPhone className="text-dark-blue" />
-                  <p className="text-xs">Contact person number #</p>
-                </div>
-                <input
-                  type="number"
-                  name="evac_contact_number"
-                  value={formData.evac_contact_number ?? ""}
-                  className="focus:border-dark-blue dark:focus:border-dark-blue/60 border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none placeholder:text-[11px] dark:border-gray-500/30"
-                  placeholder="Enter contact person number"
-                />
+                <p className="mt-2 text-xs text-gray-500">
+                  Selected: {formData.lat?.toFixed(5)},{" "}
+                  {formData.long?.toFixed(5)}
+                </p>
               </div>
             </div>
 

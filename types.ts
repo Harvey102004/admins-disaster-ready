@@ -113,4 +113,6 @@ export interface EvacuationCenterProps {
   evac_evacuees?: number;
   evac_contact_person: string;
   evac_contact_number: string;
+  lat: number | null;
+  long: number | null;
 }
