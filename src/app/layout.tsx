@@ -2,6 +2,7 @@ import "@/app/globals.css";
 import { Poppins } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import "leaflet/dist/leaflet.css";
+
 import { Metadata } from "next";
 const poppins = Poppins({
   subsets: ["latin"],

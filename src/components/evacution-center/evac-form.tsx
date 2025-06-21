@@ -16,11 +16,20 @@ import axios from "axios";
 
 import { useState, useEffect } from "react";
 
-const EvacuationMap = dynamic(() => import("@/components/evacuationMap"), {
-  ssr: false,
-});
+const EvacuationMap = dynamic(
+  () => import("@/components/evacution-center/evacuationMap"),
+  {
+    ssr: false,
+  },
+);
 
-export const EvacForm = ({ onclose }: { onclose: () => void }) => {
+export const EvacForm = ({
+  onclose,
+  triggerRefresh,
+}: {
+  onclose: () => void;
+  triggerRefresh: () => void;
+}) => {
   const [isComplete, setisComplete] = useState<boolean>(false);
   const [isPosted, setisPosted] = useState<boolean>(false);
   const [isLoading, setisLoading] = useState<boolean>(false);
@@ -112,6 +121,7 @@ export const EvacForm = ({ onclose }: { onclose: () => void }) => {
         );
 
         setisPosted(true);
+        triggerRefresh();
         setTimeout(() => {
           setisPosted(false);
           onclose();
@@ -213,7 +223,7 @@ export const EvacForm = ({ onclose }: { onclose: () => void }) => {
                     formData.evac_capacity === 0 ? "" : formData.evac_capacity
                   }
                   className="focus:border-dark-blue dark:focus:border-dark-blue/60 border-dark-blue/50 w-full border px-4 py-3 text-sm outline-none placeholder:text-[11px] dark:border-gray-500/30"
-                  placeholder="Capacity"
+                  placeholder="Capacity maximum of 5000"
                 />
               </div>
             </div>
@@ -297,7 +307,7 @@ export const EvacForm = ({ onclose }: { onclose: () => void }) => {
             </div>
 
             {/* Map Component */}
-            <div className="h-[300px] w-full overflow-hidden rounded-lg">
+            <div className="h-[300px] w-full overflow-hidden rounded-lg shadow-xl">
               <EvacuationMap
                 lat={formData.lat || 14.17}
                 lng={formData.long || 121.2436}

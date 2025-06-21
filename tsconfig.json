@@ -27,7 +27,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/components/map.js"
+    "src/components/evacution-center/evacuationMap.tsx"
   ],
   "exclude": ["node_modules"]
 }

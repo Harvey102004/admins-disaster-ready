@@ -116,3 +116,24 @@ export interface EvacuationCenterProps {
   lat: number | null;
   long: number | null;
 }
+
+export interface GetEvacuationProps {
+  id?: string;
+  name: string;
+  location: string;
+  capacity: string | number;
+  current_evacuees: string | number;
+  contact_person: string;
+  contact_number: string;
+  lat?: string | number;
+  long?: string | number;
+}
+
+export interface GetEvacCard {
+  id?: string;
+  name: string;
+  location: string;
+  capacity: string | number;
+  current_evacuees: string | number;
+  onclick: () => void;
+}
