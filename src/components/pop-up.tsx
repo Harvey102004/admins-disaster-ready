@@ -86,13 +86,11 @@ export function EditNotChange() {
   );
 }
 
-export function SuccessPostEvac() {
+export function SuccessPostEvac({ text }: { text: string }) {
   return (
     <div className="flex h-16 items-center justify-center gap-2 rounded-md border border-green-500 bg-green-500/50 px-10 py-2 backdrop-blur-sm dark:bg-green-800/70">
       <FaCircleCheck className="text-xl dark:text-green-300" />
-      <p className="text-sm text-nowrap">
-        Evacuation center added successfully.
-      </p>
+      <p className="text-sm text-nowrap">{text}</p>
     </div>
   );
 }

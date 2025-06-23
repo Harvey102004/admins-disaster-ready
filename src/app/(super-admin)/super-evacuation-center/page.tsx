@@ -8,11 +8,15 @@ import { useState, useEffect } from "react";
 import { GetEvacuationProps } from "../../../../types";
 
 import SearchInput from "@/components/search-input";
-import { EvacForm } from "@/components/evacution-center/evac-form";
+import {
+  EvacForm,
+  EvacFormEdit,
+} from "@/components/evacuation-center/evac-form";
+import { EvacuationCard } from "@/components/evacuation-center/evac-card";
+import EvacDetails from "@/components/evacuation-center/evac-details";
 
 import axios from "axios";
 import dynamic from "next/dynamic";
-import { EvacuationCard } from "@/components/evacution-center/evac-card";
 
 import {
   Select,
@@ -24,7 +28,7 @@ import {
 import { HiOutlineX } from "react-icons/hi";
 
 const EvacuationMapList = dynamic(
-  () => import("@/components/evacution-center/evacuationMapList"),
+  () => import("@/components/evacuation-center/evacuationMapList"),
   { ssr: false },
 );
 
@@ -36,6 +40,7 @@ export default function SuperAdminEvacuationCenter() {
   const [isEvacOpen, setisEvacOpen] = useState<boolean>(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState<boolean>(false);
   const [isMapOpen, setisMapOpen] = useState<boolean>(false);
+  const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [triggerRefresh, setTriggerRefresh] = useState<number>(0);
@@ -87,6 +92,8 @@ export default function SuperAdminEvacuationCenter() {
 
     fetchEvacuation();
   }, [triggerRefresh]);
+
+  const [detailsId, setDetailsId] = useState<string>();
 
   return (
     <>
@@ -170,7 +177,10 @@ export default function SuperAdminEvacuationCenter() {
                     location={evac.location}
                     capacity={evac.capacity}
                     current_evacuees={evac.current_evacuees}
-                    onclick={() => setIsDetailsOpen(true)}
+                    onclick={() => {
+                      setIsDetailsOpen(true);
+                      setDetailsId(evac.id);
+                    }}
                   />
                 ))
               )}
@@ -197,8 +207,20 @@ export default function SuperAdminEvacuationCenter() {
         />
       )}
 
+      {isDetailsOpen && (
+        <EvacDetails
+          onclick={() => setIsDetailsOpen(false)}
+          id={detailsId ?? ""}
+          onEdit={() => {
+            setIsEditOpen(true);
+            setIsDetailsOpen(false);
+          }}
+          triggerRefresh={() => setTriggerRefresh((prev) => prev + 1)}
+        />
+      )}
+
       {isMapOpen && (
-        <div className="bg-itim/40 absolute inset-0 flex items-center justify-center backdrop-blur-md">
+        <div className="bg-itim/40 absolute inset-0 flex items-center justify-center backdrop-blur-sm">
           <div
             className="absolute top-5 right-5 cursor-pointer text-3xl text-white"
             onClick={() => setisMapOpen(false)}
@@ -207,6 +229,14 @@ export default function SuperAdminEvacuationCenter() {
           </div>
           <EvacuationMapList evacCenters={evaucations} />
         </div>
+      )}
+
+      {isEditOpen && (
+        <EvacFormEdit
+          onclick={() => setIsEditOpen(false)}
+          id={detailsId ?? ""}
+          triggerRefresh={() => setTriggerRefresh((prev) => prev + 1)}
+        />
       )}
     </>
   );

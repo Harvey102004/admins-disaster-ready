@@ -137,3 +137,16 @@ export interface GetEvacCard {
   current_evacuees: string | number;
   onclick: () => void;
 }
+
+export interface GetEvacDetails {
+  id: string;
+  name: string;
+  location: string;
+  contact_person: number | string;
+  contact_number: number | string;
+  capacity: string | number;
+  current_evacuees: string | number;
+  lat?: string | number;
+  long?: string | number;
+  onclick: () => void;
+}
