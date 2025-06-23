@@ -217,7 +217,7 @@ export default function SuperAdminUpdateNews() {
         {/* ------------ WEATHER ADVISORY PAGE --------------- */}
 
         {isActive === 0 && (
-          <div className="scrollBar mt-10 flex h-[65vh] flex-wrap justify-start gap-5 overflow-auto px-6">
+          <div className="scrollBar flex h-[65vh] flex-wrap justify-start gap-5 overflow-auto px-6 pt-5">
             {(!updatesWeather ||
               !Array.isArray(updatesWeather) ||
               updatesWeather.length < 1) && (
@@ -252,7 +252,7 @@ export default function SuperAdminUpdateNews() {
         {/* ------------ ROAD ADVISORY PAGE --------------- */}
 
         {isActive === 1 && (
-          <div className="scrollBar mt-10 flex h-[65vh] flex-wrap justify-start gap-5 overflow-auto px-6">
+          <div className="scrollBar flex h-[65vh] flex-wrap justify-start gap-5 overflow-auto px-6 pt-5">
             {(!updatesRoad ||
               !Array.isArray(updatesRoad) ||
               updatesRoad.length < 1) && (
@@ -287,7 +287,7 @@ export default function SuperAdminUpdateNews() {
         {/* ------------ DISASTER UPDATES PAGE --------------- */}
 
         {isActive === 2 && (
-          <div className="scrollBar mt-10 flex h-[65vh] flex-wrap justify-start gap-5 overflow-auto px-6">
+          <div className="scrollBar flex h-[65vh] flex-wrap justify-start gap-5 overflow-auto px-6 pt-5">
             {(!updatesDisaster ||
               !Array.isArray(updatesDisaster) ||
               updatesDisaster.length < 1) && (
@@ -321,7 +321,7 @@ export default function SuperAdminUpdateNews() {
         {/* ------------ COMMUNITY NOTICE PAGE --------------- */}
 
         {isActive === 3 && (
-          <div className="scrollBar mt-10 flex h-[65vh] flex-wrap justify-start gap-5 overflow-auto px-6">
+          <div className="scrollBar flex h-[65vh] flex-wrap justify-start gap-5 overflow-auto px-6 pt-5">
             {(!updatesCommunity ||
               !Array.isArray(updatesCommunity) ||
               updatesCommunity.length < 1) && (
