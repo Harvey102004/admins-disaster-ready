@@ -1,6 +1,6 @@
 import { GetEvacCard } from "../../../types";
 import { HiLocationMarker } from "react-icons/hi";
-
+import { GoHomeFill } from "react-icons/go";
 import {
   Chart as ChartJS,
   BarElement,
@@ -74,12 +74,14 @@ export const EvacuationCard = ({
 }: GetEvacCard) => {
   return (
     <div className="flex max-w-[280px] flex-col justify-center gap-4 p-5">
-      <div className="">
-        <h2 className="mb-2 max-w-[300px] overflow-hidden font-bold text-nowrap text-ellipsis">
-          {name}
-        </h2>
-
+      <div>
         <div className="flex items-center gap-2">
+          <GoHomeFill className="text-dark-blue text-xl" />
+          <h2 className="max-w-[300px] overflow-hidden font-bold text-nowrap text-ellipsis">
+            {name}
+          </h2>
+        </div>
+        <div className="mt-2 flex items-center gap-2">
           <HiLocationMarker className="text-xl text-red-500" />
           <p className="max-w-[300px] overflow-hidden text-xs text-nowrap text-ellipsis">
             {location}

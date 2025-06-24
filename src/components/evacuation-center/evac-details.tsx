@@ -3,7 +3,7 @@
 import { HiOutlineX } from "react-icons/hi";
 import { FaHouseCircleCheck, FaUser, FaPhone } from "react-icons/fa6";
 import { HiLocationMarker } from "react-icons/hi";
-import { useState, useEffect, useDeferredValue } from "react";
+import { useState, useEffect } from "react";
 import gsap from "gsap";
 import dynamic from "next/dynamic";
 
@@ -28,6 +28,7 @@ import { AiFillDelete } from "react-icons/ai";
 import { GetEvacDetails } from "../../../types";
 import axios from "axios";
 import { DeleteSuccessfully } from "../pop-up";
+import { GoHomeFill } from "react-icons/go";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -235,7 +236,10 @@ export default function EvacDetails({
         <div className="mt-5 flex items-start gap-8">
           <div className="w-1/2 flex-1">
             <div className="flex flex-col gap-3">
-              <h2 className="mb-1 font-semibold">{evacDetails?.name}</h2>
+              <h2 className="flex items-center gap-3 font-semibold">
+                <GoHomeFill className="text-dark-blue text-xl" />
+                {evacDetails?.name}
+              </h2>
 
               <div className="mb-5 flex flex-col gap-4">
                 <p className="flex items-center gap-3 text-sm">
@@ -246,7 +250,7 @@ export default function EvacDetails({
                 <div className="flex items-center justify-between">
                   <div className="flex flex-col gap-3">
                     <div className="flex items-center gap-5">
-                      <FaUser className="text-lg" />
+                      <FaUser className="text-dark-blue" />
                       <div className="flex flex-col gap-1">
                         <p className="flex gap-3 text-sm">
                           {evacDetails?.contact_person}
@@ -256,7 +260,7 @@ export default function EvacDetails({
                     </div>
 
                     <div className="flex items-center gap-5">
-                      <FaPhone className="text-lg" />
+                      <FaPhone className="text-dark-blue" />
                       <div className="flex flex-col gap-1">
                         <p className="flex gap-3 text-sm">
                           {evacDetails?.contact_number}
