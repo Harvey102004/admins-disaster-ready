@@ -14,13 +14,13 @@ import {
   GetWeatherProps,
   GetRoadProps,
   GetCommunityProps,
-} from "../../../types";
+} from "../../../../types";
 
-import { DeleteSuccessfully } from "../pop-up";
-import { formatDateTime } from "../../../reusable-function";
+import { DeleteSuccessfully } from "../../pop-up";
+import { formatDateTime } from "../../../../reusable-function";
 
 import { useState, useEffect } from "react";
-import Loader from "../loading";
+import Loader from "../../loading";
 import axios from "axios";
 import gsap from "gsap";
 

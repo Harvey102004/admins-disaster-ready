@@ -8,6 +8,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { WrongPassword, SuccessLogin } from "@/components/pop-up";
 import gsap from "gsap";
+import Loader from "@/components/loading";
 
 export default function Login() {
   /* ----------   FETCH USER DATA ---------- */
@@ -16,6 +17,8 @@ export default function Login() {
     username: "",
     password: "",
   });
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -33,44 +36,49 @@ export default function Login() {
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    axios
-      .post("http://localhost:3001/public/login.php", {
-        username: formData.username,
-        password: formData.password,
-      })
-      .then((response) => {
-        if (response.data.success) {
-          const account = response.data.user;
+    try {
+      setIsLoading(true);
 
-          const { username, password, id, role, ...safeAccount } = account;
+      axios
+        .post("http://localhost:3001/public/login.php", {
+          username: formData.username,
+          password: formData.password,
+        })
+        .then((response) => {
+          if (response.data.success) {
+            const account = response.data.user;
 
-          localStorage.setItem("user", JSON.stringify(safeAccount));
+            const { username, password, id, role, ...safeAccount } = account;
 
-          setIsSuccess(true);
+            localStorage.setItem("user", JSON.stringify(safeAccount));
 
-          setTimeout(() => {
-            const role = response.data.user.role;
-            if (role === 1) {
-              router.push("/super-dashboard");
-            } else {
-              router.push("/sub-dashboard");
-            }
-            setIsSuccess(false);
-          }, 1500);
-        } else {
-          setIsWrong(true);
-          setTimeout(() => {
-            setIsWrong(false);
-          }, 2000);
-        }
-      })
-      .catch((error) => {
-        console.error("Login error:", error);
-        setIsWrong(true);
-        setTimeout(() => {
-          setIsWrong(false);
-        }, 2000);
-      });
+            setIsSuccess(true);
+
+            setTimeout(() => {
+              const role = response.data.user.role;
+              if (role === 1) {
+                router.push("/super-dashboard");
+              } else {
+                router.push("/sub-dashboard");
+              }
+              setIsSuccess(false);
+            }, 1500);
+          } else {
+            setIsWrong(true);
+            setTimeout(() => {
+              setIsWrong(false);
+            }, 2000);
+          }
+        });
+    } catch (error) {
+      console.error("Login error:", error);
+      setIsWrong(true);
+      setTimeout(() => {
+        setIsWrong(false);
+      }, 2000);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   /* ----------   LOGIN NOW BUTTON CLICK ---------- */
@@ -174,6 +182,7 @@ export default function Login() {
                 <input
                   type="text"
                   name="username"
+                  disabled={isLoading}
                   value={formData.username}
                   className="text-itim dark:text-puti placeholder:text-gray border-b-itim h-full w-full border-b pl-10 text-sm outline-none placeholder:text-xs dark:border-b-neutral-300"
                   placeholder="Username"
@@ -187,6 +196,7 @@ export default function Login() {
                 <FaKey className="text-itim dark:text-puti absolute top-1/2 -translate-y-1/2 text-xl" />
                 <input
                   type={`${isShowPass ? "text" : "password"}`}
+                  disabled={isLoading}
                   className="text-itim dark:text-puti placeholder:text-gray border-b-itim h-full w-full border-b px-10 text-sm outline-none placeholder:text-xs dark:border-b-neutral-300"
                   placeholder="Password"
                   name="password"
@@ -208,11 +218,19 @@ export default function Login() {
                 )}
               </div>
 
-              <input
+              <button
                 type="submit"
-                value="Login"
-                className="bg-itim dark:bg-puti dark:text-itim text-light mt-3 h-12 w-full cursor-pointer rounded-sm text-sm shadow-sm hover:opacity-90"
-              />
+                disabled={isLoading}
+                className={`bg-itim dark:bg-puti ${isLoading ? "cursor-not-allowed opacity-75" : "cursor-pointer hover:opacity-90"} dark:text-itim text-light mt-3 h-12 w-full rounded-sm text-sm shadow-sm`}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader /> <span>Logging in...</span>
+                  </>
+                ) : (
+                  "Login"
+                )}
+              </button>
 
               <button
                 type="button"

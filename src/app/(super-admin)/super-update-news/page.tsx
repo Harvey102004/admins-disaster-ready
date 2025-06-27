@@ -19,28 +19,28 @@ import {
   RoadAdvisoryForm,
   DisasterUpdatesForm,
   CommunityNoticeForm,
-} from "@/components/update-news/updates-forms";
+} from "@/components/super-admin/update-news/updates-forms";
 import { FaUsers } from "react-icons/fa6";
 import {
   RoadAdvisoryCard,
   WeatherAdvisoryCard,
   DisasterUpdatesCard,
   CommunityNoticeCard,
-} from "@/components/update-news/update-card";
+} from "@/components/super-admin/update-news/update-card";
 
 import {
   RoadAdvisoryDetails,
   WeatherAdvisoryDetails,
   DisasterUpdatesDetails,
   CommunityNoticeDetails,
-} from "@/components/update-news/details";
+} from "@/components/super-admin/update-news/details";
 
 import {
   WeatherAdvisoryEdit,
   RoadAdvisoryEdit,
   CommunityNoticeEdit,
   DisasterUpdatesEdit,
-} from "@/components/update-news/updates-edit";
+} from "@/components/super-admin/update-news/updates-edit";
 
 // ---------- EMPTY UPDATES COMPONENT ---------- //
 

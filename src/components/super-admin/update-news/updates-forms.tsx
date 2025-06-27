@@ -7,14 +7,14 @@ import { PiWarningFill } from "react-icons/pi";
 import { MdOutlineNotes } from "react-icons/md";
 import { ImSpinner6 } from "react-icons/im";
 import { useState, useEffect } from "react";
-import { CompleteFormAlert, SuccessPost } from "../pop-up";
-import Loader from "../loading";
+import { CompleteFormAlert, SuccessPost } from "../../pop-up";
+import Loader from "../../loading";
 import {
   WeatherProps,
   RoadProps,
   DisasterProps,
   CommunityNoticeProps,
-} from "../../../types";
+} from "../../../../types";
 import axios from "axios";
 import gsap from "gsap";
 

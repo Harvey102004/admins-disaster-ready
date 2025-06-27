@@ -3,9 +3,12 @@
 import dynamic from "next/dynamic";
 import { FaQuestionCircle } from "react-icons/fa";
 
-const HazardMap = dynamic(() => import("@/components/risk-mapping/map"), {
-  ssr: false,
-});
+const HazardMap = dynamic(
+  () => import("@/components/super-admin/risk-mapping/map"),
+  {
+    ssr: false,
+  },
+);
 
 export default function DisasterRiskMapping() {
   return (

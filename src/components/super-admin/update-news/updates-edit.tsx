@@ -7,8 +7,8 @@ import { PiWarningFill } from "react-icons/pi";
 import { MdOutlineNotes } from "react-icons/md";
 import { ImSpinner6 } from "react-icons/im";
 import { useState, useEffect } from "react";
-import { CompleteFormAlert, SuccessEdit, EditNotChange } from "../pop-up";
-import Loader from "../loading";
+import { CompleteFormAlert, SuccessEdit, EditNotChange } from "../../pop-up";
+import Loader from "../../loading";
 import {
   WeatherProps,
   AdvisoryEditProps,
@@ -18,7 +18,7 @@ import {
   CommunityNoticeProps,
   DisasterProps,
   GetDisasterProps,
-} from "../../../types";
+} from "../../../../types";
 import axios from "axios";
 import gsap from "gsap";
 
@@ -34,14 +34,14 @@ const ConfirmationEdit = ({
   oncancel: () => void;
 }) => {
   return (
-    <div className="dark:bg-light-black/90 flex flex-col items-center justify-center gap-5 rounded-md border bg-blue-400/70 p-10 backdrop-blur-sm">
-      <p className="text-center text-sm leading-7 text-nowrap">
+    <div className="dark:bg-light-black/90 bg-dark-blue flex flex-col items-center justify-center gap-5 rounded-md border p-10 backdrop-blur-sm">
+      <p className="text-puti text-center text-sm leading-7 text-nowrap">
         Are you sure you want to Update this {advisory}?
       </p>
       <div className="text-puti flex gap-3 text-sm">
         <button
           type="submit"
-          className="bg-dark-blue cursor-pointer rounded-sm px-6 py-2 transition-all duration-300 hover:opacity-80"
+          className="dark:bg-dark-blue bg-light-blue text-itim dark:text-puti cursor-pointer rounded-sm px-6 py-2 transition-all duration-300 hover:opacity-80"
           onClick={onUpdate}
         >
           Yes
@@ -209,7 +209,7 @@ export const WeatherAdvisoryEdit = ({
   }, [conFirmation]);
 
   return (
-    <div className="dark:bg-itim/70 absolute inset-0 z-50 flex items-center justify-center bg-white/30">
+    <div className="dark:bg-itim/70 bg-itim/50 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center shadow-2xl">
       {isComplete && (
         <div className="popUp absolute top-8 z-50">
           <CompleteFormAlert />
@@ -475,7 +475,7 @@ export const RoadAdvisoryEdit = ({
   }, [conFirmation]);
 
   return (
-    <div className="dark:bg-itim/70 absolute inset-0 flex items-center justify-center bg-white/20 shadow-2xl">
+    <div className="dark:bg-itim/70 bg-itim/50 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center shadow-2xl">
       {isComplete && (
         <div className="popUp absolute top-8 z-50">
           <CompleteFormAlert />
@@ -753,7 +753,7 @@ export const CommunityNoticeEdit = ({
   }, [conFirmation]);
 
   return (
-    <div className="dark:bg-itim/70 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center bg-white/20 shadow-2xl">
+    <div className="dark:bg-itim/70 bg-itim/50 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center shadow-2xl">
       {isComplete && (
         <div className="popUp absolute top-8 z-50">
           <CompleteFormAlert />
@@ -1030,7 +1030,7 @@ export const DisasterUpdatesEdit = ({
   }, [conFirmation]);
 
   return (
-    <div className="dark:bg-itim/70 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center bg-white/20 shadow-2xl">
+    <div className="dark:bg-itim/70 bg-itim/50 absolute top-0 right-0 bottom-0 left-0 flex items-center justify-center shadow-2xl">
       {isComplete && (
         <div className="popUp absolute top-8 z-50">
           <CompleteFormAlert />

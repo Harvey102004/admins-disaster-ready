@@ -5,13 +5,13 @@ import { GoHomeFill } from "react-icons/go";
 import { HiOutlineX, HiLocationMarker } from "react-icons/hi";
 import { PiUsersFourFill } from "react-icons/pi";
 
-import { EvacuationCenterProps } from "../../../types";
+import { EvacuationCenterProps } from "../../../../types";
 
 import Loader from "@/components/loading";
 import {
   CompleteFormAlert,
   EditNotChange,
-  SuccessPostEvac,
+  SuccessPostForm,
 } from "@/components/pop-up";
 
 import dynamic from "next/dynamic";
@@ -21,7 +21,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 
 const EvacuationMap = dynamic(
-  () => import("@/components/evacuation-center/evacuationMap"),
+  () => import("@/components/super-admin/evacuation-center/evacuationMap"),
   {
     ssr: false,
   },
@@ -125,7 +125,6 @@ export const EvacForm = ({
         );
 
         setisPosted(true);
-        triggerRefresh();
         setTimeout(() => {
           setisPosted(false);
           onclose();
@@ -139,6 +138,7 @@ export const EvacForm = ({
             lat: null,
             long: null,
           });
+          triggerRefresh();
         }, 1800);
       } catch (err) {
         console.error(err);
@@ -178,7 +178,7 @@ export const EvacForm = ({
       )}
       {isPosted && (
         <div className="popUp absolute top-8 z-50">
-          <SuccessPostEvac text=" Evacuation center added successfully." />
+          <SuccessPostForm text=" Evacuation center added successfully." />
         </div>
       )}
       <form
@@ -533,7 +533,7 @@ export const EvacFormEdit = ({
       )}
       {isPosted && (
         <div className="bounce absolute top-1/2 left-1/2 z-50 -translate-1/2">
-          <SuccessPostEvac text=" Evacuation center  successfully edited." />
+          <SuccessPostForm text=" Evacuation center  successfully edited." />
         </div>
       )}
       <form
@@ -589,7 +589,7 @@ export const EvacFormEdit = ({
               current_evacuees: value,
             }));
           }}
-          className="dark:bg-light-black w-full border border-gray-300 px-4 py-2 text-sm outline-none dark:border-gray-500"
+          className="dark:bg-light-black border-dark-blue/50 w-full border px-4 py-2 text-sm outline-none dark:border-gray-500"
         />
 
         <div>
@@ -603,7 +603,7 @@ export const EvacFormEdit = ({
             value={formData.contact_person}
             autoComplete="off"
             onChange={handleChange}
-            className="dark:bg-light-black w-full border border-gray-300 px-4 py-2 text-sm outline-none dark:border-gray-500"
+            className="dark:bg-light-black border-dark-blue/50 w-full border px-4 py-2 text-sm outline-none dark:border-gray-500"
           />
         </div>
 
@@ -620,7 +620,7 @@ export const EvacFormEdit = ({
             maxLength={11}
             autoComplete="off"
             pattern="^09\d{9}$"
-            className="dark:bg-light-black w-full border border-gray-300 px-4 py-2 text-sm outline-none dark:border-gray-500"
+            className="dark:bg-light-black border-dark-blue/50 w-full border px-4 py-2 text-sm outline-none dark:border-gray-500"
           />
         </div>
 

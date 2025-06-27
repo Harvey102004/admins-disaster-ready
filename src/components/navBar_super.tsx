@@ -47,7 +47,7 @@ export default function NavbarSuperAdmin() {
       icon: <RiTruckFill />,
     },
     {
-      name: "Barangay Contact",
+      name: "Barangay Contact Info",
       path: "/super-brgy-contact",
       icon: <BsFillTelephoneFill />,
     },

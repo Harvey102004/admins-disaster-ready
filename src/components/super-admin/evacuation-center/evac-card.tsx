@@ -1,4 +1,4 @@
-import { GetEvacCard } from "../../../types";
+import { GetEvacCard } from "../../../../types";
 import { HiLocationMarker } from "react-icons/hi";
 import { GoHomeFill } from "react-icons/go";
 import {

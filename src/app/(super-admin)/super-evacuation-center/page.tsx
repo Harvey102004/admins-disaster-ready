@@ -11,9 +11,9 @@ import SearchInput from "@/components/search-input";
 import {
   EvacForm,
   EvacFormEdit,
-} from "@/components/evacuation-center/evac-form";
-import { EvacuationCard } from "@/components/evacuation-center/evac-card";
-import EvacDetails from "@/components/evacuation-center/evac-details";
+} from "@/components/super-admin/evacuation-center/evac-form";
+import { EvacuationCard } from "@/components/super-admin/evacuation-center/evac-card";
+import EvacDetails from "@/components/super-admin/evacuation-center/evac-details";
 
 import axios from "axios";
 import dynamic from "next/dynamic";
@@ -28,26 +28,25 @@ import {
 import { HiOutlineX } from "react-icons/hi";
 
 const EvacuationMapList = dynamic(
-  () => import("@/components/evacuation-center/evacuationMapList"),
+  () => import("@/components/super-admin/evacuation-center/evacuationMapList"),
   { ssr: false },
 );
 
 export default function SuperAdminEvacuationCenter() {
   const [search, setSearch] = useState<string>("");
 
-  const [evaucations, setEvacuations] = useState<GetEvacuationProps[]>([]);
+  const [evacuations, setEvacuations] = useState<GetEvacuationProps[]>([]);
 
   const [isEvacOpen, setisEvacOpen] = useState<boolean>(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState<boolean>(false);
   const [isMapOpen, setisMapOpen] = useState<boolean>(false);
   const [isEditOpen, setIsEditOpen] = useState<boolean>(false);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [triggerRefresh, setTriggerRefresh] = useState<number>(0);
 
   const [sortBy, setSortBy] = useState<string>("default");
 
-  const sortedEvacuations = [...evaucations].sort((a, b) => {
+  const sortedEvacuations = [...evacuations].sort((a, b) => {
     if (sortBy === "name") {
       return a.name.localeCompare(b.name);
     }
@@ -76,8 +75,6 @@ export default function SuperAdminEvacuationCenter() {
   useEffect(() => {
     const fetchEvacuation = async () => {
       try {
-        setIsLoading(true);
-
         const response = await axios.get<GetEvacuationProps[]>(
           "http://localhost/Disaster-backend/controllers/evacuationCenterController.php",
         );
@@ -85,8 +82,6 @@ export default function SuperAdminEvacuationCenter() {
         setEvacuations(response.data);
       } catch (error) {
         console.log(error);
-      } finally {
-        setIsLoading(false);
       }
     };
 
@@ -150,7 +145,7 @@ export default function SuperAdminEvacuationCenter() {
         </div>
 
         <div className="scrollBar relative flex h-[70vh] flex-wrap justify-start gap-5 overflow-auto px-6 pt-4">
-          {evaucations.length === 0 && (
+          {evacuations.length === 0 && (
             <div className="absolute top-1/2 left-1/2 flex -translate-1/2 flex-col items-center gap-2">
               <FaHouseCircleCheck className="text-dark-blue text-4xl" />
               <p> No Evacuation Center Found</p>
@@ -163,7 +158,7 @@ export default function SuperAdminEvacuationCenter() {
             </div>
           )}
 
-          {evaucations.length > 0 && (
+          {evacuations.length > 0 && (
             <div className="grid w-full grid-cols-[repeat(auto-fit,minmax(280px,1fr))] items-start justify-start gap-12">
               {filteredEvacuation.length === 0 ? (
                 <div className="absolute top-1/2 left-1/2 -translate-1/2 items-center justify-center">
@@ -227,7 +222,7 @@ export default function SuperAdminEvacuationCenter() {
           >
             <HiOutlineX />
           </div>
-          <EvacuationMapList evacCenters={evaucations} />
+          <EvacuationMapList evacCenters={evacuations} />
         </div>
       )}
 

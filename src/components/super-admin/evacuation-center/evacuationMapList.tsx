@@ -3,7 +3,7 @@
 import { MapContainer, TileLayer, Marker, Popup, Tooltip } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { GetEvacuationProps } from "../../../types";
+import { GetEvacuationProps } from "../../../../types";
 
 import { Poppins } from "next/font/google";
 

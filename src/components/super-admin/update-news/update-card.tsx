@@ -5,7 +5,7 @@ import {
   GetRoadProps,
   GetDisasterProps,
   GetCommunityProps,
-} from "../../../types";
+} from "../../../../types";
 
 // -------------- WEATHER ADVISORY CARD --------------- //
 

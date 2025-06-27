@@ -150,3 +150,15 @@ export interface GetEvacDetails {
   long?: string | number;
   onclick: () => void;
 }
+
+export interface SubContact {
+  barangay: string;
+  email: string;
+  captain: string;
+  secretary: string;
+  facebook: string;
+  landline: string;
+  contact: string;
+  lat: number;
+  long: number;
+}

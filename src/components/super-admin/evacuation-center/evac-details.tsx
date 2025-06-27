@@ -4,11 +4,19 @@ import { HiOutlineX } from "react-icons/hi";
 import { FaHouseCircleCheck, FaUser, FaPhone } from "react-icons/fa6";
 import { HiLocationMarker } from "react-icons/hi";
 import { useState, useEffect } from "react";
+import { LiaEditSolid } from "react-icons/lia";
+import { AiFillDelete } from "react-icons/ai";
+import { GetEvacDetails } from "../../../../types";
+import axios from "axios";
+import { DeleteSuccessfully } from "../../pop-up";
+import { GoHomeFill } from "react-icons/go";
+
 import gsap from "gsap";
 import dynamic from "next/dynamic";
 
 const EvacuationMapDetails = dynamic(
-  () => import("@/components/evacuation-center/evacuationMapDetails"),
+  () =>
+    import("@/components/super-admin/evacuation-center/evacuationMapDetails"),
   {
     ssr: false,
   },
@@ -23,12 +31,6 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { LiaEditSolid } from "react-icons/lia";
-import { AiFillDelete } from "react-icons/ai";
-import { GetEvacDetails } from "../../../types";
-import axios from "axios";
-import { DeleteSuccessfully } from "../pop-up";
-import { GoHomeFill } from "react-icons/go";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
