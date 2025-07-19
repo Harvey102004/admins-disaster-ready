@@ -1,5 +1,6 @@
-import NavbarSuperAdmin from "@/components/navBar_super";
 import { Metadata } from "next";
+
+import NavbarSuperAdmin from "@/components/(navigation)/navBar_super";
 
 export const metadata: Metadata = {
   title: {
@@ -15,9 +16,11 @@ export default function SuperAdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex gap-5">
-      <NavbarSuperAdmin />
-      {children}
-    </div>
+    <>
+      <div className="flex">
+        <NavbarSuperAdmin />
+        {children}
+      </div>
+    </>
   );
 }

@@ -160,10 +160,3 @@
 .leaflet-tooltip {
   font-family: "Poppins", sans-serif;
 }
-
-select {
-  -webkit-appearance: none; /* for Safari/Chrome */
-  -moz-appearance: none; /* for Firefox */
-  appearance: none;
-  background-image: none; /* Remove arrow background */
-}

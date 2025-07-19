@@ -1,14 +1,6 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { FaQuestionCircle } from "react-icons/fa";
-
-const HazardMap = dynamic(
-  () => import("@/components/super-admin/risk-mapping/map"),
-  {
-    ssr: false,
-  },
-);
 
 export default function DisasterRiskMapping() {
   return (
@@ -28,12 +20,6 @@ export default function DisasterRiskMapping() {
               a marker. Use this to identify disaster-prone areas.
             </div>
           </div>
-        </div>
-      </div>
-
-      <div className="mt-5 flex justify-center">
-        <div className="h-[80vh] w-full max-w-5xl">
-          <HazardMap />
         </div>
       </div>
     </div>

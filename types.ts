@@ -11,110 +11,20 @@ export interface EmptyUpdatesProps {
   onclick: () => void;
 }
 
-export interface WeatherProps {
-  title: string;
-  details: string;
-  dateTime: string;
-}
-
-export interface RoadProps {
-  title: string;
-  details: string;
-  dateTime: string;
-  status: string;
-}
-
-export interface DisasterProps {
-  disasterType: string;
-  title: string;
-  details: string;
-  dateTime: string;
-  image: File | null | string;
-}
-
-export interface CommunityNoticeProps {
-  title: string;
-  details: string;
-  dateTime: string;
-}
-
-export interface GetWeatherProps {
-  id?: string;
-  title: string;
-  details: string;
-  date_time: string;
-  onclick?: () => void;
-  onedit?: () => void;
-}
-
-export interface GetRoadProps {
-  id?: string;
-  title: string;
-  details: string;
-  date_time: string;
-  status: string;
-  onclick: () => void;
-  onedit: () => void;
-}
-
-export interface GetCommunityProps {
-  id?: string;
-  title: string;
-  details: string;
-  date_time: string;
-  onclick: () => void;
-  onedit: () => void;
-}
-
-export interface GetDisasterProps {
-  id?: string;
-  img_path?: string;
-  title: string;
-  details: string;
-  date_time: string;
-  disaster_type: string;
-  onclick: () => void;
-  onedit: () => void;
-}
-
-export interface GetDisasterProps {
-  id?: string;
-  image_url?: string;
-  title: string;
-  details: string;
-  date_time: string;
-  disaster_type: string;
-}
-
-export interface GetCommunityProps {
-  id?: string;
-  title: string;
-  details: string;
-  date_time: string;
-}
-
-export interface GetAdvisoryDetails {
-  id: string | undefined;
-  onclick: () => void;
-  triggerRefresh: () => void;
-  onEdit: () => void;
-}
-
-export interface AdvisoryEditProps {
-  id: string | undefined;
-  onclick: () => void;
-  triggerRefresh: () => void;
-}
+// EVACUATION CENTER TYPES
 
 export interface EvacuationCenterProps {
-  evac_name: string;
-  evac_capacity: number;
-  evac_location: string;
-  evac_evacuees?: number;
-  evac_contact_person: string;
-  evac_contact_number: string;
+  id?: string | number;
+  name: string;
+  capacity: number;
+  location: string;
+  current_evacuees?: number;
+  contact_person: string;
+  contact_number: string;
   lat: number | null;
   long: number | null;
+  addedBy?: string;
+  chartStyle?: string;
 }
 
 export interface GetEvacuationProps {
@@ -152,6 +62,7 @@ export interface GetEvacDetails {
 }
 
 export interface SubContact {
+  id?: string | number;
   barangay: string;
   email: string;
   captain: string;
@@ -161,4 +72,41 @@ export interface SubContact {
   contact: string;
   lat: number;
   long: number;
+}
+
+// UPDATE AND NEWS TYPES
+
+export interface TWeatherAdvisory {
+  id: number;
+  title: string;
+  details: string;
+  date_time: string;
+  addedBy?: string;
+}
+
+export interface TRoadAdvisory {
+  id: number;
+  title: string;
+  details: string;
+  date_time: string;
+  status: string;
+  addedBy?: string;
+}
+
+export interface TDisasterAdvisory {
+  id: number;
+  disaster_type: string;
+  title: string;
+  details: string;
+  date_time: string;
+  image_url: string;
+  addedBy?: string;
+}
+
+export interface TCommunity {
+  id: number;
+  title: string;
+  details: string;
+  date_time: string;
+  addedBy?: string;
 }

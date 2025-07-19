@@ -1,7 +1,10 @@
 import "@/app/globals.css";
 import { Poppins } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
+import QueryProvider from "@/components/QueryProvider";
 import "leaflet/dist/leaflet.css";
+
+import { Toaster } from "sonner";
 
 import { Metadata } from "next";
 const poppins = Poppins({
@@ -24,9 +27,22 @@ export default function RootLayout({
   return (
     <html lang="en" className={poppins.className} suppressHydrationWarning>
       <body className="hidden lg:block">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
-        </ThemeProvider>
+        <QueryProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Toaster
+              position="top-center"
+              richColors
+              toastOptions={{
+                className: `${poppins.className} !w-max !absolute !left-1/2 !-translate-x-1/2`,
+                classNames: {
+                  description: "text-nowrap",
+                  actionButton: "!bg-transparent !hover:none",
+                },
+              }}
+            />
+            {children}
+          </ThemeProvider>
+        </QueryProvider>
       </body>
     </html>
   );
