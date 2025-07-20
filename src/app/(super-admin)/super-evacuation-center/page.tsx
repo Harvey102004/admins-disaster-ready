@@ -98,7 +98,7 @@ export default function SuperAdminEvacuationCenter() {
           <SearchInput
             value={searchText}
             onchange={(e) => setSearchText(e.target.value)}
-            placeholder="Search by evacuation name..."
+            placeholder="Search..."
             classname="flex-1"
           />
 
