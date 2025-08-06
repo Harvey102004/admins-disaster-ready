@@ -1,6 +1,6 @@
 "use client";
 
-import ContactInfoForm from "@/app/sub-admin/contact-info/contact-form";
+import ContactInfoForm from "@/components/sub-admin/contact-info/contact-form";
 import { useState } from "react";
 import { FaPhone } from "react-icons/fa6";
 

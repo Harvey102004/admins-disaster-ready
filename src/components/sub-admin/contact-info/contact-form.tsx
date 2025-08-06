@@ -17,7 +17,7 @@ import axios from "axios";
 import gsap from "gsap";
 import { RiErrorWarningFill } from "react-icons/ri";
 
-const BrgyMap = dynamic(() => import("@/app/sub-admin/map"), {
+const BrgyMap = dynamic(() => import("@/components/sub-admin/map"), {
   ssr: false,
 });
 export default function ContactInfoForm({ onclose }: { onclose: () => void }) {

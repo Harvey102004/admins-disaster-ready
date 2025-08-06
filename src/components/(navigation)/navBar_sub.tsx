@@ -13,6 +13,7 @@ import { useState, useEffect } from "react";
 import { UserProps } from "../../../types";
 import Link from "next/link";
 import Image from "next/image";
+import { SideBarSkeleton } from "../skeleton/Skeleton-update-news";
 
 export default function NavbarSubAdmin() {
   const pathname = usePathname();
@@ -60,66 +61,44 @@ export default function NavbarSubAdmin() {
 
   return (
     <div
-      className={`x-translate-y-1/2 bg-dark-blue/20 border-dark-blue relative top-[1vh] left-[0.5vw] flex h-[98vh] overflow-hidden ${isResize ? "w-[5vw] items-center" : "w-[35vw]"} dark:bg-light-black flex-col gap-8 rounded-2xl border px-10 py-7 transition-all duration-300 dark:border-white/5`}
+      className={`x-translate-y-1/2 bg-dark-blue/20 border-dark-blue dark:bg-light-black relative top-[1vh] left-[0.5vw] flex h-[98vh] w-[30vw] flex-col overflow-hidden rounded-2xl border p-5 transition-all duration-300 dark:border-white/5`}
     >
-      <div className="border-b-dark-blue/50 flex items-center justify-between border-b pb-4 dark:border-b-gray-500">
-        {!isResize && (
-          <h1 className="text-dark-blue text-base font-bold text-nowrap">
-            Disaster Ready
-          </h1>
-        )}
+      <div className="border-b-dark-blue/50 flex items-center justify-between border-b pb-3 pl-4 dark:border-b-gray-500/30">
+        <h1 className="text-dark-blue text-lg font-bold text-nowrap">
+          DisasterReady
+        </h1>
 
-        {isResize ? (
-          <PiResizeFill
-            className="dark:text-puti text-dark-blue text-2xl"
-            onClick={() => {
-              setIsResize((prev) => !prev);
-            }}
-          />
-        ) : (
-          <PiResizeFill
-            className="dark:text-puti text-dark-blue text-2xl"
-            onClick={() => {
-              setIsResize((prev) => !prev);
-            }}
-          />
-        )}
-      </div>
-
-      <div className="border-b-dark-blue/50 relative flex items-center gap-3 border-b pb-8 dark:border-b-gray-500">
-        <div className="relative h-12 min-h-12 w-12 min-w-12">
-          <Image
-            src={
-              storedAccount
-                ? `/logos/${storedAccount?.barangay.toLowerCase()}-logo.png`
-                : `/logos/no-logo.png`
-            }
-            alt=""
-            fill
-          />
-        </div>
-
-        {!isResize && (
-          <div className="flex flex-col gap-1.5 text-nowrap">
-            <h1 className="text-sm">
-              {storedAccount?.barangay
-                ? `Barangay ${storedAccount.barangay}`
-                : "Loading..."}
-            </h1>
-            <p className="text-xs font-light">Sub Admin</p>
-            <p className="text-[11px] text-gray-700 dark:text-gray-400">
-              {storedAccount?.email ?? "Loading..."}
-            </p>
-          </div>
-        )}
-
-        <div className={`${isResize ? "hidden" : "absolute right-0"}`}>
+        <div className={`"absolute right-0"}`}>
           <ModeToggleSideBar />
         </div>
       </div>
 
-      <nav className="border-b-dark-blue/50 border-b pb-10 dark:border-b-gray-500">
-        <ul className="flex flex-col gap-10">
+      <div className="border-b-dark-blue/50 relative mt-5 flex items-center gap-3 border-b pb-5 dark:border-b-gray-500/30">
+        {storedAccount?.barangay && storedAccount.email ? (
+          <>
+            <div className="relative h-14 w-14">
+              <Image src={`/logos/lb-logo.png`} alt="" fill />
+            </div>
+
+            <div className="flex flex-col gap-1.5 text-nowrap">
+              <h1 className="text-sm font-semibold">
+                {storedAccount?.barangay}
+              </h1>
+              <p className="max-w-[250px] truncate text-xs text-gray-800 dark:text-gray-400">
+                {storedAccount?.email}
+              </p>
+              <p className="text-[10px] font-light text-gray-700 dark:text-gray-400">
+                Super Admin
+              </p>
+            </div>
+          </>
+        ) : (
+          <SideBarSkeleton />
+        )}
+      </div>
+
+      <nav className="border-b-dark-blue/50 mt-3 border-b pb-3 dark:border-b-gray-500/30">
+        <ul className="flex flex-col gap-1">
           {navLinks.map((link, i) => {
             const isActive =
               pathname === link.path ||
@@ -128,25 +107,21 @@ export default function NavbarSubAdmin() {
               <Link
                 key={i}
                 href={link.path}
-                className={`flex items-center gap-4 text-sm text-nowrap ${isActive ? "text-dark-blue font-semibold" : "hover:text-dark-blue"}`}
+                className={`flex items-center gap-4 rounded-sm py-3 text-xs text-nowrap ${isActive ? "bg-dark-blue/90 text-puti" : "hover:bg-dark-blue/10"}`}
               >
-                <div className={`${isResize ? "text-2xl" : "pl-4 text-xl"}`}>
-                  {link.icon}
-                </div>
+                <div className="pl-4 text-lg">{link.icon}</div>
 
-                {isResize ? "" : link.name}
+                {link.name}
               </Link>
             );
           })}
         </ul>
       </nav>
       <p
-        className={` ${isResize ? "" : "pl-4"} hover:text-dark-blue mt-auto flex cursor-pointer items-center gap-4 text-sm`}
+        className={`hover:text-dark-blue mt-auto flex cursor-pointer items-center gap-4 pl-4 text-xs`}
       >
-        <RiLogoutCircleLine
-          className={`${isResize ? "text-2xl" : "text-xl"}`}
-        />
-        {isResize ? "" : "Logout"}
+        <RiLogoutCircleLine className={"text-xl"} />
+        {"Logout"}
       </p>
     </div>
   );

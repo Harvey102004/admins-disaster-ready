@@ -12,7 +12,7 @@ const EvacuationListView = dynamic(
 export default function Page() {
   return (
     <div className="relative h-screen w-full pl-4">
-      <EvacuationListView />{" "}
+      <EvacuationListView />
     </div>
   );
 }

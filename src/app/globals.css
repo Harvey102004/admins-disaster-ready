@@ -160,3 +160,9 @@
 .leaflet-tooltip {
   font-family: "Poppins", sans-serif;
 }
+
+.table {
+  display: table;
+  width: 100%;
+  border-collapse: collapse;
+}

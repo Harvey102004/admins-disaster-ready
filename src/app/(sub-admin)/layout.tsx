@@ -1,4 +1,4 @@
-import NavbarSubAdmin from "@/components/navBar_sub";
+import NavbarSubAdmin from "@/components/(navigation)/navBar_sub";
 import { Metadata } from "next";
 import FaviconUpdater from "@/components/favIcon-updater";
 
