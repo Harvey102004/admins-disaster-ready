@@ -50,6 +50,7 @@ export default function EditEvacFormModal() {
         contact_number: data.contact_number,
         lat: data.lat ?? undefined,
         long: data.long ?? undefined,
+        created_by: data.created_by,
       });
     }
   }, [data, reset]);

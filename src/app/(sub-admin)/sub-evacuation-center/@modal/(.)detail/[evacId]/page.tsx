@@ -29,7 +29,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { showDeleteConfirmation } from "@/lib/toasts";
 
-export default function EvacuationDetailModal() {
+export default function SubEvacuationDetailModal() {
   const params = useParams() as { evacId: string };
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -48,12 +48,8 @@ export default function EvacuationDetailModal() {
     mutationFn: async () => {
       return await toast.promise(deleteEvacuationCenter({ id: evacId }), {
         loading: "Deleting evacuation center",
-        success: () => {
-          return "Evacuation center deleted successfully!";
-        },
-        error: (err: any) => {
-          return err?.message || "Something went wrong";
-        },
+        success: () => "Evacuation center deleted successfully!",
+        error: (err: any) => err?.message || "Something went wrong",
       });
     },
 
@@ -73,15 +69,10 @@ export default function EvacuationDetailModal() {
   }
 
   if (error) {
-    return <p>Error fetching Weather Advisory Details</p>;
+    return <p>Error fetching Evacuation Center Details</p>;
   }
 
-  if (
-    !data ||
-    (typeof data === "object" &&
-      "message" in data &&
-      data.message === "No records found.")
-  ) {
+  if (!data || ("message" in data && data.message === "No records found.")) {
     return <NoIdFound message="Evacuation Center" />;
   }
 
@@ -96,22 +87,13 @@ export default function EvacuationDetailModal() {
 
   switch (chartDesign) {
     case "bar":
-      chartDesign = "bar";
-      break;
     case "line":
-      chartDesign = "line";
-      break;
     case "doughnut":
-      chartDesign = "doughnut";
-      break;
     case "pie":
-      chartDesign = "pie";
-      break;
     case "polar":
-      chartDesign = "polar";
       break;
     default:
-      break;
+      chartDesign = "line";
   }
 
   const vacancyRate = (vacancy / cap) * 100;
@@ -123,7 +105,7 @@ export default function EvacuationDetailModal() {
     statusLabel = "No capacity data";
     statusColor = "bg-gray-400";
   } else if (vacancy === 0) {
-    statusLabel = "Not Available  (Full) ";
+    statusLabel = "Not Available (Full)";
     statusColor = "bg-red-600";
   } else if (vacancyRate < 50) {
     statusLabel = "Almost full";
@@ -133,15 +115,28 @@ export default function EvacuationDetailModal() {
     statusColor = "bg-green-500";
   }
 
+  const removeAccents = (str: string) =>
+    str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
   const barangayOnly = data.created_by
     ? data.created_by.split(",").pop()?.trim()
     : "Unknown";
 
   const barangayLogo = barangayOnly
-    ? barangayOnly.toLowerCase().includes("municipality of los baños")
+    ? removeAccents(barangayOnly).toLowerCase().includes("los banos")
       ? "lb-logo.png"
-      : barangayOnly.toLowerCase().replace(/\s+/g, "-") + "-logo.png"
+      : removeAccents(barangayOnly).toLowerCase().replace(/\s+/g, "-") +
+        "-logo.png"
     : "default-logo.png";
+
+  let currentUser = null;
+  if (typeof window !== "undefined") {
+    const storedUser = localStorage.getItem("user");
+    currentUser = storedUser ? JSON.parse(storedUser) : null;
+  }
+
+  const canEdit =
+    currentUser && barangayOnly ? currentUser.barangay === barangayOnly : false;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
@@ -160,7 +155,7 @@ export default function EvacuationDetailModal() {
 
             <div className="flex items-center gap-5">
               <HiLocationMarker className="text-dark-blue text-2xl" />
-              <p className="">{data.location}</p>
+              <p>{data.location}</p>
             </div>
 
             <div className="flex items-center gap-5">
@@ -210,10 +205,10 @@ export default function EvacuationDetailModal() {
         </div>
 
         <div className="h-full w-[55%] p-8">
-          <div className="h-full w-full">
+          <div className="relative h-full w-full">
             <IoCloseCircleSharp
               onClick={() => router.back()}
-              className={`absolute top-5 right-5 z-50 text-2xl transition-colors duration-300 ${
+              className={`absolute top-0 right-0 z-50 text-2xl transition-colors duration-300 ${
                 isToastOpen
                   ? "pointer-events-none opacity-80"
                   : "hover:text-red-500"
@@ -257,38 +252,42 @@ export default function EvacuationDetailModal() {
             </div>
 
             <div className="mt-5 flex items-center justify-center gap-3">
-              <Link href={`/super-evacuation-center/edit-evac-form/${evacId}`}>
-                <button
-                  disabled={isPending || isToastOpen}
-                  className={`bg-dark-blue text-puti flex cursor-pointer items-center gap-1 rounded-sm px-6 py-2 text-xs transition-all duration-300 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-80`}
-                >
-                  <LiaEditSolid className="text-sm" />
-                  Edit
-                </button>
-              </Link>
+              {canEdit && (
+                <>
+                  <Link
+                    href={`/sub-evacuation-center/edit-evac-form/${evacId}`}
+                  >
+                    <button
+                      disabled={isPending || isToastOpen}
+                      className="bg-dark-blue text-puti flex cursor-pointer items-center gap-1 rounded-sm px-6 py-2 text-xs transition-all duration-300 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-80"
+                    >
+                      <LiaEditSolid className="text-sm" />
+                      Edit
+                    </button>
+                  </Link>
 
-              <button
-                disabled={isPending || isToastOpen}
-                onClick={() => {
-                  setIsToastOpen(true);
-                  showDeleteConfirmation({
-                    onConfirm: () => mutate(),
-                    onClose: () => setIsToastOpen(false),
-                  });
-                  setTimeout(() => {
-                    setIsToastOpen(false);
-                  }, 5000);
-                }}
-                className={`text-puti flex cursor-pointer items-center gap-1 rounded-sm bg-red-500 px-6 py-2 text-xs transition-all duration-300 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-80`}
-              >
-                <AiFillDelete className="text-sm" />
-                {isPending ? "Deleting..." : "Delete"}
-              </button>
+                  <button
+                    disabled={isPending || isToastOpen}
+                    onClick={() => {
+                      setIsToastOpen(true);
+                      showDeleteConfirmation({
+                        onConfirm: () => mutate(),
+                        onClose: () => setIsToastOpen(false),
+                      });
+                      setTimeout(() => setIsToastOpen(false), 5000);
+                    }}
+                    className="text-puti flex cursor-pointer items-center gap-1 rounded-sm bg-red-500 px-6 py-2 text-xs transition-all duration-300 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-80"
+                  >
+                    <AiFillDelete className="text-sm" />
+                    {isPending ? "Deleting..." : "Delete"}
+                  </button>
+                </>
+              )}
 
               <button
                 disabled={isPending || isToastOpen}
                 onClick={() => setIsMapOpen((prev) => !prev)}
-                className={`bg-dark-blue text-puti flex cursor-pointer items-center gap-1 rounded-sm px-6 py-2 text-xs transition-all duration-300 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-80`}
+                className="bg-dark-blue text-puti flex cursor-pointer items-center gap-1 rounded-sm px-6 py-2 text-xs transition-all duration-300 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-80"
               >
                 {isMapOpen ? (
                   <>
@@ -298,7 +297,7 @@ export default function EvacuationDetailModal() {
                 ) : (
                   <>
                     <FaMapMarkerAlt className="text-[10px]" />
-                    View map
+                    View Map
                   </>
                 )}
               </button>

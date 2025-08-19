@@ -21,6 +21,7 @@ import dynamic from "next/dynamic";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { addEvacuationCenter } from "@/server/api/evacuation";
 import { toast } from "sonner";
+import { useEffect } from "react";
 
 const EvacuationMap = dynamic(() => import("@/components/maps/evac-map-add"), {
   ssr: false,
@@ -41,11 +42,28 @@ export default function AddEvacForm() {
     defaultValues: {
       lat: 14.1717,
       long: 121.2436,
+      created_by: "",
     },
   });
 
   const lat = watch("lat");
   const long = watch("long");
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const userObj = JSON.parse(storedUser);
+        if (userObj.username && userObj.barangay) {
+          setValue("created_by", `${userObj.username}, ${userObj.barangay}`);
+        } else if (userObj.username) {
+          setValue("created_by", userObj.username);
+        }
+      } catch (err) {
+        console.error("Error parsing stored user:", err);
+      }
+    }
+  }, [setValue]);
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: EvacuationCenterFormData) => {
@@ -57,14 +75,21 @@ export default function AddEvacForm() {
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["evacuationsCenter"] });
-
       await queryClient.refetchQueries({ queryKey: ["evacuationsCenter"] });
-
       router.back();
     },
   });
 
   const onSubmit = (data: EvacuationCenterFormData) => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const userObj = JSON.parse(storedUser);
+      if (!data.created_by && userObj.username && userObj.barangay) {
+        data.created_by = `${userObj.username}, ${userObj.barangay}`;
+      } else if (!data.created_by && userObj.username) {
+        data.created_by = userObj.username;
+      }
+    }
     mutate(data);
   };
 
@@ -87,6 +112,8 @@ export default function AddEvacForm() {
             </div>
 
             <div className="flex justify-between gap-5">
+              <input type="hidden" {...register("created_by")} />
+
               <TextInput
                 name="evac_name"
                 icon={<FaHeading />}

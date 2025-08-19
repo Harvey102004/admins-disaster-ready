@@ -48,7 +48,7 @@ export default function Login() {
           if (response.data.success) {
             const account = response.data.user;
 
-            const { username, password, id, role, ...safeAccount } = account;
+            const { password, role, ...safeAccount } = account;
 
             localStorage.setItem("user", JSON.stringify(safeAccount));
 

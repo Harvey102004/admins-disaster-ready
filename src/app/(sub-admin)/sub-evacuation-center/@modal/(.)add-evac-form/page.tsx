@@ -27,7 +27,7 @@ const EvacuationMap = dynamic(() => import("@/components/maps/evac-map-add"), {
   ssr: false,
 });
 
-export default function AddEvacFormModal() {
+export default function SubAddEvacFormModal() {
   const router = useRouter();
   const queryClient = useQueryClient();
 

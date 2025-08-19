@@ -61,15 +61,17 @@ export const SortDropdown = ({
 
 // ----------- FILTERING EVACUATION CENTER ----------- //
 
-type FilteringEvacuationProps = {
-  selectedBrgy: string;
+interface FilteringEvacuationProps {
+  selectedBarangay: string;
   selectedStatus: string;
-  onBrgyChange: (value: string) => void;
+  onBarangayChange: (value: string) => void;
   onStatusChange: (value: string) => void;
-};
+}
 
 export const FilteringEvacuation = ({
+  selectedBarangay,
   selectedStatus,
+  onBarangayChange,
   onStatusChange,
 }: FilteringEvacuationProps) => {
   const allBrgy = [
@@ -99,20 +101,21 @@ export const FilteringEvacuation = ({
 
   return (
     <div className="flex items-center gap-4">
+      {/* Filter Icon + Label */}
       <div className="flex items-center gap-2">
         <FaFilter />
         <p className="text-sm">Filter By:</p>
       </div>
 
-      <Select>
+      {/* Barangay Filter */}
+      <Select value={selectedBarangay} onValueChange={onBarangayChange}>
         <SelectTrigger className="border-dark-blue/50 focus:border-dark-blue w-[170px] rounded-sm border text-xs shadow-none outline-none dark:border-gray-500/50 dark:bg-transparent">
           <SelectValue placeholder="Select brgy" />
         </SelectTrigger>
-
         <SelectContent className="dark:bg-light-black bg-light-blue text-xs">
           {allBrgy.map((option) => (
             <SelectItem
-              key={option.name}
+              key={option.value}
               value={option.value}
               className="data-[highlighted]:bg-dark-blue/20 text-xs dark:data-[highlighted]:text-white"
             >
@@ -122,9 +125,10 @@ export const FilteringEvacuation = ({
         </SelectContent>
       </Select>
 
+      {/* Status Filter */}
       <Select value={selectedStatus} onValueChange={onStatusChange}>
         <SelectTrigger className="border-dark-blue/50 focus:border-dark-blue w-[170px] rounded-sm border text-xs shadow-none outline-none dark:border-gray-500/50 dark:bg-transparent">
-          <SelectValue placeholder="Select date" />
+          <SelectValue placeholder="Select status" />
         </SelectTrigger>
         <SelectContent className="dark:bg-light-black bg-light-blue text-xs">
           {allStatus.map((option) => (

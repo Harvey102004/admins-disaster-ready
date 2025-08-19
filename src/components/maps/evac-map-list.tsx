@@ -52,20 +52,21 @@ export default function EvacuationListView() {
   });
 
   const toggleFilter = (status: "plenty" | "almost" | "full") => {
-    const isOnlyThisTrue =
+    const isOnlyThisActive =
       filterStates[status] &&
       Object.values(filterStates).filter(Boolean).length === 1;
 
-    if (isOnlyThisTrue) {
+    if (isOnlyThisActive) {
       setFilterStates({ plenty: true, almost: true, full: true });
     } else {
-      setFilterStates((prev) => ({
-        ...prev,
-        [status]: !prev[status],
-      }));
+      setFilterStates({
+        plenty: false,
+        almost: false,
+        full: false,
+        [status]: true,
+      });
     }
   };
-
   const filtered = data.filter((evac) =>
     evac.name.toLowerCase().includes(search.toLowerCase()),
   );

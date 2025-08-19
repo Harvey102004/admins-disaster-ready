@@ -7,7 +7,6 @@ import { RiLogoutCircleLine } from "react-icons/ri";
 import { HiMiniMapPin } from "react-icons/hi2";
 import { BsFillTelephoneFill } from "react-icons/bs";
 import { IoSettings } from "react-icons/io5";
-import { PiResizeFill } from "react-icons/pi";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { UserProps } from "../../../types";
@@ -17,8 +16,6 @@ import { SideBarSkeleton } from "../skeleton/Skeleton-update-news";
 
 export default function NavbarSubAdmin() {
   const pathname = usePathname();
-
-  const [isResize, setIsResize] = useState<boolean>(false);
 
   const navLinks = [
     {
@@ -59,6 +56,12 @@ export default function NavbarSubAdmin() {
     setStoredAccount(JSON.parse(localStorage.getItem("user") || "{}"));
   }, []);
 
+  const getLogoPath = (barangay: string | undefined) => {
+    if (!barangay) return "/logos/default-logo.png"; // fallback kung wala
+    const formatted = barangay.toLowerCase().replace(/\s+/g, "-");
+    return `/logos/${formatted}-logo.png`;
+  };
+
   return (
     <div
       className={`x-translate-y-1/2 bg-dark-blue/20 border-dark-blue dark:bg-light-black relative top-[1vh] left-[0.5vw] flex h-[98vh] w-[30vw] flex-col overflow-hidden rounded-2xl border p-5 transition-all duration-300 dark:border-white/5`}
@@ -77,7 +80,11 @@ export default function NavbarSubAdmin() {
         {storedAccount?.barangay && storedAccount.email ? (
           <>
             <div className="relative h-14 w-14">
-              <Image src={`/logos/lb-logo.png`} alt="" fill />
+              <Image
+                src={getLogoPath(storedAccount.barangay)}
+                alt={`${storedAccount.barangay} logo`}
+                fill
+              />
             </div>
 
             <div className="flex flex-col gap-1.5 text-nowrap">
@@ -88,7 +95,7 @@ export default function NavbarSubAdmin() {
                 {storedAccount?.email}
               </p>
               <p className="text-[10px] font-light text-gray-700 dark:text-gray-400">
-                Super Admin
+                Sub Admin
               </p>
             </div>
           </>

@@ -23,7 +23,7 @@ export interface EvacuationCenterProps {
   contact_number: string;
   lat: number | null;
   long: number | null;
-  addedBy?: string;
+  created_by?: string;
   chartStyle?: string;
 }
 
@@ -37,6 +37,7 @@ export interface GetEvacuationProps {
   contact_number: string;
   lat?: string | number;
   long?: string | number;
+  created_by?: string;
 }
 
 export interface GetEvacCard {

@@ -4,7 +4,7 @@ import Image from "next/image";
 import { FaUser, FaPhone } from "react-icons/fa6";
 import { HiLocationMarker } from "react-icons/hi";
 import { GoHomeFill } from "react-icons/go";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 import {
   EvacuationLineChart,
@@ -23,6 +23,7 @@ interface EvacuationCardProps {
   capacity: string | number;
   evacuees: string | number;
   chartStyle: string;
+  created_by?: string;
 }
 
 export default function EvacuationCard({
@@ -34,32 +35,26 @@ export default function EvacuationCard({
   capacity,
   evacuees,
   chartStyle,
+  created_by,
 }: EvacuationCardProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const isSubPage = pathname.includes("/sub-evacuation-center");
+
   const cap = Number(capacity) || 0;
   const evacs = Number(evacuees) || 0;
   const vacancy = cap - evacs;
 
   let chartDesign = chartStyle;
-
   switch (chartDesign) {
     case "bar":
-      chartDesign = "bar";
-      break;
     case "line":
-      chartDesign = "line";
-      break;
     case "doughnut":
-      chartDesign = "doughnut";
-      break;
     case "pie":
-      chartDesign = "pie";
-      break;
     case "polar":
-      chartDesign = "polar";
       break;
     default:
-      break;
+      chartDesign = "bar";
   }
 
   const vacancyRate = (vacancy / cap) * 100;
@@ -71,7 +66,7 @@ export default function EvacuationCard({
     statusLabel = "No capacity data";
     statusColor = "bg-gray-400";
   } else if (vacancy === 0) {
-    statusLabel = "Not Available  (Full) ";
+    statusLabel = "Not Available (Full)";
     statusColor = "bg-red-600";
   } else if (vacancyRate < 50) {
     statusLabel = "Almost full";
@@ -80,6 +75,20 @@ export default function EvacuationCard({
     statusLabel = "Plenty of space";
     statusColor = "bg-green-500";
   }
+
+  const removeAccents = (str: string) =>
+    str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+  const barangayOnly = created_by
+    ? created_by.split(",").pop()?.trim()
+    : "Unknown";
+
+  const barangayLogo = barangayOnly
+    ? removeAccents(barangayOnly).toLowerCase().includes("los banos")
+      ? "lb-logo.png"
+      : removeAccents(barangayOnly).toLowerCase().replace(/\s+/g, "-") +
+        "-logo.png"
+    : "lb-logo.png";
 
   return (
     <div className="border-dark-blue/50 relative flex h-[280px] rounded-xl border p-5 transition-all duration-300 hover:z-10 hover:scale-[1.01] hover:shadow-lg dark:border-gray-500/40 dark:bg-transparent">
@@ -135,8 +144,19 @@ export default function EvacuationCard({
             </div>
 
             <div className="flex items-center gap-2">
-              <Image src={`/logos/lb-logo.png`} alt="" width={30} height={30} />
-              <p className="text-xs text-gray-500">Added by: Wala pa</p>
+              <Image
+                src={`/logos/${barangayLogo}`}
+                alt={`${barangayOnly} logo`}
+                width={30}
+                height={30}
+              />
+
+              <p className="text-[11px] text-nowrap text-gray-500">
+                Added by:{" "}
+                {created_by?.includes(",")
+                  ? created_by.split(",").pop()?.trim()
+                  : created_by}
+              </p>
             </div>
           </div>
 
@@ -162,7 +182,11 @@ export default function EvacuationCard({
             <button
               onClick={() => {
                 sessionStorage.setItem("chartStyle", chartStyle);
-                router.push(`/super-evacuation-center/detail/${id}`);
+                router.push(
+                  isSubPage
+                    ? `/sub-evacuation-center/detail/${id}`
+                    : `/super-evacuation-center/detail/${id}`,
+                );
               }}
               className="bg-dark-blue ml-5 w-1/2 rounded-sm py-2 text-center text-[10px] text-white transition-all duration-300 hover:opacity-85"
             >

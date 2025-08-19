@@ -55,6 +55,7 @@ export const evacuationCenterSchema = z
       .refine((val) => val !== 121.2436, {
         message: "Please select a location on the map",
       }),
+    created_by: z.string().optional(),
   })
   .refine((data) => data.evac_evacuees <= data.evac_capacity, {
     path: ["evac_evacuees"],
@@ -98,6 +99,7 @@ export const editEvacuationCenterSchema = z
     long: z.coerce
       .number()
       .refine((val) => !isNaN(val), { message: "Longitude must be a number" }),
+    created_by: z.string().optional(),
   })
   .refine((data) => data.current_evacuees <= data.capacity, {
     path: ["current_evacuees"],

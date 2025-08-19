@@ -122,17 +122,6 @@ export default function ContactInfoForm({ onclose }: { onclose: () => void }) {
       onSubmit={handleSubmit}
       className="mt-8 flex h-[75vh] justify-center gap-5"
     >
-      {isSubmitted && (
-        <div className="bounce absolute top-1/2 left-1/2 z-50 -translate-x-1/2">
-          <SuccessPostForm text="Contact Information Submitted Successfully!" />
-        </div>
-      )}
-
-      {notComplete && (
-        <div className="bounce absolute top-1/2 left-1/2 z-50 -translate-x-1/2">
-          <CompleteFormAlert />
-        </div>
-      )}
       <div className="mt-5 flex gap-5">
         <div className="flex flex-col gap-8">
           <div className="flex w-[250px] flex-col gap-2">

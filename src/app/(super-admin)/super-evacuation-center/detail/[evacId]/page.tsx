@@ -1,9 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-
 import { useRouter, useParams } from "next/navigation";
-
 import {
   deleteEvacuationCenter,
   getEvacuationDetails,
@@ -16,7 +14,6 @@ import Link from "next/link";
 import { LiaEditSolid } from "react-icons/lia";
 import { AiFillDelete } from "react-icons/ai";
 import { FaMapMarkerAlt } from "react-icons/fa";
-
 import {
   EvacuationBarChart,
   EvacuationDoughnutChart,
@@ -49,18 +46,21 @@ export default function EvacuationDetail() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      return await deleteEvacuationCenter({ id: evacId });
+      return await toast.promise(deleteEvacuationCenter({ id: evacId }), {
+        loading: "Deleting evacuation center",
+        success: () => {
+          return "Evacuation center deleted successfully!";
+        },
+        error: (err: any) => {
+          return err?.message || "Something went wrong";
+        },
+      });
     },
 
     onSuccess: () => {
-      toast.success("Evacuation center deleted successfully!");
       queryClient.invalidateQueries({ queryKey: ["evacuationCenter"] });
       queryClient.refetchQueries({ queryKey: ["evacuationsCenter"] });
       router.back();
-    },
-
-    onError: (err: any) => {
-      toast.error(err?.message || "Something went wrong.");
     },
   });
 
@@ -133,176 +133,179 @@ export default function EvacuationDetail() {
     statusColor = "bg-green-500";
   }
 
+  const barangayOnly = data.created_by
+    ? data.created_by.split(",").pop()?.trim()
+    : "Unknown";
+
+  const barangayLogo = barangayOnly
+    ? barangayOnly.toLowerCase().includes("municipality of los baños")
+      ? "lb-logo.png"
+      : barangayOnly.toLowerCase().replace(/\s+/g, "-") + "-logo.png"
+    : "default-logo.png";
+
   return (
-    <>
-      <div className="h-screen w-full"></div>
-
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-        <div className="dark:bg-light-black relative flex h-[80vh] w-[65vw] justify-between rounded-md bg-white">
-          <div className="flex h-full w-[45%] flex-col gap-5 p-8">
-            <div className="mb-5 flex items-center gap-3">
-              <div className={`h-5 w-5 rounded-full ${statusColor}`}></div>
-              <p>{statusLabel}</p>
-            </div>
-
-            <div className="flex h-full w-full flex-col gap-5">
-              <div className="flex w-full items-center gap-5">
-                <GoHomeFill className="text-dark-blue text-2xl" />
-                <p>{data.name}</p>
-              </div>
-
-              <div className="flex items-center gap-5">
-                <HiLocationMarker className="text-dark-blue text-2xl" />
-                <p className="">{data.location}</p>
-              </div>
-
-              <div className="flex items-center gap-5">
-                <FaUser className="text-dark-blue text-2xl" />
-                <p>{data.contact_person}</p>
-              </div>
-
-              <div className="flex items-center gap-5">
-                <FaPhone className="text-dark-blue text-2xl" />
-                <p>{data.contact_number}</p>
-              </div>
-
-              <div className="mt-5 flex items-center gap-5">
-                <div className="bg-dark-blue h-5 w-5 rounded-full"></div>
-                <p className="text-sm">
-                  Capacity: <span className="ml-5">{cap}</span>
-                </p>
-              </div>
-
-              <div className="flex items-center gap-5">
-                <div className="h-5 w-5 rounded-full bg-[#C10000]"></div>
-                <p className="text-sm">
-                  Evacuees: <span className="ml-5">{evacs}</span>
-                </p>
-              </div>
-
-              <div className="flex items-center gap-5">
-                <div className="h-5 w-5 rounded-full bg-[#4CAF50]"></div>
-                <p className="text-sm">
-                  Vacancy: <span className="ml-5">{vacancy}</span>
-                </p>
-              </div>
-
-              <div className="mt-auto flex items-center gap-5">
-                <Image
-                  src={`/logos/lb-logo.png`}
-                  alt=""
-                  width={60}
-                  height={60}
-                />
-                <p className="text-sm text-gray-500">Added by: Wala pa</p>
-              </div>
-            </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+      <div className="dark:bg-light-black relative flex h-[80vh] w-[65vw] justify-between rounded-md bg-white">
+        <div className="flex h-full w-[45%] flex-col gap-5 p-8">
+          <div className="mb-5 flex items-center gap-3">
+            <div className={`h-5 w-5 rounded-full ${statusColor}`}></div>
+            <p>{statusLabel}</p>
           </div>
 
-          <div className="h-full w-[55%] p-8">
-            <div className="h-full w-full">
-              <IoCloseCircleSharp
-                onClick={() => router.push("/super-evacuation-center")}
-                className={`absolute top-5 right-5 z-50 text-2xl transition-colors duration-300 ${isToastOpen ? "pointer-events-none opacity-80" : "hover:text-red-500"}`}
-              />
+          <div className="flex h-full w-full flex-col gap-5">
+            <div className="flex w-full items-center gap-5">
+              <GoHomeFill className="text-dark-blue text-2xl" />
+              <p>{data.name}</p>
+            </div>
 
-              <p className="mb-5 text-center text-sm dark:text-zinc-300">
-                {isMapOpen ? "Map View" : "Graph View"}
+            <div className="flex items-center gap-5">
+              <HiLocationMarker className="text-dark-blue text-2xl" />
+              <p className="">{data.location}</p>
+            </div>
+
+            <div className="flex items-center gap-5">
+              <FaUser className="text-dark-blue text-2xl" />
+              <p>{data.contact_person}</p>
+            </div>
+
+            <div className="flex items-center gap-5">
+              <FaPhone className="text-dark-blue text-2xl" />
+              <p>{data.contact_number}</p>
+            </div>
+
+            <div className="mt-5 flex items-center gap-5">
+              <div className="bg-dark-blue h-5 w-5 rounded-full"></div>
+              <p className="text-sm">
+                Capacity: <span className="ml-5">{cap}</span>
               </p>
+            </div>
 
-              <div className="h-[80%] w-full min-w-[400px]">
-                {isMapOpen ? (
-                  <EvacuationMapDetails
-                    name={data.name}
-                    lat={Number(data.lat)}
-                    lng={Number(data.long)}
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    {chartDesign === "bar" && (
-                      <EvacuationBarChart capacity={cap} evacuees={evacs} />
-                    )}
-                    {chartDesign === "line" && (
-                      <EvacuationLineChart capacity={cap} evacuees={evacs} />
-                    )}
-                    {chartDesign === "doughnut" && (
-                      <EvacuationDoughnutChart
-                        capacity={cap}
-                        evacuees={evacs}
-                      />
-                    )}
-                    {chartDesign === "pie" && (
-                      <EvacuationPieChart
-                        capacity={cap}
-                        evacuees={evacs}
-                        classname="h-[300px] w-[300px]"
-                      />
-                    )}
-                    {chartDesign === "polar" && (
-                      <EvacuationPolarAreaChart
-                        capacity={cap}
-                        evacuees={evacs}
-                      />
-                    )}
-                  </div>
-                )}
-              </div>
+            <div className="flex items-center gap-5">
+              <div className="h-5 w-5 rounded-full bg-[#C10000]"></div>
+              <p className="text-sm">
+                Evacuees: <span className="ml-5">{evacs}</span>
+              </p>
+            </div>
 
-              <div className="mt-5 flex items-center justify-center gap-3">
-                <Link
-                  href={`/super-evacuation-center/edit-evac-form/${evacId}`}
-                >
-                  <button
-                    disabled={isPending || isToastOpen}
-                    className={`bg-dark-blue text-puti flex cursor-pointer items-center gap-1 rounded-sm px-6 py-2 text-xs transition-all duration-300 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-80`}
-                  >
-                    <LiaEditSolid className="text-sm" />
-                    Edit
-                  </button>
-                </Link>
+            <div className="flex items-center gap-5">
+              <div className="h-5 w-5 rounded-full bg-[#4CAF50]"></div>
+              <p className="text-sm">
+                Vacancy: <span className="ml-5">{vacancy}</span>
+              </p>
+            </div>
 
+            <div className="mt-auto flex items-center gap-5">
+              <Image
+                src={`/logos/${barangayLogo}`}
+                alt={`${barangayOnly} logo`}
+                width={60}
+                height={60}
+                className="rounded-full"
+              />
+              <p className="text-[13px] text-nowrap text-gray-500">
+                Added by: {barangayOnly || "Unknown"}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="h-full w-[55%] p-8">
+          <div className="h-full w-full">
+            <IoCloseCircleSharp
+              onClick={() => router.back()}
+              className={`absolute top-5 right-5 z-50 text-2xl transition-colors duration-300 ${
+                isToastOpen
+                  ? "pointer-events-none opacity-80"
+                  : "hover:text-red-500"
+              }`}
+            />
+
+            <p className="mb-5 text-center text-sm dark:text-zinc-300">
+              {isMapOpen ? "Map View" : "Graph View"}
+            </p>
+
+            <div className="h-[80%] w-full min-w-[400px]">
+              {isMapOpen ? (
+                <EvacuationMapDetails
+                  name={data.name}
+                  lat={Number(data.lat)}
+                  lng={Number(data.long)}
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center">
+                  {chartDesign === "bar" && (
+                    <EvacuationBarChart capacity={cap} evacuees={evacs} />
+                  )}
+                  {chartDesign === "line" && (
+                    <EvacuationLineChart capacity={cap} evacuees={evacs} />
+                  )}
+                  {chartDesign === "doughnut" && (
+                    <EvacuationDoughnutChart capacity={cap} evacuees={evacs} />
+                  )}
+                  {chartDesign === "pie" && (
+                    <EvacuationPieChart
+                      capacity={cap}
+                      evacuees={evacs}
+                      classname="h-[300px] w-[300px]"
+                    />
+                  )}
+                  {chartDesign === "polar" && (
+                    <EvacuationPolarAreaChart capacity={cap} evacuees={evacs} />
+                  )}
+                </div>
+              )}
+            </div>
+
+            <div className="mt-5 flex items-center justify-center gap-3">
+              <Link href={`/super-evacuation-center/edit-evac-form/${evacId}`}>
                 <button
                   disabled={isPending || isToastOpen}
-                  onClick={() => {
-                    setIsToastOpen(true);
-
-                    showDeleteConfirmation({
-                      onConfirm: () => mutate(),
-                      onClose: () => setIsToastOpen(false),
-                    });
-
-                    setTimeout(() => {
-                      setIsToastOpen(false);
-                    }, 5000);
-                  }}
-                  className={`text-puti flex cursor-pointer items-center gap-1 rounded-sm bg-red-500 px-6 py-2 text-xs transition-all duration-300 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-80`}
-                >
-                  <AiFillDelete className="text-sm" />
-                  {isPending ? "Deleting..." : "Delete"}
-                </button>
-
-                <button
-                  disabled={isPending || isToastOpen}
-                  onClick={() => setIsMapOpen((prev) => !prev)}
                   className={`bg-dark-blue text-puti flex cursor-pointer items-center gap-1 rounded-sm px-6 py-2 text-xs transition-all duration-300 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-80`}
                 >
-                  {isMapOpen ? (
-                    <>
-                      <IoStatsChart />
-                      View Graph
-                    </>
-                  ) : (
-                    <>
-                      <FaMapMarkerAlt className="text-[10px]" />
-                      View map
-                    </>
-                  )}
+                  <LiaEditSolid className="text-sm" />
+                  Edit
                 </button>
-              </div>
+              </Link>
+
+              <button
+                disabled={isPending || isToastOpen}
+                onClick={() => {
+                  setIsToastOpen(true);
+                  showDeleteConfirmation({
+                    onConfirm: () => mutate(),
+                    onClose: () => setIsToastOpen(false),
+                  });
+                  setTimeout(() => {
+                    setIsToastOpen(false);
+                  }, 5000);
+                }}
+                className={`text-puti flex cursor-pointer items-center gap-1 rounded-sm bg-red-500 px-6 py-2 text-xs transition-all duration-300 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-80`}
+              >
+                <AiFillDelete className="text-sm" />
+                {isPending ? "Deleting..." : "Delete"}
+              </button>
+
+              <button
+                disabled={isPending || isToastOpen}
+                onClick={() => setIsMapOpen((prev) => !prev)}
+                className={`bg-dark-blue text-puti flex cursor-pointer items-center gap-1 rounded-sm px-6 py-2 text-xs transition-all duration-300 hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-80`}
+              >
+                {isMapOpen ? (
+                  <>
+                    <IoStatsChart />
+                    View Graph
+                  </>
+                ) : (
+                  <>
+                    <FaMapMarkerAlt className="text-[10px]" />
+                    View map
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 }

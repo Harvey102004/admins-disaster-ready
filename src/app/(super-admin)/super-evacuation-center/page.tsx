@@ -33,9 +33,9 @@ import { EvacuationSkeleton } from "@/components/skeleton/evacuation";
 import { AiFillFolderOpen } from "react-icons/ai";
 
 export default function SuperAdminEvacuationCenter() {
-  const [sortBy, setSortBy] = useState("default");
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [filterBrgy, setFilterBrgy] = useState("all");
+  const [sortBy, setSortBy] = useState("addedBy");
+  const [barangay, setBarangay] = useState("all");
+  const [status, setStatus] = useState("all");
   const [searchText, setSearchText] = useState("");
   const [styling, setStyling] = useState(() => {
     if (typeof window !== "undefined") {
@@ -53,7 +53,7 @@ export default function SuperAdminEvacuationCenter() {
   });
 
   const filteredAndSorted = useMemo(() => {
-    const filtered = filterEvacuationData(data ?? [], filterBrgy, filterStatus);
+    const filtered = filterEvacuationData(data ?? [], barangay, status);
 
     const searched = filtered.filter((item) => {
       const text = searchText.toLowerCase();
@@ -67,7 +67,7 @@ export default function SuperAdminEvacuationCenter() {
     });
 
     return sortEvacuationData(searched, sortBy);
-  }, [data, sortBy, filterBrgy, filterStatus, searchText]);
+  }, [data, sortBy, barangay, status, searchText]);
 
   const allStyles = [
     { name: "BarGraph", value: "bar" },
@@ -125,7 +125,6 @@ export default function SuperAdminEvacuationCenter() {
               value={sortBy}
               onChange={(value) => setSortBy(value as SortBy)}
               options={[
-                { label: "Default", value: "default" },
                 { label: "Evacuation name", value: "name" },
                 { label: "Added by", value: "addedBy" },
                 { label: "Capacity (High to Low)", value: "capacity_desc" },
@@ -138,10 +137,10 @@ export default function SuperAdminEvacuationCenter() {
             />
 
             <FilteringEvacuation
-              selectedStatus={filterStatus}
-              onStatusChange={(value) => setFilterStatus(value)}
-              selectedBrgy={filterBrgy}
-              onBrgyChange={(value) => setFilterBrgy(value)}
+              selectedBarangay={barangay}
+              selectedStatus={status}
+              onBarangayChange={setBarangay}
+              onStatusChange={setStatus}
             />
           </div>
 
@@ -199,6 +198,7 @@ export default function SuperAdminEvacuationCenter() {
                 capacity={evac.capacity}
                 evacuees={evac.current_evacuees ?? 0}
                 chartStyle={styling}
+                created_by={evac.created_by}
               />
             ))
           )}

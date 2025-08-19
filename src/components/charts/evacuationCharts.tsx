@@ -99,10 +99,10 @@ export const EvacuationLineChart: FC<EvacuationChartProps> = ({
   const vacancy = capacity - evacuees;
 
   const data = {
-    labels: ["Capacity", "Evacuees", "Vacancy"],
+    labels: ["Capacity", "Vacancy", "Evacuees"],
     datasets: [
       {
-        data: [capacity, evacuees, vacancy],
+        data: [capacity, vacancy, evacuees],
         fill: true,
         borderColor: "#2563eb",
         backgroundColor: "rgba(59, 130, 246, 0.08)",

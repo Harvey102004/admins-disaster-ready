@@ -96,18 +96,18 @@ export const editEvacuationCenter = async ({
   data: GetEvacuationProps;
 }) => {
   try {
-    const response = await axios.post(
+    const response = await axios.put(
       `http://localhost/Disaster-backend/controllers/evacuationCenterController.php?id=${id}`,
       {
-        _method: "PUT",
-        name: data.name,
-        location: data.location,
-        capacity: data.capacity,
-        current_evacuees: data.current_evacuees,
-        contact_person: data.contact_person,
-        contact_number: data.contact_number,
+        evac_name: data.name,
+        evac_location: data.location,
+        evac_capacity: data.capacity,
+        evac_evacuees: data.current_evacuees,
+        evac_contact_person: data.contact_person,
+        evac_contact_number: data.contact_number,
         lat: data.lat,
         long: data.long,
+        created_by: data.created_by,
       },
     );
 
