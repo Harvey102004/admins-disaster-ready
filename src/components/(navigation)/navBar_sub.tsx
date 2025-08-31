@@ -1,6 +1,7 @@
 "use client";
 
 import { ModeToggleSideBar } from ".././darkmode-toggle";
+import { useRouter } from "next/navigation";
 import { MdSpaceDashboard, MdAnnouncement } from "react-icons/md";
 import { FaHouseCircleCheck } from "react-icons/fa6";
 import { RiLogoutCircleLine } from "react-icons/ri";
@@ -16,6 +17,8 @@ import { SideBarSkeleton } from "../skeleton/Skeleton-update-news";
 
 export default function NavbarSubAdmin() {
   const pathname = usePathname();
+  const [isLogout, setIsLogout] = useState(false);
+  const router = useRouter();
 
   const navLinks = [
     {
@@ -125,11 +128,44 @@ export default function NavbarSubAdmin() {
         </ul>
       </nav>
       <p
+        onClick={() => setIsLogout(true)}
         className={`hover:text-dark-blue mt-auto flex cursor-pointer items-center gap-4 pl-4 text-xs`}
       >
         <RiLogoutCircleLine className={"text-xl"} />
-        {"Logout"}
+        Logout
       </p>
+
+      {isLogout && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/10"
+          onClick={() => setIsLogout(false)}
+        >
+          <div
+            className="dark:bg-light-black rounded bg-white p-7 shadow-md"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="mb-5 font-medium">Are you sure you want to logout?</p>
+
+            <div className="mx-auto flex items-center justify-center gap-5 text-sm text-white">
+              <button
+                className="bg-dark-blue rounded px-6 py-2"
+                onClick={() => setIsLogout(false)}
+              >
+                No
+              </button>
+              <button
+                className="rounded bg-red-500 px-6 py-2 text-white"
+                onClick={() => {
+                  localStorage.removeItem("user");
+                  router.push("/login");
+                }}
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

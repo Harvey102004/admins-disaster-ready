@@ -9,7 +9,7 @@ import {
 import NoIdFound from "@/components/NoIdFound";
 import Loader from "@/components/loading";
 import { IoCloseCircleSharp, IoStatsChart } from "react-icons/io5";
-import EvacuationMapDetails from "@/components/maps/evac-map-details";
+import MapDetails from "@/components/maps/map-details";
 import Link from "next/link";
 import { LiaEditSolid } from "react-icons/lia";
 import { AiFillDelete } from "react-icons/ai";
@@ -221,7 +221,7 @@ export default function SubEvacuationDetailModal() {
 
             <div className="h-[80%] w-full min-w-[400px]">
               {isMapOpen ? (
-                <EvacuationMapDetails
+                <MapDetails
                   name={data.name}
                   lat={Number(data.lat)}
                   lng={Number(data.long)}

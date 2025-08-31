@@ -2,14 +2,17 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { brgyContactSchema } from "@/lib/schema/brgyContacts";
 import { z } from "zod";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-import { useRouter } from "next/navigation";
-import { addBrgyContact } from "@/server/api/brgyContacts";
+import { useParams, useRouter } from "next/navigation";
+import {
+  editBrgyContact,
+  getBrgyContactDetails,
+} from "@/server/api/brgyContacts";
 
 import { GoHomeFill } from "react-icons/go";
 import { MdEmail } from "react-icons/md";
@@ -19,6 +22,9 @@ import { HiLocationMarker } from "react-icons/hi";
 import dynamic from "next/dynamic";
 
 import { TextInput } from "@/components/Inputs";
+import NoIdFound from "@/components/NoIdFound";
+import { showEditConfirmation } from "@/lib/toasts";
+import Loader from "@/components/loading";
 
 type BrgyContactForm = z.infer<typeof brgyContactSchema>;
 
@@ -29,61 +35,108 @@ const BarangayMap = dynamic(() => import("@/components/maps/brgy-map-add"), {
 export default function AddContactForm() {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const { contactId } = useParams() as { contactId: string };
+
+  const { data, isLoading, error, isRefetching } = useQuery({
+    queryKey: ["brgyContactDetails", contactId],
+    queryFn: () => getBrgyContactDetails({ id: contactId }),
+  });
 
   const {
     register,
     handleSubmit,
     setValue,
-    watch,
+    reset,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(brgyContactSchema),
-    defaultValues: {
-      lat: 14.1717 as number,
-      long: 121.2436 as number,
-    },
+  } = useForm({ resolver: zodResolver(brgyContactSchema) });
+
+  // ✅ Single state variable for map position
+  const [mapPosition, setMapPosition] = useState<{ lat: number; lng: number }>({
+    lat: 14.1717,
+    lng: 121.2436,
   });
 
-  const lat = watch("lat");
-  const long = watch("long");
-
-  // ✅ Auto-set barangay from localStorage.user.barangay
+  // ✅ Initialize form and map position when data loads
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      try {
-        const parsed = JSON.parse(storedUser);
-        if (parsed?.barangay) {
-          setValue("barangay_name", parsed.barangay, { shouldValidate: true });
-        }
-      } catch (err) {
-        console.error("Invalid user data in localStorage", err);
-      }
+    if (data) {
+      const lat = Number(data.lat) || 14.1717;
+      const lng = Number(data.long) || 121.2436;
+
+      setMapPosition({ lat, lng });
+
+      reset({
+        barangay_name: data.barangay_name,
+        captain_name: data.captain_name,
+        secretary_name: data.secretary_name,
+        email: data.email,
+        contact_number: data.contact_number,
+        facebook_page: data.facebook_page,
+        landline: data.landline,
+        lat,
+        long: lng,
+      });
     }
-  }, [setValue]);
+  }, [data, reset]);
 
   const { mutate, isPending } = useMutation({
-    mutationFn: async (data: BrgyContactForm) => {
-      await toast.promise(addBrgyContact(data), {
-        loading: "Adding barangay contact...",
-        success: () => "Barangay contact added successfully!",
-        error: (error: any) => error?.message || "Something went wrong",
-        position: "bottom-right",
-      });
+    mutationKey: ["editBrgyContact"],
+    mutationFn: async (formData: BrgyContactForm) => {
+      return await toast.promise(
+        editBrgyContact({ id: contactId, data: formData }),
+        {
+          loading: "Updating barangay contact...",
+          success: "Barangay contact updated successfully!",
+          error: (error: any) => error?.message || "Something went wrong",
+          position: "bottom-right",
+        },
+      );
     },
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({ queryKey: ["brgyContacts"] });
-      await queryClient.refetchQueries({ queryKey: ["brgyContacts"] });
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["brgyContacts"] });
       router.back();
     },
   });
 
-  const onSubmit = (data: BrgyContactForm) => {
-    // Ensure lat/long are numbers
-    data.lat = Number(data.lat);
-    data.long = Number(data.long);
-    mutate(data);
+  const onSubmit = (formData: BrgyContactForm) => {
+    const unchanged =
+      formData.barangay_name.trim() === data?.barangay_name.trim() &&
+      formData.captain_name.trim() === data?.captain_name.trim() &&
+      formData.secretary_name.trim() === data?.secretary_name.trim() &&
+      formData.email.trim() === data?.email.trim() &&
+      formData.contact_number.trim() === data?.contact_number.trim() &&
+      formData.facebook_page.trim() === data?.facebook_page.trim() &&
+      formData.landline.trim() === data?.landline.trim() &&
+      Number(formData.lat) === Number(data?.lat) &&
+      Number(formData.long) === Number(data?.long);
+
+    if (unchanged) {
+      toast.error("No changes detected.");
+      return;
+    }
+
+    showEditConfirmation({ onConfirm: () => mutate(formData) });
   };
+
+  if (isLoading || isRefetching) {
+    return (
+      <div className="absolute top-1/2 left-1/2 flex -translate-1/2 items-center justify-center bg-black/30 backdrop-blur-sm">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (error) {
+    return <p>Error fetching evacuation center details</p>;
+  }
+
+  if (
+    !data ||
+    (typeof data === "object" &&
+      "message" in data &&
+      data.message === "No records found.")
+  ) {
+    return <NoIdFound message="Barangay Contact" />;
+  }
 
   return (
     <div className="flex h-[85vh] flex-col items-center gap-10 p-6">
@@ -101,7 +154,6 @@ export default function AddContactForm() {
               register={register}
               errors={errors}
             />
-
             <TextInput
               name="email"
               icon={<MdEmail />}
@@ -110,7 +162,6 @@ export default function AddContactForm() {
               errors={errors}
               placeholder="Enter brgy email..."
             />
-
             <TextInput
               name="captain_name"
               icon={<FaUser />}
@@ -119,7 +170,6 @@ export default function AddContactForm() {
               errors={errors}
               placeholder="Enter brgy captain..."
             />
-
             <TextInput
               name="secretary_name"
               icon={<FaUser />}
@@ -128,7 +178,6 @@ export default function AddContactForm() {
               errors={errors}
               placeholder="Enter brgy secretary..."
             />
-
             <TextInput
               name="contact_number"
               icon={<FaPhone />}
@@ -137,7 +186,6 @@ export default function AddContactForm() {
               errors={errors}
               placeholder="Enter brgy contact number..."
             />
-
             <TextInput
               name="landline"
               icon={<ImPhoneHangUp />}
@@ -164,8 +212,9 @@ export default function AddContactForm() {
                 <HiLocationMarker className="text-dark-blue text-lg" />
                 <p className="text-xs">Pin Location in map</p>
               </div>
-              <div className="border-dark-blue h-[400px] w-full overflow-hidden rounded-lg border shadow-xl">
-                {/* hidden inputs with valueAsNumber */}
+
+              <div className="border-dark-blue relative h-[400px] w-full overflow-hidden rounded-lg border shadow-xl">
+                {/* Hidden RHF inputs */}
                 <input
                   type="hidden"
                   {...register("lat", { required: true, valueAsNumber: true })}
@@ -175,15 +224,17 @@ export default function AddContactForm() {
                   {...register("long", { required: true, valueAsNumber: true })}
                 />
 
+                {/* Map */}
                 <BarangayMap
-                  lat={lat}
-                  lng={long}
-                  onChange={({ lng, lat }) => {
-                    const numLng = Number(lng);
+                  lat={mapPosition.lat}
+                  lng={mapPosition.lng}
+                  onChange={({ lat, lng }) => {
                     const numLat = Number(lat);
+                    const numLng = Number(lng);
 
+                    setMapPosition({ lat: numLat, lng: numLng }); // Update marker
+                    setValue("lat", numLat, { shouldValidate: true }); // Update form
                     setValue("long", numLng, { shouldValidate: true });
-                    setValue("lat", numLat, { shouldValidate: true });
                   }}
                 />
 
@@ -206,7 +257,6 @@ export default function AddContactForm() {
           >
             {isPending ? "Saving..." : "Submit"}
           </button>
-
           <button
             type="button"
             onClick={() => router.back()}

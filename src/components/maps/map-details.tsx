@@ -1,7 +1,6 @@
 "use client";
 
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { useRef, useEffect } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
@@ -15,7 +14,7 @@ const poppins = Poppins({
 type Props = {
   lat?: string | number;
   lng?: string | number;
-  name: string;
+  name?: string;
 };
 
 const customMarkerIcon = new L.Icon({
@@ -25,18 +24,7 @@ const customMarkerIcon = new L.Icon({
   popupAnchor: [0, -40],
 });
 
-export default function EvacuationMapDetails({ lat, lng, name }: Props) {
-  const markerRef = useRef<L.Marker>(null);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (markerRef.current) {
-        markerRef.current.openPopup();
-      }
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
-
+export default function MapDetails({ lat, lng, name }: Props) {
   return (
     <div className="h-full w-full rounded-lg shadow-md">
       <MapContainer
@@ -55,11 +43,7 @@ export default function EvacuationMapDetails({ lat, lng, name }: Props) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
         />
-        <Marker
-          position={[Number(lat), Number(lng)]}
-          icon={customMarkerIcon}
-          ref={markerRef}
-        >
+        <Marker position={[Number(lat), Number(lng)]} icon={customMarkerIcon}>
           <Popup>
             <div className={`pr-2 ${poppins.className}`}>
               <h3 className="text-xs font-semibold">{name}</h3>

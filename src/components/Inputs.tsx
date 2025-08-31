@@ -3,15 +3,15 @@
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { FiSearch } from "react-icons/fi";
 
-type InputType = {
-  name: string;
-  label?: string;
-  icon?: React.ReactNode;
-  placeholder?: string;
-  register: UseFormRegister<any>;
-  errors: FieldErrors<any>;
-  classname?: string;
-};
+  type InputType = {
+    name: string;
+    label?: string;
+    icon?: React.ReactNode;
+    placeholder?: string;
+    register: UseFormRegister<any>;
+    errors: FieldErrors<any>;
+    classname?: string;
+  };
 
 interface SearchProps {
   value: string;
@@ -27,6 +27,7 @@ export const TextInput = ({
   register,
   errors,
   placeholder,
+  classname,
 }: InputType) => {
   return (
     <div className="w-full">
@@ -38,7 +39,7 @@ export const TextInput = ({
         {...register(name)}
         type="text"
         autoComplete="off"
-        className={`${errors[name] ? "border-red-500/50" : "focus:border-dark-blue border-dark-blue/50 dark:border-gray-500/30"} w-full border px-4 py-3 text-sm outline-none placeholder:text-xs`}
+        className={`${errors[name] ? "border-red-500/50" : "focus:border-dark-blue border-dark-blue/50 dark:border-gray-500/30"} ${classname} w-full border px-4 py-3 text-sm outline-none placeholder:text-xs`}
         placeholder={placeholder}
       />
       {errors[name] && (

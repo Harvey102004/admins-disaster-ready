@@ -1,13 +1,75 @@
 "use client";
 
-import { FaPhone } from "react-icons/fa6";
+import { useEffect, useState } from "react";
+import { FaFacebook, FaPhone, FaUser } from "react-icons/fa6";
 import { useRouter } from "next/navigation";
+import { getBrgyContacts } from "@/server/api/brgyContacts";
+import { LiaEditSolid } from "react-icons/lia";
+import Image from "next/image";
+import { MdEmail } from "react-icons/md";
+import { ImPhoneHangUp } from "react-icons/im";
+import Link from "next/link";
+import dynamic from "next/dynamic";
+import Loader from "@/components/loading";
+
+const MapDetails = dynamic(() => import("@/components/maps/map-details"), {
+  ssr: false,
+});
+
+export type BarangayContact = {
+  id: string;
+  barangay_name: string;
+  email: string;
+  captain_name: string;
+  secretary_name: string;
+  facebook_page: string;
+  landline: string;
+  contact_number: string;
+  lat: number;
+  long: number;
+};
 
 export default function SubAdminBarangayContact() {
   const router = useRouter();
+  const [contact, setContact] = useState<BarangayContact | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  return (
-    <>
+  useEffect(() => {
+    const fetchContact = async () => {
+      try {
+        const userData = localStorage.getItem("user");
+        if (!userData) return;
+
+        const parsedUser = JSON.parse(userData);
+        const barangayName = parsedUser.barangay;
+
+        const contacts: BarangayContact[] = await getBrgyContacts();
+
+        const found = contacts.find((c) => c.barangay_name === barangayName);
+
+        if (found) {
+          setContact(found);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchContact();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="absolute top-1/2 left-1/2 flex -translate-1/2 items-center justify-center bg-black/30 backdrop-blur-sm">
+        <Loader />
+      </div>
+    );
+  }
+
+  if (!contact) {
+    return (
       <div className="absolute top-1/2 left-1/2 flex -translate-1/2 flex-col items-center justify-center gap-3">
         <FaPhone className="text-dark-blue text-2xl" />
         <p className="text-center">
@@ -21,6 +83,113 @@ export default function SubAdminBarangayContact() {
           Add Contact Details
         </button>
       </div>
-    </>
+    );
+  }
+
+  return (
+    <div className="flex h-[85vh] justify-center gap-7 pt-6">
+      <div className="absolute top-1/2 left-1/2 flex w-[50vw] -translate-1/2 flex-col gap-8">
+        {/* Map Container */}
+        <div className="h-40 w-full overflow-hidden rounded-lg shadow-lg">
+          <MapDetails
+            name={contact.barangay_name}
+            lat={Number(contact.lat)}
+            lng={Number(contact.long)}
+          />
+        </div>
+
+        <div className="flex gap-10">
+          {/* Barangay Logo */}
+          <div className="relative h-35 w-35">
+            <Image
+              src={`/logos/${contact.barangay_name.toLowerCase().replace(/\s+/g, "-")}-logo.png`}
+              alt={`${contact.barangay_name} Logo`}
+              fill
+              style={{ objectFit: "cover" }}
+            />
+          </div>
+
+          <div className="flex gap-12">
+            {/* Contact Details */}
+            <div className="flex flex-col gap-6">
+              {/* Barangay Captain */}
+              <div className="flex items-center gap-3">
+                <FaUser className="text-dark-blue text-xl" />
+                <div className="text-lg">
+                  <p>{contact.captain_name}</p>
+                  <p className="text-xs text-nowrap">Barangay Captain</p>
+                </div>
+              </div>
+
+              {/* Barangay Secretary */}
+              <div className="flex items-center gap-3">
+                <FaUser className="text-dark-blue text-xl" />
+                <div className="text-lg">
+                  <p>{contact.secretary_name}</p>
+                  <p className="text-xs text-nowrap">Barangay Secretary </p>
+                </div>
+              </div>
+
+              {/* Email */}
+              <div className="flex items-center gap-3">
+                <MdEmail className="text-dark-blue text-xl" />
+                <div className="text-lg">
+                  <p>{contact.email}</p>
+                  <p className="text-xs text-nowrap">Email </p>
+                </div>
+              </div>
+
+              {/* Facebook Page */}
+              <div className="flex items-center gap-3">
+                <FaFacebook className="text-dark-blue text-xl" />
+                <div className="items-center text-lg">
+                  {contact.facebook_page ? (
+                    <a
+                      href={contact.facebook_page}
+                      target="_blank"
+                      className="text-blue-500 transition-all duration-300 hover:underline hover:underline-offset-8 hover:opacity-75"
+                    >
+                      Visit Facebook Page
+                    </a>
+                  ) : (
+                    <span className="text-gray-500">No page available</span>
+                  )}
+                  <p className="text-xs whitespace-nowrap">Facebook Page</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-6">
+              {/* Landline */}
+              <div className="flex items-center gap-3">
+                <ImPhoneHangUp className="text-dark-blue text-xl" />
+                <div className="text-lg">
+                  <p>{contact.landline}</p>
+                  <p className="text-xs text-nowrap">Landline </p>
+                </div>
+              </div>
+
+              {/* Contact Number */}
+              <div className="flex items-center gap-3">
+                <FaPhone className="text-dark-blue text-xl" />
+                <div className="text-lg">
+                  <p>{contact.contact_number}</p>
+                  <p className="text-xs text-nowrap">Contact Number </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Edit Link */}
+            <Link
+              href={`/sub-brgy-contact/edit-contact-form/${contact.id}`}
+              className="bg-dark-blue absolute -bottom-20 mt-4 flex w-max items-center gap-2 rounded-md px-6 py-3 text-sm transition-all duration-300 hover:opacity-75"
+            >
+              <LiaEditSolid className="text-xl" />
+              Edit Contact Details
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   MapContainer,
   TileLayer,
@@ -21,8 +21,7 @@ import {
 import { Poppins } from "next/font/google";
 import Image from "next/image";
 import { IoClose } from "react-icons/io5";
-import { FaArrowLeftLong } from "react-icons/fa6";
-import { FaArrowRightLong } from "react-icons/fa6";
+import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { LuFilter } from "react-icons/lu";
 
 const poppins = Poppins({
@@ -65,7 +64,7 @@ const HazardSelector = ({
           <Tooltip key={type.type} delayDuration={150}>
             <TooltipTrigger asChild>
               <button
-                className={`flex items-center justify-center rounded-full bg-white text-xs text-nowrap text-white transition ${classname} ${
+                className={`flex items-center justify-center rounded-full bg-white text-xs transition ${classname} ${
                   isActive ? "p-3.5" : "p-3 hover:opacity-70"
                 }`}
                 onClick={() => onSelect(isActive ? null : type.type)}
@@ -82,7 +81,6 @@ const HazardSelector = ({
                 )}
               </button>
             </TooltipTrigger>
-
             <TooltipContent
               side="left"
               className="!bg-white text-xs text-gray-700"
@@ -115,9 +113,9 @@ const getIcon = (type: string): L.DivIcon => {
 
   return L.divIcon({
     html: `
-       <div class="flex flex-col items-center">
+      <div class="flex flex-col items-center">
         <img src="${iconUrl}" class="w-10 h-10" />
-        <span class="text-[10px] text-nowrap ${poppins.className} text-gray-700 text-center font-bold  rounded px-1 ">
+        <span class="text-[10px] ${poppins.className} text-gray-700 text-center font-bold rounded px-1">
           ${label}
         </span>
       </div>
@@ -144,43 +142,93 @@ const reverseGeocode = async (lat: number, lng: number) => {
 export default function RiskMappingMap() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [markers, setMarkers] = useState<
-    { type: string; lat: number; lng: number; address: string }[]
+    {
+      id: number;
+      type: string;
+      lat: number;
+      lng: number;
+      address: string;
+      created_by: string;
+    }[]
   >([]);
-
   const [isIconsOpen, setIsIconsOpen] = useState(false);
+
+  // Fetch existing markers from backend
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(
+          "http://localhost/Disaster-backend/controllers/locationController.php",
+        );
+        if (!res.ok) throw new Error("Failed to fetch markers");
+        const data = await res.json();
+        setMarkers(data);
+      } catch (err) {
+        console.error(err);
+      }
+    })();
+  }, []);
 
   const handleMapClick = async (latlng: { lat: number; lng: number }) => {
     if (!selectedType) return;
 
     const address = await reverseGeocode(latlng.lat, latlng.lng);
+    const createdBy =
+      JSON.parse(localStorage.getItem("user") || "{}")?.username || "unknown";
 
-    const newMarker = {
-      type: selectedType,
-      lat: latlng.lat,
-      lng: latlng.lng,
-      address,
-    };
+    try {
+      const res = await fetch(
+        "http://localhost/Disaster-backend/controllers/locationController.php",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            type: selectedType,
+            lat: latlng.lat,
+            lng: latlng.lng,
+            created_by: createdBy,
+          }),
+        },
+      );
 
-    setMarkers((prev) => [...prev, newMarker]);
+      if (!res.ok) throw new Error("Failed to save marker");
+      const savedData = await res.json();
 
-    fetch("/api/markers", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newMarker),
-    });
+      setMarkers((prev) => [
+        ...prev,
+        {
+          id: savedData.id,
+          type: selectedType,
+          lat: latlng.lat,
+          lng: latlng.lng,
+          address,
+          created_by: createdBy,
+        },
+      ]);
+    } catch (err) {
+      console.error(err);
+      alert("Error saving marker");
+    }
 
     setSelectedType(null);
   };
 
-  const handleDelete = (index: number) => {
+  const handleDelete = async (index: number) => {
     const markerToDelete = markers[index];
-    setMarkers((prev) => prev.filter((_, i) => i !== index));
+    if (!markerToDelete?.id) return alert("No marker ID found");
 
-    fetch("/api/markers", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(markerToDelete),
-    });
+    try {
+      const res = await fetch(
+        `http://localhost/Disaster-backend/controllers/locationController.php?id=${markerToDelete.id}`,
+        { method: "DELETE" },
+      );
+
+      if (!res.ok) throw new Error("Failed to delete marker");
+      setMarkers((prev) => prev.filter((_, i) => i !== index));
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting marker");
+    }
   };
 
   const types = [
@@ -194,7 +242,8 @@ export default function RiskMappingMap() {
 
   return (
     <div className="relative h-full w-full">
-      <div className="absolute top-6 left-1/2 z-50 flex h-max -translate-x-1/2 items-center gap-4">
+      {/* Filter buttons */}
+      <div className="absolute top-6 left-1/2 z-50 flex -translate-x-1/2 items-center gap-4">
         <div className="flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-gray-700">
           <LuFilter />
           Filter
@@ -202,25 +251,23 @@ export default function RiskMappingMap() {
         {types.map((type) => (
           <button
             key={type.type}
-            className="flex w-max items-center gap-2 rounded-full bg-white px-4 py-2 text-sm text-gray-700 transition-opacity duration-300 hover:opacity-75"
+            className="flex items-center gap-2 rounded-full bg-white px-4 py-2 pr-8 text-sm text-gray-700 hover:opacity-75"
           >
-            <Image
-              src={type.icon}
-              height={15}
-              width={15}
-              alt={type.type}
-            ></Image>
+            <Image src={type.icon} height={15} width={15} alt={type.type} />
             {type.type}
           </button>
         ))}
       </div>
 
+      {/* Hazard selector panel */}
       <div
-        className={`${isIconsOpen ? "w-8" : "px-5 py-7"} absolute top-1/2 right-0 z-[40] flex h-[420px] -translate-y-1/2 items-center rounded-l-3xl bg-black/20 backdrop-blur-[1px] transition-all duration-300 ease-in-out`}
+        className={`${
+          isIconsOpen ? "w-8" : "px-5 py-7"
+        } absolute top-1/2 right-0 z-[40] flex h-[420px] -translate-y-1/2 items-center rounded-l-3xl bg-black/20 backdrop-blur-[1px] transition-all`}
       >
         <div
           onClick={() => setIsIconsOpen((prev) => !prev)}
-          className="absolute top-1/2 -left-1 -translate-1/2 rounded-full border border-black/30 bg-white p-2 text-xs text-gray-500 shadow-2xl"
+          className="absolute top-1/2 -left-1 -translate-1/2 cursor-pointer rounded-full border border-black/30 bg-white p-2 text-xs text-gray-500 shadow-2xl"
         >
           {isIconsOpen ? <FaArrowLeftLong /> : <FaArrowRightLong />}
         </div>
@@ -231,6 +278,7 @@ export default function RiskMappingMap() {
         />
       </div>
 
+      {/* Map */}
       <MapContainer
         center={[14.17, 121.2436]}
         zoom={13}
@@ -239,7 +287,6 @@ export default function RiskMappingMap() {
         zoomControl={false}
         zoomSnap={1}
         zoomDelta={1}
-        dragging={true}
         className="z-0 h-full w-full rounded"
         maxBounds={[
           [14.145, 121.215],
@@ -254,16 +301,16 @@ export default function RiskMappingMap() {
         <MapClickHandler onClick={handleMapClick} />
 
         {markers.map((m, idx) => (
-          <Marker key={idx} position={[m.lat, m.lng]} icon={getIcon(m.type)}>
+          <Marker key={m.id} position={[m.lat, m.lng]} icon={getIcon(m.type)}>
             <Popup>
               <div className={`flex flex-col p-3 ${poppins.className}`}>
-                <p className="!m-0 text-center text-sm font-semibold">
+                <p className="text-center text-sm font-semibold">
                   {m.type.replace(/([A-Z])/g, " $1").trim()}
                 </p>
                 <p className="text-xs text-gray-600">{m.address}</p>
                 <button
                   onClick={() => handleDelete(idx)}
-                  className="rounded bg-red-600 p-2 text-white hover:bg-red-700"
+                  className="mt-2 rounded bg-red-600 p-2 text-white hover:bg-red-700"
                 >
                   Delete
                 </button>

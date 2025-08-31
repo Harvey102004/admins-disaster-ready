@@ -8,12 +8,12 @@ export function filterEvacuationData(
   return data.filter((evac) => {
     const evacBarangay = evac.created_by?.split(",")[1]?.trim() || "";
 
-    // Filter Barangay
+ 
     if (brgy !== "all" && evacBarangay.toLowerCase() !== brgy.toLowerCase()) {
       return false;
     }
 
-    // Filter Status
+
     const cap = evac.capacity || 0;
     const evacuees = evac.current_evacuees || 0;
     const vacancy = cap - evacuees;
@@ -28,7 +28,7 @@ export function filterEvacuationData(
 }
 
 export function sortEvacuationData(data: any[], sortBy: string) {
-  // ✅ Kunin username ng logged-in user sa localStorage
+
   let currentUsername: string | null = null;
   if (typeof window !== "undefined") {
     try {
@@ -51,18 +51,17 @@ export function sortEvacuationData(data: any[], sortBy: string) {
         return a.name.localeCompare(b.name);
 
       case "addedBy": {
-        // ✅ Extract username part from created_by (before comma)
+   
         const aCreator = (a.created_by || "").split(",")[0].trim();
         const bCreator = (b.created_by || "").split(",")[0].trim();
 
-        // ✅ Priority: kung match sa current user, siya mauuna
+  
         const aIsCurrentUser = currentUsername && aCreator === currentUsername;
         const bIsCurrentUser = currentUsername && bCreator === currentUsername;
 
-        if (aIsCurrentUser && !bIsCurrentUser) return -1; // a goes first
-        if (!aIsCurrentUser && bIsCurrentUser) return 1; // b goes first
+        if (aIsCurrentUser && !bIsCurrentUser) return -1; 
+        if (!aIsCurrentUser && bIsCurrentUser) return 1; 
 
-        // ✅ Kung parehong match or parehong hindi match, alphabetical sort na lang
         return aCreator.localeCompare(bCreator);
       }
 

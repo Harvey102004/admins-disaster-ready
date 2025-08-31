@@ -24,7 +24,6 @@ L.Icon.Default.mergeOptions({
   shadowUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png",
 });
 
-// Recenter helper
 function RecenterMap({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap();
   useEffect(() => {
@@ -33,10 +32,10 @@ function RecenterMap({ lat, lng }: { lat: number; lng: number }) {
   return null;
 }
 
-export default function EvacuationMap({ lat, lng, onChange }: Props) {
+export default function BarangayMap({ lat, lng, onChange }: Props) {
   const markerRef = useRef<L.Marker>(null);
   const [popupText, setPopupText] = useState(
-    "📍 Drag me to evacuation center location",
+    "📍 Drag me to your barangay location",
   );
 
   useEffect(() => {
@@ -77,10 +76,6 @@ export default function EvacuationMap({ lat, lng, onChange }: Props) {
       maxZoom={18}
       scrollWheelZoom={true}
       className="z-10 h-full w-full"
-      maxBounds={[
-        [14.12, 121.2],
-        [14.22, 121.28],
-      ]}
       maxBoundsViscosity={1.0}
     >
       <TileLayer
@@ -105,7 +100,6 @@ export default function EvacuationMap({ lat, lng, onChange }: Props) {
         <Popup autoPan={false}>{popupText}</Popup>
       </Marker>
 
-      {/* Auto center after lat/lng update */}
       <RecenterMap lat={lat} lng={lng} />
     </MapContainer>
   );
