@@ -87,20 +87,12 @@ export default function SubAdminBarangayContact() {
   }
 
   return (
-    <div className="flex h-[85vh] justify-center gap-7 pt-6">
-      <div className="absolute top-1/2 left-1/2 flex w-[50vw] -translate-1/2 flex-col gap-8">
+    <div className="flex h-[85vh] justify-center gap-7">
+      <div className="flex w-full flex-col gap-8">
         {/* Map Container */}
-        <div className="h-40 w-full overflow-hidden rounded-lg shadow-lg">
-          <MapDetails
-            name={contact.barangay_name}
-            lat={Number(contact.lat)}
-            lng={Number(contact.long)}
-          />
-        </div>
-
-        <div className="flex gap-10">
+        <div className="relative h-60 w-full overflow-hidden rounded-lg shadow-lg">
           {/* Barangay Logo */}
-          <div className="relative h-35 w-35">
+          <div className="absolute top-1/2 left-20 z-50 h-35 w-35 -translate-y-1/2 overflow-hidden rounded-full">
             <Image
               src={`/logos/${contact.barangay_name.toLowerCase().replace(/\s+/g, "-")}-logo.png`}
               alt={`${contact.barangay_name} Logo`}
@@ -109,6 +101,17 @@ export default function SubAdminBarangayContact() {
             />
           </div>
 
+          {/* Fade overlay  */}
+          <div className="pointer-events-none absolute bottom-0 left-0 z-40 h-full w-full bg-gradient-to-r from-black/70 to-transparent" />
+
+          <MapDetails
+            name={contact.barangay_name}
+            lat={Number(contact.lat)}
+            lng={Number(contact.long)}
+          />
+        </div>
+
+        <div className="relative flex justify-center gap-10">
           <div className="flex gap-12">
             {/* Contact Details */}
             <div className="flex flex-col gap-6">
@@ -129,7 +132,9 @@ export default function SubAdminBarangayContact() {
                   <p className="text-xs text-nowrap">Barangay Secretary </p>
                 </div>
               </div>
+            </div>
 
+            <div className="flex flex-col gap-6">
               {/* Email */}
               <div className="flex items-center gap-3">
                 <MdEmail className="text-dark-blue text-xl" />
@@ -182,7 +187,7 @@ export default function SubAdminBarangayContact() {
             {/* Edit Link */}
             <Link
               href={`/sub-brgy-contact/edit-contact-form/${contact.id}`}
-              className="bg-dark-blue absolute -bottom-20 mt-4 flex w-max items-center gap-2 rounded-md px-6 py-3 text-sm transition-all duration-300 hover:opacity-75"
+              className="bg-dark-blue absolute -bottom-25 left-1/2 mt-4 flex w-max -translate-x-1/2 items-center gap-2 rounded-md px-6 py-3 text-sm transition-all duration-300 hover:opacity-75"
             >
               <LiaEditSolid className="text-xl" />
               Edit Contact Details

@@ -37,7 +37,7 @@ export default function NavbarSubAdmin() {
       icon: <HiMiniMapPin />,
     },
     {
-      name: "Contact Information",
+      name: "Barangay Information",
       path: "/sub-brgy-contact",
       icon: <BsFillTelephoneFill />,
     },

@@ -31,80 +31,122 @@ export default function SuperAdminBarangayContact() {
             All Barangay Contact Information
           </h1>
         </div>
-        <div className="scrollBar relative max-h-[85vh] overflow-auto">
-          <table className="w-full table-auto border-collapse">
-            <thead className="bg-background sticky top-0 z-50">
-              <tr>
-                <th className="p-2 text-left font-semibold">Barangay</th>
-                <th className="p-2 text-left font-semibold">Captain</th>
-                <th className="p-2 text-left font-semibold">Secretary</th>
-                <th className="p-2 text-left font-semibold">Contact no.</th>
-                <th className="p-2 text-left font-semibold">Landline</th>
-                <th className="p-2 text-left font-semibold">Email</th>
-                <th className="p-2 text-left font-semibold">Facebook</th>
-              </tr>
-            </thead>
-            <tbody>
+        <div className="scrollBar relative overflow-auto">
+          <div className="">
+            <div className="flex h-[87vh] flex-wrap items-start gap-x-10 pt-5">
               {isLoading ? (
-                <tr>
-                  <td colSpan={7} className="py-10 text-center">
-                    Loading...
-                  </td>
-                </tr>
+                <p className="col-span-full text-center text-gray-500 dark:text-gray-400">
+                  Loading...
+                </p>
               ) : (
                 data.map((item: BarangayContact) => (
-                  <tr
+                  <div
                     key={item.id}
-                    className="hover:bg-dark-blue/5 cursor-pointer border-b text-sm"
+                    className="group relative w-[330px] cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md transition-all duration-300 dark:border-gray-700 dark:bg-gray-900"
                     onClick={() => {
                       setSelectedContact(item);
                       setIsDetailOpen(true);
                     }}
                   >
-                    <td className="flex items-center gap-4 p-2 capitalize">
+                    {/* Logo + Name */}
+                    <div className="flex flex-col items-center justify-center px-4 py-6">
                       <Image
                         src={`/logos/${item.barangay_name.toLowerCase()}-logo.png`}
-                        height={30}
-                        width={30}
+                        height={90}
+                        width={90}
                         alt={item.barangay_name}
+                        className="mb-3 drop-shadow-md transition-all duration-500 group-hover:scale-90"
                       />
-                      {item.barangay_name}
-                    </td>
-                    <td className="p-2">{item.captain_name}</td>
-                    <td className="p-2">{item.secretary_name}</td>
-                    <td className="p-2">{item.contact_number}</td>
-                    <td className="p-2">{item.landline}</td>
-                    <td className="max-w-[150px] truncate p-2">
-                      <a href={`mailto:${item.email}`}>{item.email}</a>
-                    </td>
-                    <td className="max-w-[150px] truncate p-2">
-                      <a
-                        href={item.facebook_page}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 transition-all duration-300 hover:underline hover:underline-offset-8 hover:opacity-85"
-                      >
-                        Facebook Page
-                      </a>
-                    </td>
-                  </tr>
+                      <h2 className="text-lg font-semibold tracking-wide text-gray-900 capitalize dark:text-gray-100">
+                        {item.barangay_name
+                          .replace(/-/g, " ")
+                          .split(" ")
+                          .map(
+                            (word) =>
+                              word.charAt(0).toUpperCase() +
+                              word.slice(1).toLowerCase(),
+                          )
+                          .join(" ")}
+                      </h2>
+                    </div>
+
+                    {/* DETAILS PAG HINOVER (BABA LANG) */}
+                    <div className="max-h-0 overflow-hidden opacity-0 transition-all duration-300 ease-in-out group-hover:max-h-60 group-hover:opacity-100">
+                      <div className="flex flex-col items-center gap-2 px-4 pb-4 text-sm text-gray-700 dark:text-gray-300">
+                        <div className="flex gap-8 px-4 pb-4 text-sm text-gray-700 dark:text-gray-300">
+                          <div className="flex flex-col gap-3">
+                            {/* Captain */}
+                            <div className="flex items-center gap-2">
+                              <FaUser />
+                              <p className="flex flex-col text-xs leading-tight">
+                                {item.captain_name || "N/A"}
+                                <span className="mt-1 text-[10px] font-medium">
+                                  Captain
+                                </span>
+                              </p>
+                            </div>
+
+                            {/* Secretary */}
+                            <div className="flex items-center gap-2">
+                              <FaUser />
+                              <p className="flex flex-col text-xs leading-tight">
+                                {item.secretary_name || "N/A"}
+                                <span className="mt-1 text-[10px] font-medium">
+                                  Secretary
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="flex flex-col gap-3">
+                            {/* Contact */}
+                            <div className="flex items-center gap-2">
+                              <FaPhone />
+                              <p className="flex flex-col text-xs leading-tight">
+                                {item.contact_number || "N/A"}
+                                <span className="mt-1 text-[10px] font-medium">
+                                  Contact
+                                </span>
+                              </p>
+                            </div>
+
+                            {/* Landline */}
+                            <div className="flex items-center gap-2">
+                              <ImPhoneHangUp />
+                              <p className="flex flex-col text-xs leading-tight">
+                                {item.landline || "N/A"}
+                                <span className="mt-1 text-[10px] font-medium">
+                                  Landline
+                                </span>
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <p className="text-xs">Click to see full details</p>
+                      </div>
+                    </div>
+                  </div>
                 ))
               )}
-            </tbody>
-          </table>
+            </div>
+          </div>
 
           {isDetailOpen && selectedContact && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
               <div className="border-dark-blue/50 dark:border-puti/10 dark:bg-light-black col relative max-h-[80vh] overflow-hidden rounded-lg bg-white shadow-lg">
-                <div className="mb-5 h-40 w-full bg-red-300">
+                <div className="relative mb-5 h-40 w-full bg-red-300">
                   <MapDetails
                     name={selectedContact.barangay_name}
                     lat={selectedContact.lat}
                     lng={selectedContact.long}
                   />
+
+                  {/* Fade overlay  */}
+                  <div className="pointer-events-none absolute bottom-0 left-0 z-40 h-full w-full bg-gradient-to-t from-black/70 to-transparent" />
                 </div>
 
-                <div className="absolute top-30 left-1/2 mb-5 flex -translate-x-1/2 items-center gap-4">
+                <div className="absolute top-30 left-1/2 z-50 mb-5 flex -translate-x-1/2 items-center gap-4">
                   <Image
                     src={`/logos/${selectedContact.barangay_name.toLowerCase()}-logo.png`}
                     height={80}
@@ -126,7 +168,7 @@ export default function SuperAdminBarangayContact() {
                     .join(" ")}
                 </h1>
 
-                <div className="mx-12 mb-12 flex items-center gap-16">
+                <div className="mx-12 mt-10 mb-12 flex items-center gap-16">
                   <div className="flex flex-col gap-5">
                     <div className="flex items-center gap-3">
                       <FaUser className="text-dark-blue text-xl" />
@@ -145,25 +187,9 @@ export default function SuperAdminBarangayContact() {
                         </p>
                       </div>
                     </div>
-
-                    <div className="flex items-center gap-3">
-                      <FaPhone className="text-dark-blue text-xl" />
-                      <div className="text-lg">
-                        <p>{selectedContact.contact_number || "N/A"}</p>
-                        <p className="text-xs text-nowrap">Contact Number</p>
-                      </div>
-                    </div>
                   </div>
 
                   <div className="flex flex-col gap-5">
-                    <div className="flex items-center gap-3">
-                      <ImPhoneHangUp className="text-dark-blue text-xl" />
-                      <div className="text-lg">
-                        <p>{selectedContact.landline || "N/A"}</p>
-                        <p className="text-xs text-nowrap">Landline</p>
-                      </div>
-                    </div>
-
                     <div className="flex items-center gap-3">
                       <MdEmail className="text-dark-blue text-xl" />
                       <div>
@@ -189,6 +215,24 @@ export default function SuperAdminBarangayContact() {
                           Visit Facebook Page
                         </a>
                         <p className="text-xs text-nowrap">Facebook</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-5">
+                    <div className="flex items-center gap-3">
+                      <FaPhone className="text-dark-blue text-xl" />
+                      <div className="text-lg">
+                        <p>{selectedContact.contact_number || "N/A"}</p>
+                        <p className="text-xs text-nowrap">Contact Number</p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <ImPhoneHangUp className="text-dark-blue text-xl" />
+                      <div className="text-lg">
+                        <p>{selectedContact.landline || "N/A"}</p>
+                        <p className="text-xs text-nowrap">Landline</p>
                       </div>
                     </div>
                   </div>
