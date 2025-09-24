@@ -158,6 +158,7 @@ export default function NavbarSubAdmin() {
                 onClick={() => {
                   localStorage.removeItem("user");
                   router.push("/login");
+                  router.refresh();
                 }}
               >
                 Yes

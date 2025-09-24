@@ -1,7 +1,15 @@
-export default function SubAdminRiskMapping() {
+"use client";
+
+import dynamic from "next/dynamic";
+
+const RiskMappingMap = dynamic(() => import("@/components/maps/risk-mapping"), {
+  ssr: false,
+});
+
+export default function DisasterRiskMapping() {
   return (
-    <div className="flex h-screen max-h-screen w-full items-center justify-center overflow-auto px-14 py-10 transition-all duration-300">
-      <h1 className="text-2xl font-bold">Sub Admin Risk Mapping</h1>
+    <div className="relative h-screen w-full pl-4">
+      <RiskMappingMap />
     </div>
   );
 }

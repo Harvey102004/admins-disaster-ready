@@ -2,7 +2,7 @@ export type SortBy =
   | "default"
   | "title"
   | "dateTime"
-  | "addedBy"
+  | "added_by"
   | "status"
   | "disasterType";
 
@@ -28,13 +28,33 @@ export function sortWeatherData(
     case "title":
       return [...data].sort((a, b) => a.title.localeCompare(b.title));
 
-    case "addedBy":
-      return [...data].sort((a, b) => a.title.localeCompare(b.title));
+    case "added_by": {
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+
+      if (!user) {
+        return [...data].sort((a, b) => a.added_by.localeCompare(b.added_by));
+      }
+
+      const currentUserBarangay = user.barangay?.trim().toLowerCase();
+
+      return [...data].sort((a, b) => {
+        const aBarangay = a.added_by?.trim().toLowerCase();
+        const bBarangay = b.added_by?.trim().toLowerCase();
+
+        const isAUser = aBarangay === currentUserBarangay;
+        const isBUser = bBarangay === currentUserBarangay;
+
+        if (isAUser && !isBUser) return -1;
+        if (!isAUser && isBUser) return 1;
+
+        return aBarangay.localeCompare(bBarangay);
+      });
+    }
 
     case "dateTime":
       return [...data].sort(
         (a, b) =>
-          new Date(a.date_time).getTime() - new Date(b.date_time).getTime(),
+          new Date(b.date_time).getTime() - new Date(a.date_time).getTime(),
       );
 
     default:
@@ -48,9 +68,18 @@ export function filterWeatherData(
   filterDate: string,
 ): TWeatherAdvisory[] {
   return data.filter((item) => {
-    const matchBrgy =
-      filterBrgy === "default" ||
-      item.addedBy?.toLowerCase() === filterBrgy.toLowerCase();
+    const normalize = (val?: string) =>
+      (val ?? "")
+        .toLowerCase()
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ");
+
+    const itemVal = normalize(item.added_by);
+    const filterVal = normalize(filterBrgy);
+
+    const matchBrgy = filterBrgy === "default" || itemVal === filterVal;
 
     const matchDate = (() => {
       if (filterDate === "all") return true;
@@ -109,8 +138,28 @@ export function sortCommunityData(
     case "title":
       return [...data].sort((a, b) => a.title.localeCompare(b.title));
 
-    case "addedBy":
-      return [...data].sort((a, b) => a.title.localeCompare(b.title));
+    case "added_by": {
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+
+      if (!user) {
+        return [...data].sort((a, b) => a.added_by.localeCompare(b.added_by));
+      }
+
+      const currentUserBarangay = user.barangay?.trim().toLowerCase();
+
+      return [...data].sort((a, b) => {
+        const aBarangay = a.added_by?.trim().toLowerCase();
+        const bBarangay = b.added_by?.trim().toLowerCase();
+
+        const isAUser = aBarangay === currentUserBarangay;
+        const isBUser = bBarangay === currentUserBarangay;
+
+        if (isAUser && !isBUser) return -1;
+        if (!isAUser && isBUser) return 1;
+
+        return aBarangay.localeCompare(bBarangay);
+      });
+    }
 
     case "dateTime":
       return [...data].sort(
@@ -129,9 +178,18 @@ export function filterCommunityData(
   filterDate: string,
 ): TCommunity[] {
   return data.filter((item) => {
-    const matchBrgy =
-      filterBrgy === "default" ||
-      item.addedBy?.toLowerCase() === filterBrgy.toLowerCase();
+    const normalize = (val?: string) =>
+      (val ?? "")
+        .toLowerCase()
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ");
+
+    const itemVal = normalize(item.added_by);
+    const filterVal = normalize(filterBrgy);
+
+    const matchBrgy = filterBrgy === "default" || itemVal === filterVal;
 
     const matchDate = (() => {
       if (filterDate === "all") return true;
@@ -190,8 +248,28 @@ export function sortRoadData(
     case "title":
       return [...data].sort((a, b) => a.title.localeCompare(b.title));
 
-    case "addedBy":
-      return [...data].sort((a, b) => a.title.localeCompare(b.title));
+    case "added_by": {
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+
+      if (!user) {
+        return [...data].sort((a, b) => a.added_by.localeCompare(b.added_by));
+      }
+
+      const currentUserBarangay = user.barangay?.trim().toLowerCase();
+
+      return [...data].sort((a, b) => {
+        const aBarangay = a.added_by?.trim().toLowerCase();
+        const bBarangay = b.added_by?.trim().toLowerCase();
+
+        const isAUser = aBarangay === currentUserBarangay;
+        const isBUser = bBarangay === currentUserBarangay;
+
+        if (isAUser && !isBUser) return -1;
+        if (!isAUser && isBUser) return 1;
+
+        return aBarangay.localeCompare(bBarangay);
+      });
+    }
 
     case "status":
       return [...data].sort((a, b) => a.status.localeCompare(b.status));
@@ -214,9 +292,18 @@ export function filterRoadData(
   filterDate: string,
 ): TRoadAdvisory[] {
   return data.filter((item) => {
-    const matchBrgy =
-      filterBrgy === "default" ||
-      item.addedBy?.toLowerCase() === filterBrgy.toLowerCase();
+    const normalize = (val?: string) =>
+      (val ?? "")
+        .toLowerCase()
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ");
+
+    const itemVal = normalize(item.added_by);
+    const filterVal = normalize(filterBrgy);
+
+    const matchBrgy = filterBrgy === "default" || itemVal === filterVal;
 
     const matchStatus =
       filterStatus === "all" ||
@@ -279,8 +366,28 @@ export function sortDisasterData(
     case "title":
       return [...data].sort((a, b) => a.title.localeCompare(b.title));
 
-    case "addedBy":
-      return [...data].sort((a, b) => a.title.localeCompare(b.title));
+    case "added_by": {
+      const user = JSON.parse(localStorage.getItem("user") || "null");
+
+      if (!user) {
+        return [...data].sort((a, b) => a.added_by.localeCompare(b.added_by));
+      }
+
+      const currentUserBarangay = user.barangay?.trim().toLowerCase();
+
+      return [...data].sort((a, b) => {
+        const aBarangay = a.added_by?.trim().toLowerCase();
+        const bBarangay = b.added_by?.trim().toLowerCase();
+
+        const isAUser = aBarangay === currentUserBarangay;
+        const isBUser = bBarangay === currentUserBarangay;
+
+        if (isAUser && !isBUser) return -1;
+        if (!isAUser && isBUser) return 1;
+
+        return aBarangay.localeCompare(bBarangay);
+      });
+    }
 
     case "disasterType":
       return [...data].sort((a, b) =>
@@ -305,9 +412,18 @@ export function filterDisasterData(
   filterDate: string,
 ): TDisasterAdvisory[] {
   return data.filter((item) => {
-    const matchBrgy =
-      filterBrgy === "default" ||
-      item.addedBy?.toLowerCase() === filterBrgy.toLowerCase();
+    const normalize = (val?: string) =>
+      (val ?? "")
+        .toLowerCase()
+        .trim()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ");
+
+    const itemVal = normalize(item.added_by);
+    const filterVal = normalize(filterBrgy);
+
+    const matchBrgy = filterBrgy === "default" || itemVal === filterVal;
 
     const matchStatus =
       filterDisasterType === "all" ||

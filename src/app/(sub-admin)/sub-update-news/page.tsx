@@ -1,7 +1,19 @@
-export default function SubAdminUpdateNews() {
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Loader from "@/components/loading";
+
+export default function SuperUpdateNewsPage() {
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("sub-update-news/weather-advisory");
+  }, []);
+
   return (
-    <div className="flex h-screen max-h-screen w-full items-center justify-center overflow-auto px-14 py-10 transition-all duration-300">
-      <h1 className="text-2xl font-bold">Sub Admin Update & News</h1>
+    <div className="relative flex h-[87vh] items-center justify-center">
+      <Loader />
     </div>
   );
 }

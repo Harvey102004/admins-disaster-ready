@@ -15,6 +15,7 @@ export const weatherAdvisorySchema = z.object({
     .max(2500, "Maximum of 2500 characters only"),
 
   dateTime: z.string().min(1, "Date & Time is required"),
+  added_by: z.string(),
 });
 
 export const roadAdvisorySchema = z.object({
@@ -35,6 +36,7 @@ export const roadAdvisorySchema = z.object({
   status: z.string().min(1, "Status is required"),
 
   dateTime: z.string().min(1, "Date & Time is required"),
+  added_by: z.string(),
 });
 
 export const disasterUpdatesSchema = z.object({
@@ -71,6 +73,7 @@ export const disasterUpdatesSchema = z.object({
   dateTime: z.string().min(1, "Date & Time is required"),
 
   disasterType: z.string().min(1, "Disaster Type is required"),
+  added_by: z.string(),
 });
 
 export const communityNoticeSchema = z.object({
@@ -88,15 +91,32 @@ export const communityNoticeSchema = z.object({
     .max(2500, "Maximum of 2500 characters only"),
 
   dateTime: z.string().min(1, "Date & Time is required"),
+  added_by: z.string(),
 });
 
 // EDIT DISASTER SCHEMA
 
 export const disasterUpdatesEditSchema = z.object({
-  title: z.string().min(1),
-  disasterType: z.string().min(1),
-  details: z.string().min(1).max(1000),
-  dateTime: z.string().min(1),
+  title: z
+    .string()
+    .trim()
+    .min(1, "Title is required")
+    .min(8, "At least 8 characters long")
+    .max(50, "Maximum of 50 characters only"),
+
+  disasterType: z.string().min(1, "Disaster Type is required"),
+
+  details: z
+    .string()
+    .trim()
+    .min(1, "Details are required")
+    .min(60, "Too short message")
+    .max(1000, "Maximum of 1000 characters only"),
+
+  dateTime: z.string().min(1, "Date & Time is required"),
+
+  added_by: z.string(),
+
   image: z
     .any()
     .optional()
@@ -104,7 +124,6 @@ export const disasterUpdatesEditSchema = z.object({
       (file) => {
         if (!file || (file instanceof FileList && file.length === 0))
           return true;
-
         const allowedTypes = ["image/jpeg", "image/png"];
         const fileToCheck = file instanceof FileList ? file[0] : file;
         return allowedTypes.includes(fileToCheck.type);

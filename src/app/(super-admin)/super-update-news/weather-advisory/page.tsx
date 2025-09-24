@@ -11,7 +11,7 @@ import type { SortBy } from "@/lib/sort-filter-update-news";
 import { WeatherCards } from "@/components/cards/AdvisoryCards";
 
 import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import { getWeather } from "@/server/api/advisories";
 
@@ -31,6 +31,19 @@ export default function WeatherAdvisory() {
   const [filterBrgy, setFilterBrgy] = useState("default");
   const [filterDate, setFilterDate] = useState("all");
   const [searchText, setSearchText] = useState("");
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const parsed = JSON.parse(user);
+        setCurrentUser(parsed.barangay);
+      } catch (e) {
+        console.error("Invalid JSON sa localStorage:", e);
+      }
+    }
+  }, []);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["weatherAdvisory"],
@@ -94,7 +107,7 @@ export default function WeatherAdvisory() {
               },
               {
                 label: "Added by",
-                value: "addeBy",
+                value: "added_by",
               },
 
               {
@@ -139,8 +152,9 @@ export default function WeatherAdvisory() {
               id={item.id}
               title={item.title}
               desc={item.details}
-              addedBy="Added by: Brgy wala pa"
               dateTime={item.date_time}
+              addedBy={item.added_by}
+              currentUser={currentUser ?? ""}
             />
           ))
         ) : (

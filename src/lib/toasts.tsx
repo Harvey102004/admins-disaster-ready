@@ -5,13 +5,16 @@ import { toast } from "sonner";
 export const showDeleteConfirmation = ({
   onConfirm,
   onClose,
+  margins,
 }: {
   onConfirm: () => void;
   onClose: () => void;
+  margins?: string;
 }) => {
   toast.warning("Are you sure?", {
     id: "confirm-delete",
     description: "This will deleted permanently",
+    style: { marginLeft: margins },
     action: {
       label: (
         <div className="ml-2 flex items-center gap-1">

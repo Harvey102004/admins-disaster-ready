@@ -61,23 +61,24 @@ export const SortDropdown = ({
 
 // ---------- FILTERING WEATHER ADVISORY ------- //
 
-type FilteringWeatherProps = {
-  selectedBrgy: string;
-  onBrgyChange: (value: string) => void;
-  selectedDate: string;
-  onDateChange: (value: string) => void;
-};
-
 export const FilteringWeather = ({
   selectedDate,
   onDateChange,
-}: FilteringWeatherProps) => {
+  selectedBrgy,
+  onBrgyChange,
+}: {
+  selectedDate: string;
+  onDateChange: (val: string) => void;
+  selectedBrgy: string;
+  onBrgyChange: (val: string) => void;
+}) => {
   const allBrgy = [
-    { name: "Default", value: "default" },
+    { name: "All", value: "default" },
+    { name: "Municipality of LB", value: "Municipality of los baños" },
     { name: "Anos", value: "anos" },
-    { name: "Bagong Silang", value: "bagong-silang" },
+    { name: "Bagong Silang", value: "bagong silang" },
     { name: "Bambang", value: "bambang" },
-    { name: "Batong Malake", value: "batong-malake" },
+    { name: "Batong Malake", value: "batong malake" },
     { name: "Baybayin", value: "baybayin" },
     { name: "Bayog", value: "bayog" },
     { name: "Lalakay", value: "lalakay" },
@@ -85,7 +86,7 @@ export const FilteringWeather = ({
     { name: "Malinta", value: "malinta" },
     { name: "Mayondon", value: "mayondon" },
     { name: "Putho-Tuntungin", value: "putho-tuntungin" },
-    { name: "San Antonio", value: "san-antonio" },
+    { name: "San Antonio", value: "san antonio" },
     { name: "Tadlac", value: "tadlac" },
     { name: "Timugan", value: "timugan" },
   ];
@@ -105,7 +106,8 @@ export const FilteringWeather = ({
         <p className="text-sm">Filter By:</p>
       </div>
 
-      <Select>
+      {/* Barangay Select */}
+      <Select value={selectedBrgy} onValueChange={onBrgyChange}>
         <SelectTrigger className="border-dark-blue/50 focus:border-dark-blue w-[130px] rounded-sm border text-xs shadow-none outline-none dark:border-gray-500/50 dark:bg-transparent">
           <SelectValue placeholder="Select brgy" />
         </SelectTrigger>
@@ -113,7 +115,7 @@ export const FilteringWeather = ({
         <SelectContent className="dark:bg-light-black bg-light-blue text-xs">
           {allBrgy.map((option) => (
             <SelectItem
-              key={option.name}
+              key={option.value}
               value={option.value}
               className="data-[highlighted]:bg-dark-blue/20 text-xs dark:data-[highlighted]:text-white"
             >
@@ -123,6 +125,7 @@ export const FilteringWeather = ({
         </SelectContent>
       </Select>
 
+      {/* Date Select */}
       <Select value={selectedDate} onValueChange={onDateChange}>
         <SelectTrigger className="border-dark-blue/50 focus:border-dark-blue w-[130px] rounded-sm border text-xs shadow-none outline-none dark:border-gray-500/50 dark:bg-transparent">
           <SelectValue placeholder="Select date" />
@@ -145,23 +148,24 @@ export const FilteringWeather = ({
 
 // ---------- FILTERING COMMUNITY NOTICE ------- //
 
-type FilteringCommunityProps = {
-  selectedBrgy: string;
-  onBrgyChange: (value: string) => void;
-  selectedDate: string;
-  onDateChange: (value: string) => void;
-};
-
 export const FilteringCommunity = ({
   selectedDate,
   onDateChange,
-}: FilteringCommunityProps) => {
+  selectedBrgy,
+  onBrgyChange,
+}: {
+  selectedDate: string;
+  onDateChange: (val: string) => void;
+  selectedBrgy: string;
+  onBrgyChange: (val: string) => void;
+}) => {
   const allBrgy = [
-    { name: "Default", value: "default" },
+    { name: "All", value: "default" },
+    { name: "Municipality of LB", value: "Municipality of los baños" },
     { name: "Anos", value: "anos" },
-    { name: "Bagong Silang", value: "bagong-silang" },
+    { name: "Bagong Silang", value: "bagong silang" },
     { name: "Bambang", value: "bambang" },
-    { name: "Batong Malake", value: "batong-malake" },
+    { name: "Batong Malake", value: "batong malake" },
     { name: "Baybayin", value: "baybayin" },
     { name: "Bayog", value: "bayog" },
     { name: "Lalakay", value: "lalakay" },
@@ -169,7 +173,7 @@ export const FilteringCommunity = ({
     { name: "Malinta", value: "malinta" },
     { name: "Mayondon", value: "mayondon" },
     { name: "Putho-Tuntungin", value: "putho-tuntungin" },
-    { name: "San Antonio", value: "san-antonio" },
+    { name: "San Antonio", value: "san antonio" },
     { name: "Tadlac", value: "tadlac" },
     { name: "Timugan", value: "timugan" },
   ];
@@ -189,7 +193,7 @@ export const FilteringCommunity = ({
         <p className="text-sm">Filter By:</p>
       </div>
 
-      <Select>
+      <Select value={selectedBrgy} onValueChange={onBrgyChange}>
         <SelectTrigger className="border-dark-blue/50 focus:border-dark-blue w-[130px] rounded-sm border text-xs shadow-none outline-none dark:border-gray-500/50 dark:bg-transparent">
           <SelectValue placeholder="Select brgy" />
         </SelectTrigger>
@@ -239,17 +243,20 @@ type FilteringRoadProps = {
 };
 
 export const FilteringRoad = ({
+  selectedBrgy,
+  onBrgyChange,
   selectedDate,
   onDateChange,
   selectedStatus,
   onStatusChange,
 }: FilteringRoadProps) => {
   const allBrgy = [
-    { name: "All Brgy", value: "default" },
+    { name: "All", value: "default" },
+    { name: "Municipality of LB", value: "Municipality of los baños" },
     { name: "Anos", value: "anos" },
-    { name: "Bagong Silang", value: "bagong-silang" },
+    { name: "Bagong Silang", value: "bagong silang" },
     { name: "Bambang", value: "bambang" },
-    { name: "Batong Malake", value: "batong-malake" },
+    { name: "Batong Malake", value: "batong malake" },
     { name: "Baybayin", value: "baybayin" },
     { name: "Bayog", value: "bayog" },
     { name: "Lalakay", value: "lalakay" },
@@ -257,7 +264,7 @@ export const FilteringRoad = ({
     { name: "Malinta", value: "malinta" },
     { name: "Mayondon", value: "mayondon" },
     { name: "Putho-Tuntungin", value: "putho-tuntungin" },
-    { name: "San Antonio", value: "san-antonio" },
+    { name: "San Antonio", value: "san antonio" },
     { name: "Tadlac", value: "tadlac" },
     { name: "Timugan", value: "timugan" },
   ];
@@ -284,7 +291,7 @@ export const FilteringRoad = ({
         <p className="text-sm">Filter By:</p>
       </div>
 
-      <Select>
+      <Select value={selectedBrgy} onValueChange={onBrgyChange}>
         <SelectTrigger className="border-dark-blue/50 focus:border-dark-blue w-[120px] rounded-sm border text-xs shadow-none outline-none dark:border-gray-500/50 dark:bg-transparent">
           <SelectValue placeholder="Select brgy" />
         </SelectTrigger>
@@ -355,13 +362,16 @@ export const FilteringDisaster = ({
   onDateChange,
   selectedDisasterType,
   onDisasterTypeChange,
+  selectedBrgy,
+  onBrgyChange,
 }: FilterDisasterProps) => {
   const allBrgy = [
-    { name: "All Brgy", value: "default" },
+    { name: "All", value: "default" },
+    { name: "Municipality of LB", value: "Municipality of los baños" },
     { name: "Anos", value: "anos" },
-    { name: "Bagong Silang", value: "bagong-silang" },
+    { name: "Bagong Silang", value: "bagong silang" },
     { name: "Bambang", value: "bambang" },
-    { name: "Batong Malake", value: "batong-malake" },
+    { name: "Batong Malake", value: "batong malake" },
     { name: "Baybayin", value: "baybayin" },
     { name: "Bayog", value: "bayog" },
     { name: "Lalakay", value: "lalakay" },
@@ -369,7 +379,7 @@ export const FilteringDisaster = ({
     { name: "Malinta", value: "malinta" },
     { name: "Mayondon", value: "mayondon" },
     { name: "Putho-Tuntungin", value: "putho-tuntungin" },
-    { name: "San Antonio", value: "san-antonio" },
+    { name: "San Antonio", value: "san antonio" },
     { name: "Tadlac", value: "tadlac" },
     { name: "Timugan", value: "timugan" },
   ];
@@ -416,7 +426,7 @@ export const FilteringDisaster = ({
         <p className="text-sm">Filter By:</p>
       </div>
 
-      <Select>
+      <Select value={selectedBrgy} onValueChange={onBrgyChange}>
         <SelectTrigger className="border-dark-blue/50 focus:border-dark-blue w-[120px] rounded-sm border text-xs shadow-none outline-none dark:border-gray-500/50 dark:bg-transparent">
           <SelectValue placeholder="Select brgy" />
         </SelectTrigger>

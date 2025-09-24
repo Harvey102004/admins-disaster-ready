@@ -1,6 +1,6 @@
 import React from "react";
 import type { Metadata } from "next";
-import UpdateNewsNav from "@/components/(navigation)/UpdateNewsNav";
+import UpdateNewsNavSuper from "@/components/(navigation)/UpdateNewsNav";
 export const metadata: Metadata = {
   title: "Update & News",
 };
@@ -14,7 +14,7 @@ export default function UpdateNewsLayout({
 }) {
   return (
     <div className="relative w-full pl-8 transition-all duration-300">
-      <UpdateNewsNav />
+      <UpdateNewsNavSuper />
 
       {children}
       {modal}

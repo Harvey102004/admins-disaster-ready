@@ -82,7 +82,7 @@ export interface TWeatherAdvisory {
   title: string;
   details: string;
   date_time: string;
-  addedBy?: string;
+  added_by: string;
 }
 
 export interface TRoadAdvisory {
@@ -91,7 +91,7 @@ export interface TRoadAdvisory {
   details: string;
   date_time: string;
   status: string;
-  addedBy?: string;
+  added_by: string;
 }
 
 export interface TDisasterAdvisory {
@@ -101,7 +101,7 @@ export interface TDisasterAdvisory {
   details: string;
   date_time: string;
   image_url: string;
-  addedBy?: string;
+  added_by: string;
 }
 
 export interface TCommunity {
@@ -109,5 +109,5 @@ export interface TCommunity {
   title: string;
   details: string;
   date_time: string;
-  addedBy?: string;
+  added_by: string;
 }

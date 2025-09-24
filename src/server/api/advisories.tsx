@@ -232,6 +232,7 @@ export const addWeatherAdvisory = async (data: WeatherType) => {
         title: data.title,
         details: data.details,
         dateTime: data.dateTime,
+        added_by: data.added_by,
       },
       {
         headers: {
@@ -258,6 +259,7 @@ export const addRoadAdvisory = async (data: RoadType) => {
         details: data.details,
         status: data.status,
         dateTime: data.dateTime,
+        added_by: data.added_by,
       },
       {
         headers: {
@@ -283,6 +285,7 @@ export const addDisasterUpdates = async (data: DisasterType) => {
     formData.append("dateTime", data.dateTime);
     formData.append("disasterType", data.disasterType);
     formData.append("image", data.image[0]);
+    formData.append("added_by", data.added_by);
 
     const response = await axios.post(API_URL_ADD_DISASTER, formData);
 
@@ -303,6 +306,7 @@ export const addCommunityNotice = async (data: WeatherType) => {
         title: data.title,
         details: data.details,
         dateTime: data.dateTime,
+        added_by: data.added_by,
       },
       {
         headers: {
@@ -336,6 +340,7 @@ export const editWeatherAdvisory = async ({
         title: data.title,
         details: data.details,
         dateTime: data.dateTime,
+        added_by: data.added_by,
       },
       {
         headers: { "Content-Type": "application/json" },
@@ -366,6 +371,7 @@ export const editRoadAvisory = async ({
         details: data.details,
         status: data.status,
         dateTime: data.dateTime,
+        added_by: data.added_by,
       },
       {
         headers: { "Content-Type": "application/json" },
@@ -400,6 +406,8 @@ export const editDisasterUpdates = async ({
       formData.append("image", data.image[0]);
     }
 
+    formData.append("added_by", data.added_by ?? "");
+
     const response = await axios.post(
       `http://localhost/Disaster-backend/public/updateAdvisory.php?type=disaster&id=${id}`,
       formData,
@@ -428,6 +436,7 @@ export const editCommunityNotice = async ({
         title: data.title,
         details: data.details,
         dateTime: data.dateTime,
+        added_by: data.added_by,
       },
       {
         headers: { "Content-Type": "application/json" },

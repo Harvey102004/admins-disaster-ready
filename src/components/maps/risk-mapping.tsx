@@ -11,18 +11,19 @@ import {
 
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { toast } from "sonner";
 
 import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-
 import { Poppins } from "next/font/google";
 import Image from "next/image";
 import { IoClose } from "react-icons/io5";
 import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { LuFilter } from "react-icons/lu";
+import { showDeleteConfirmation } from "@/lib/toasts";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -128,19 +129,27 @@ const getIcon = (type: string): L.DivIcon => {
 };
 
 const reverseGeocode = async (lat: number, lng: number) => {
-  const response = await fetch(
-    `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,
-  );
-  const data = await response.json();
-  const fullAddress = data.display_name || "Unknown location";
-  const shortAddress = fullAddress
-    .replace(/,\s*(Laguna|Calabarzon|Philippines)/g, "")
-    .trim();
-  return shortAddress.trim();
+  try {
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}`,
+    );
+    const data = await response.json();
+    const fullAddress = data.display_name || "Unknown location";
+    const shortAddress = fullAddress
+      .replace(/,\s*(Laguna|Calabarzon|Philippines)/g, "")
+      .trim();
+    return shortAddress;
+  } catch (err) {
+    console.error(err);
+    return "Unknown location";
+  }
 };
 
 export default function RiskMappingMap() {
   const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [activeFilters, setActiveFilters] = useState<string[]>(
+    Object.keys(iconData),
+  );
   const [markers, setMarkers] = useState<
     {
       id: number;
@@ -148,21 +157,44 @@ export default function RiskMappingMap() {
       lat: number;
       lng: number;
       address: string;
-      created_by: string;
+      created_by: number;
     }[]
   >([]);
   const [isIconsOpen, setIsIconsOpen] = useState(false);
 
-  // Fetch existing markers from backend
+  // Fetch markers
   useEffect(() => {
     (async () => {
       try {
         const res = await fetch(
-          "http://localhost/Disaster-backend/controllers/locationController.php",
+          "http://localhost/Disaster-backend/public/disasterMapping.php",
         );
         if (!res.ok) throw new Error("Failed to fetch markers");
-        const data = await res.json();
-        setMarkers(data);
+
+        const result = await res.json();
+
+        if (result.success && Array.isArray(result.data)) {
+          const fetchedMarkers = await Promise.all(
+            result.data.map(async (m: any) => {
+              let address = m.address;
+              if (!address) {
+                address = await reverseGeocode(Number(m.lat), Number(m.lng));
+              }
+              return {
+                id: Number(m.id),
+                type: m.type,
+                lat: Number(m.lat),
+                lng: Number(m.lng),
+                address,
+                created_by: Number(m.created_by),
+              };
+            }),
+          );
+
+          setMarkers(fetchedMarkers);
+        } else {
+          setMarkers([]);
+        }
       } catch (err) {
         console.error(err);
       }
@@ -172,13 +204,16 @@ export default function RiskMappingMap() {
   const handleMapClick = async (latlng: { lat: number; lng: number }) => {
     if (!selectedType) return;
 
-    const address = await reverseGeocode(latlng.lat, latlng.lng);
-    const createdBy =
-      JSON.parse(localStorage.getItem("user") || "{}")?.username || "unknown";
+    const user = JSON.parse(localStorage.getItem("user") || "{}");
+    const createdBy = Number(user.id || 0);
+    if (!createdBy) {
+      alert("User not found. Please log in.");
+      return;
+    }
 
     try {
       const res = await fetch(
-        "http://localhost/Disaster-backend/controllers/locationController.php",
+        "http://localhost/Disaster-backend/public/disasterMapping.php",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -190,9 +225,10 @@ export default function RiskMappingMap() {
           }),
         },
       );
-
       if (!res.ok) throw new Error("Failed to save marker");
       const savedData = await res.json();
+
+      const address = await reverseGeocode(latlng.lat, latlng.lng);
 
       setMarkers((prev) => [
         ...prev,
@@ -205,40 +241,48 @@ export default function RiskMappingMap() {
           created_by: createdBy,
         },
       ]);
+
+      toast.success(`${selectedType} added successfully`, {
+        style: { marginLeft: "160px" },
+      });
     } catch (err) {
       console.error(err);
-      alert("Error saving marker");
+      toast.error("Error saving marker", {
+        style: { marginLeft: "160px" },
+      });
     }
 
     setSelectedType(null);
   };
 
-  const handleDelete = async (index: number) => {
-    const markerToDelete = markers[index];
-    if (!markerToDelete?.id) return alert("No marker ID found");
-
-    try {
-      const res = await fetch(
-        `http://localhost/Disaster-backend/controllers/locationController.php?id=${markerToDelete.id}`,
-        { method: "DELETE" },
-      );
-
-      if (!res.ok) throw new Error("Failed to delete marker");
-      setMarkers((prev) => prev.filter((_, i) => i !== index));
-    } catch (err) {
-      console.error(err);
-      alert("Error deleting marker");
-    }
+  // Toggle filters
+  const handleFilterClick = (type: string) => {
+    setActiveFilters((prev) => {
+      if (prev.length === Object.keys(iconData).length) {
+        // Lahat active, so pag click isa lang matitira
+        return [type];
+      } else if (prev.includes(type)) {
+        // Kung active, i-remove
+        const newFilters = prev.filter((t) => t !== type);
+        // Pag walang natira, balik lahat
+        return newFilters.length > 0 ? newFilters : Object.keys(iconData);
+      } else {
+        // Kung inactive, i-add sa list
+        return [...prev, type];
+      }
+    });
   };
 
-  const types = [
-    { type: "Flood", icon: "/icons/flood.png" },
-    { type: "Landslide", icon: "/icons/landslide.png" },
-    { type: "FallenTree", icon: "/icons/tree.png" },
-    { type: "RoadBlockage", icon: "/icons/road-blockage.png" },
-    { type: "Hospital", icon: "/icons/hospital.png" },
-    { type: "Pharmacy", icon: "/icons/pharmacy.png" },
-  ];
+  // Apply filters
+  const filteredMarkers =
+    activeFilters.length > 0
+      ? markers.filter((m) => activeFilters.includes(m.type))
+      : [];
+
+  const types = Object.keys(iconData).map((type) => ({
+    type,
+    icon: iconData[type],
+  }));
 
   return (
     <div className="relative h-full w-full">
@@ -248,18 +292,24 @@ export default function RiskMappingMap() {
           <LuFilter />
           Filter
         </div>
-        {types.map((type) => (
-          <button
-            key={type.type}
-            className="flex items-center gap-2 rounded-full bg-white px-4 py-2 pr-8 text-sm text-gray-700 hover:opacity-75"
-          >
-            <Image src={type.icon} height={15} width={15} alt={type.type} />
-            {type.type}
-          </button>
-        ))}
+        {types.map((type) => {
+          const isActive = activeFilters.includes(type.type);
+          return (
+            <button
+              key={type.type}
+              onClick={() => handleFilterClick(type.type)}
+              className={`text-light-black flex items-center gap-2 rounded-full bg-white px-4 py-2 pr-8 text-sm transition hover:opacity-75 ${
+                isActive ? "" : "opacity-50"
+              }`}
+            >
+              <Image src={type.icon} height={15} width={15} alt={type.type} />
+              {type.type}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Hazard selector panel */}
+      {/* Hazard selector */}
       <div
         className={`${
           isIconsOpen ? "w-8" : "px-5 py-7"
@@ -300,24 +350,83 @@ export default function RiskMappingMap() {
         />
         <MapClickHandler onClick={handleMapClick} />
 
-        {markers.map((m, idx) => (
-          <Marker key={m.id} position={[m.lat, m.lng]} icon={getIcon(m.type)}>
-            <Popup>
-              <div className={`flex flex-col p-3 ${poppins.className}`}>
-                <p className="text-center text-sm font-semibold">
-                  {m.type.replace(/([A-Z])/g, " $1").trim()}
-                </p>
-                <p className="text-xs text-gray-600">{m.address}</p>
-                <button
-                  onClick={() => handleDelete(idx)}
-                  className="mt-2 rounded bg-red-600 p-2 text-white hover:bg-red-700"
-                >
-                  Delete
-                </button>
-              </div>
-            </Popup>
-          </Marker>
-        ))}
+        {filteredMarkers.map((m, index) => {
+          const userId = Number(
+            JSON.parse(localStorage.getItem("user") || "{}")?.id || 0,
+          );
+          const canDelete = m.created_by === userId;
+
+          return (
+            <Marker
+              key={m.id || `temp-${index}`}
+              position={[m.lat, m.lng]}
+              icon={getIcon(m.type)}
+            >
+              <Popup>
+                <div className={`flex flex-col p-3 ${poppins.className}`}>
+                  <p className="text-center text-sm font-semibold">
+                    {m.type.replace(/([A-Z])/g, " $1").trim()}
+                  </p>
+                  <p className="mt-1 text-center text-xs text-gray-600">
+                    {m.address}
+                  </p>
+
+                  {canDelete && (
+                    <button
+                      onClick={() => {
+                        showDeleteConfirmation({
+                          margins: "160px",
+                          onConfirm: async () => {
+                            toast.loading("Deleting marker...", {
+                              id: "delete-marker",
+                              style: { marginLeft: "160px" },
+                            });
+                            try {
+                              const res = await fetch(
+                                `http://localhost/Disaster-backend/public/disasterMapping.php?id=${encodeURIComponent(
+                                  m.id,
+                                )}`,
+                                { method: "DELETE" },
+                              );
+
+                              const result = await res.json();
+                              if (!result.success)
+                                throw new Error(
+                                  result.message || "Delete failed",
+                                );
+
+                              setMarkers((prev) =>
+                                prev.filter((marker) => marker.id !== m.id),
+                              );
+
+                              toast.success(" Successfully deleted", {
+                                id: "delete-marker",
+                                style: { marginLeft: "160px" },
+                              });
+                            } catch (err) {
+                              console.error(err);
+                              toast.error(
+                                "Error deleting marker, Try refreshing the page.",
+                                {
+                                  id: "delete-marker",
+                                },
+                              );
+                            }
+                          },
+                          onClose: () =>
+                            console.log("Delete confirmation closed"),
+                        });
+                      }}
+                      className="mt-2 rounded bg-red-600 p-2 text-white hover:bg-red-700"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </div>
+              </Popup>
+            </Marker>
+          );
+        })}
       </MapContainer>
     </div>
   );

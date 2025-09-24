@@ -18,7 +18,6 @@ import { toast } from "sonner";
 import Link from "next/link";
 import Loader from "@/components/loading";
 import { showDeleteConfirmation } from "@/lib/toasts";
-import NoIdFound from "@/components/NoIdFound";
 
 import {
   Card,
@@ -29,6 +28,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import NoIdFound from "@/components/NoIdFound";
+import Image from "next/image";
 
 export default function CommunityNoticeDetail() {
   const router = useRouter();
@@ -101,7 +102,29 @@ export default function CommunityNoticeDetail() {
           <p>{data?.details}</p>
         </CardContent>
         <CardFooter className="mt-2 flex items-center justify-between">
-          <p className="text-sm text-gray-400">Added By: Brgy Wala pa</p>
+          <span className="flex items-center gap-2 text-xs text-gray-800 dark:text-gray-500">
+            Added by:
+            <Image
+              src={`/logos/${
+                data?.added_by
+                  ?.toLowerCase()
+                  .normalize("NFD")
+                  .replace(/[\u0300-\u036f]/g, "")
+                  .includes("municipality of los banos")
+                  ? "lb-logo.png"
+                  : data?.added_by
+                      ?.toLowerCase()
+                      .normalize("NFD")
+                      .replace(/[\u0300-\u036f]/g, "")
+                      .replace(/\s+/g, "-") + "-logo.png"
+              }`}
+              alt={`${data?.added_by} logo`}
+              width={20}
+              height={20}
+              className="h-5 w-5 object-contain"
+            />
+            {data?.added_by}
+          </span>{" "}
           <div className="flex items-center gap-3">
             <Link
               href={`/super-update-news/community-notice/edit-community-notice-form/${communityId}`}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import Image from "next/image";
 
@@ -45,6 +45,7 @@ interface WeatherCardsProps {
   desc: string;
   dateTime: string;
   addedBy: string;
+  currentUser?: string;
 }
 
 interface CommunityCardsProps {
@@ -53,6 +54,7 @@ interface CommunityCardsProps {
   desc: string;
   dateTime: string;
   addedBy: string;
+  currentUser?: string;
 }
 
 interface RoadCardsProps {
@@ -62,6 +64,7 @@ interface RoadCardsProps {
   dateTime: string;
   status: string;
   addedBy: string;
+  currentUser?: string;
 }
 
 interface DisasterCardsProps {
@@ -72,6 +75,7 @@ interface DisasterCardsProps {
   disasterType: string;
   dateTime: string;
   addedBy: string;
+  currentUser?: string;
 }
 
 export const WeatherCards = ({
@@ -80,8 +84,14 @@ export const WeatherCards = ({
   desc,
   dateTime,
   addedBy,
+  currentUser,
 }: WeatherCardsProps) => {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const basePath = pathname.includes("sub-update-news")
+    ? "sub-update-news"
+    : "super-update-news";
   const queryClient = useQueryClient();
 
   const [isToastOpen, setIsToastOpen] = useState(false);
@@ -113,51 +123,52 @@ export const WeatherCards = ({
         <CardDescription className="text-xs text-gray-800 dark:text-gray-500">
           <DateTimeDisplay value={dateTime} />
         </CardDescription>
-        <CardAction>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="outline-none focus:outline-none active:outline-none">
-                <HiOutlineDotsVertical className="text-xl" />
-              </button>
-            </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                className="text-xs"
-                disabled={isToastOpen}
-                onClick={() =>
-                  router.push(
-                    `/super-update-news/weather-advisory/edit-weather-form/${id}`,
-                  )
-                }
-              >
-                <RiEdit2Fill className="text-dark-blue" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-xs"
-                disabled={isToastOpen}
-                onClick={() => {
-                  if (!id) return toast.error("Invalid ID");
-                  setIsToastOpen(true);
-                  showDeleteConfirmation({
-                    onConfirm: () => mutate(),
-                    onClose: () => {
-                      setIsToastOpen(false);
-                    },
-                  });
+        {(currentUser?.toLowerCase() === addedBy?.toLowerCase() ||
+          currentUser?.toLowerCase() ===
+            "municipality of los baños".toLowerCase()) && (
+          <CardAction>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="outline-none focus:outline-none active:outline-none">
+                  <HiOutlineDotsVertical className="text-xl" />
+                </button>
+              </DropdownMenuTrigger>
 
-                  setTimeout(() => {
-                    setIsToastOpen(false);
-                  }, 5000);
-                }}
-              >
-                <AiFillDelete className="text-red-500" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </CardAction>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  className="text-xs"
+                  disabled={isToastOpen}
+                  onClick={() =>
+                    router.push(
+                      `/${basePath}/weather-advisory/edit-weather-form/${id}`,
+                    )
+                  }
+                >
+                  <RiEdit2Fill className="text-dark-blue" />
+                  Edit
+                </DropdownMenuItem>
+
+                <DropdownMenuItem
+                  className="text-xs"
+                  disabled={isToastOpen}
+                  onClick={() => {
+                    if (!id) return toast.error("Invalid ID");
+                    setIsToastOpen(true);
+                    showDeleteConfirmation({
+                      onConfirm: () => mutate(),
+                      onClose: () => setIsToastOpen(false),
+                    });
+                    setTimeout(() => setIsToastOpen(false), 5000);
+                  }}
+                >
+                  <AiFillDelete className="text-red-500" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </CardAction>
+        )}
       </CardHeader>
 
       <CardContent className="justify-self-end">
@@ -166,9 +177,29 @@ export const WeatherCards = ({
         </p>
       </CardContent>
       <CardFooter className="mt-auto flex items-center justify-between">
-        <span className="text-xs text-gray-800 dark:text-gray-500">
-          {addedBy}
+        <span className="flex items-center gap-2 text-xs text-gray-800 dark:text-gray-500">
+          Added by :
+          <Image
+            src={`/logos/${
+              addedBy
+                ?.toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .includes("municipality of los banos")
+                ? "lb-logo.png"
+                : addedBy
+                    ?.toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .replace(/\s+/g, "-") + "-logo.png"
+            }`}
+            alt={`${addedBy} logo`}
+            width={30}
+            height={30}
+            className="h-5 w-5 object-contain"
+          />
         </span>
+
         <Link
           href={`weather-advisory/detail/${id}`}
           scroll={false}
@@ -187,9 +218,15 @@ export const CommunityCards = ({
   desc,
   dateTime,
   addedBy,
+  currentUser,
 }: CommunityCardsProps) => {
   const router = useRouter();
+  const pathname = usePathname();
   const queryClient = useQueryClient();
+
+  const basePath = pathname.includes("sub-update-news")
+    ? "sub-update-news"
+    : "super-update-news";
 
   const [isToastOpen, setIsToastOpen] = useState(false);
 
@@ -220,51 +257,55 @@ export const CommunityCards = ({
         <CardDescription className="text-xs text-gray-800 dark:text-gray-500">
           <DateTimeDisplay value={dateTime} />
         </CardDescription>
-        <CardAction>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="outline-none focus:outline-none active:outline-none">
-                <HiOutlineDotsVertical className="text-xl" />
-              </button>
-            </DropdownMenuTrigger>
+        {(currentUser?.toLowerCase() === addedBy?.toLowerCase() ||
+          currentUser?.toLowerCase() ===
+            "municipality of los baños".toLowerCase()) && (
+          <CardAction>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="outline-none focus:outline-none active:outline-none">
+                  <HiOutlineDotsVertical className="text-xl" />
+                </button>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                className="text-xs"
-                disabled={isToastOpen}
-                onClick={() =>
-                  router.push(
-                    `/super-update-news/community-notice/edit-community-notice-form/${id}`,
-                  )
-                }
-              >
-                <RiEdit2Fill className="text-dark-blue" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-xs"
-                disabled={isToastOpen}
-                onClick={() => {
-                  if (!id) return toast.error("Invalid ID");
-                  setIsToastOpen(true);
-                  showDeleteConfirmation({
-                    onConfirm: () => mutate(),
-                    onClose: () => {
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  className="text-xs"
+                  disabled={isToastOpen}
+                  onClick={() =>
+                    router.push(
+                      `/${basePath}/community-notice/edit-community-notice-form/${id}`,
+                    )
+                  }
+                >
+                  <RiEdit2Fill className="text-dark-blue" />
+                  Edit
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  className="text-xs"
+                  disabled={isToastOpen}
+                  onClick={() => {
+                    if (!id) return toast.error("Invalid ID");
+                    setIsToastOpen(true);
+                    showDeleteConfirmation({
+                      onConfirm: () => mutate(),
+                      onClose: () => {
+                        setIsToastOpen(false);
+                      },
+                    });
+
+                    setTimeout(() => {
                       setIsToastOpen(false);
-                    },
-                  });
-
-                  setTimeout(() => {
-                    setIsToastOpen(false);
-                  }, 5000);
-                }}
-              >
-                <AiFillDelete className="text-red-500" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </CardAction>
+                    }, 5000);
+                  }}
+                >
+                  <AiFillDelete className="text-red-500" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </CardAction>
+        )}
       </CardHeader>
       <CardContent className="justify-self-end">
         <p className="line-clamp-5 text-sm leading-relaxed tracking-normal text-gray-800 dark:text-gray-300">
@@ -272,8 +313,27 @@ export const CommunityCards = ({
         </p>
       </CardContent>
       <CardFooter className="mt-auto flex items-center justify-between">
-        <span className="text-xs text-gray-800 dark:text-gray-500">
-          {addedBy}
+        <span className="flex items-center gap-2 text-xs text-gray-800 dark:text-gray-500">
+          Added by :
+          <Image
+            src={`/logos/${
+              addedBy
+                ?.toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .includes("municipality of los banos")
+                ? "lb-logo.png"
+                : addedBy
+                    ?.toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .replace(/\s+/g, "-") + "-logo.png"
+            }`}
+            alt={`${addedBy} logo`}
+            width={30}
+            height={30}
+            className="h-5 w-5 object-contain"
+          />
         </span>
         <Link
           href={`community-notice/detail/${id}`}
@@ -294,9 +354,15 @@ export const RoadCards = ({
   dateTime,
   status,
   addedBy,
+  currentUser,
 }: RoadCardsProps) => {
   const router = useRouter();
   const queryClient = useQueryClient();
+  const pathname = usePathname();
+
+  const basePath = pathname.includes("sub-update-news")
+    ? "sub-update-news"
+    : "super-update-news";
 
   const [isToastOpen, setIsToastOpen] = useState(false);
 
@@ -327,51 +393,51 @@ export const RoadCards = ({
         <CardDescription className="text-xs text-gray-800 dark:text-gray-500">
           <DateTimeDisplay value={dateTime} />
         </CardDescription>
-        <CardAction>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <button className="outline-none focus:outline-none active:outline-none">
-                <HiOutlineDotsVertical className="text-xl" />
-              </button>
-            </DropdownMenuTrigger>
+        {(currentUser?.toLowerCase() === addedBy?.toLowerCase() ||
+          currentUser?.toLowerCase() ===
+            "municipality of los baños".toLowerCase()) && (
+          <CardAction>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="outline-none focus:outline-none active:outline-none">
+                  <HiOutlineDotsVertical className="text-xl" />
+                </button>
+              </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                className="text-xs"
-                disabled={isToastOpen}
-                onClick={() =>
-                  router.push(
-                    `/super-update-news/road-advisory/edit-road-form/${id}`,
-                  )
-                }
-              >
-                <RiEdit2Fill className="text-dark-blue" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-xs"
-                disabled={isToastOpen}
-                onClick={() => {
-                  if (!id) return toast.error("Invalid ID");
-                  setIsToastOpen(true);
-                  showDeleteConfirmation({
-                    onConfirm: () => mutate(),
-                    onClose: () => {
-                      setIsToastOpen(false);
-                    },
-                  });
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  className="text-xs"
+                  disabled={isToastOpen}
+                  onClick={() =>
+                    router.push(
+                      `/${basePath}/road-advisory/edit-road-form/${id}`,
+                    )
+                  }
+                >
+                  <RiEdit2Fill className="text-dark-blue" />
+                  Edit
+                </DropdownMenuItem>
 
-                  setTimeout(() => {
-                    setIsToastOpen(false);
-                  }, 5000);
-                }}
-              >
-                <AiFillDelete className="text-red-500" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </CardAction>
+                <DropdownMenuItem
+                  className="text-xs"
+                  disabled={isToastOpen}
+                  onClick={() => {
+                    if (!id) return toast.error("Invalid ID");
+                    setIsToastOpen(true);
+                    showDeleteConfirmation({
+                      onConfirm: () => mutate(),
+                      onClose: () => setIsToastOpen(false),
+                    });
+                    setTimeout(() => setIsToastOpen(false), 5000);
+                  }}
+                >
+                  <AiFillDelete className="text-red-500" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </CardAction>
+        )}
       </CardHeader>
       <CardContent className="justify-self-end">
         <p className="line-clamp-5 text-sm leading-relaxed tracking-normal text-gray-800 dark:text-gray-300">
@@ -379,7 +445,7 @@ export const RoadCards = ({
         </p>
       </CardContent>
       <CardFooter className="mt-auto flex items-center justify-between">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-2">
           <div className="flex items-center gap-1">
             <div
               className={`h-2 w-2 rounded-full bg-green-700 ${
@@ -407,8 +473,27 @@ export const RoadCards = ({
             </p>
           </div>
 
-          <span className="text-xs text-gray-800 dark:text-gray-500">
-            {addedBy}
+          <span className="flex items-center gap-2 text-xs text-gray-800 dark:text-gray-500">
+            Added by :
+            <Image
+              src={`/logos/${
+                addedBy
+                  ?.toLowerCase()
+                  .normalize("NFD")
+                  .replace(/[\u0300-\u036f]/g, "")
+                  .includes("municipality of los banos")
+                  ? "lb-logo.png"
+                  : addedBy
+                      ?.toLowerCase()
+                      .normalize("NFD")
+                      .replace(/[\u0300-\u036f]/g, "")
+                      .replace(/\s+/g, "-") + "-logo.png"
+              }`}
+              alt={`${addedBy} logo`}
+              width={30}
+              height={30}
+              className="h-5 w-5 object-contain"
+            />
           </span>
         </div>
         <Link
@@ -431,9 +516,15 @@ export const DisasterCard = ({
   desc,
   dateTime,
   addedBy,
+  currentUser,
 }: DisasterCardsProps) => {
   const router = useRouter();
+  const pathname = usePathname();
   const queryClient = useQueryClient();
+
+  const basePath = pathname.includes("sub-update-news")
+    ? "sub-update-news"
+    : "super-update-news";
 
   const [isToastOpen, setIsToastOpen] = useState(false);
 
@@ -481,51 +572,55 @@ export const DisasterCard = ({
             </CardDescription>
           </div>
 
-          <CardAction className="absolute right-4">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="outline-none focus:outline-none active:outline-none">
-                  <HiOutlineDotsVertical className="text-xl" />
-                </button>
-              </DropdownMenuTrigger>
+          {(currentUser?.toLowerCase() === addedBy?.toLowerCase() ||
+            currentUser?.toLowerCase() ===
+              "municipality of los baños".toLowerCase()) && (
+            <CardAction className="absolute right-4">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="outline-none focus:outline-none active:outline-none">
+                    <HiOutlineDotsVertical className="text-xl" />
+                  </button>
+                </DropdownMenuTrigger>
 
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem
-                  onClick={() =>
-                    router.push(
-                      `/super-update-news/disaster-updates/edit-disaster-form/${id}`,
-                    )
-                  }
-                  disabled={isToastOpen}
-                  className="text-xs"
-                >
-                  <RiEdit2Fill className="text-dark-blue" />
-                  Edit
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  disabled={isToastOpen}
-                  onClick={() => {
-                    if (!id) return toast.error("Invalid ID");
-                    setIsToastOpen(true);
-                    showDeleteConfirmation({
-                      onConfirm: () => mutate(),
-                      onClose: () => {
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() =>
+                      router.push(
+                        `/${basePath}/disaster-updates/edit-disaster-form/${id}`,
+                      )
+                    }
+                    disabled={isToastOpen}
+                    className="text-xs"
+                  >
+                    <RiEdit2Fill className="text-dark-blue" />
+                    Edit
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    disabled={isToastOpen}
+                    onClick={() => {
+                      if (!id) return toast.error("Invalid ID");
+                      setIsToastOpen(true);
+                      showDeleteConfirmation({
+                        onConfirm: () => mutate(),
+                        onClose: () => {
+                          setIsToastOpen(false);
+                        },
+                      });
+
+                      setTimeout(() => {
                         setIsToastOpen(false);
-                      },
-                    });
-
-                    setTimeout(() => {
-                      setIsToastOpen(false);
-                    }, 5000);
-                  }}
-                  className="text-xs"
-                >
-                  <AiFillDelete className="text-red-500" />
-                  Delete
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </CardAction>
+                      }, 5000);
+                    }}
+                    className="text-xs"
+                  >
+                    <AiFillDelete className="text-red-500" />
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </CardAction>
+          )}
         </div>
       </CardHeader>
 
@@ -536,8 +631,28 @@ export const DisasterCard = ({
       </CardContent>
 
       <CardFooter className="mt-auto flex items-center justify-between">
-        <p className="text-xs text-gray-800 dark:text-gray-500">{addedBy}</p>
-
+        <span className="flex items-center gap-2 text-xs text-gray-800 dark:text-gray-500">
+          Added by :
+          <Image
+            src={`/logos/${
+              addedBy
+                ?.toLowerCase()
+                .normalize("NFD")
+                .replace(/[\u0300-\u036f]/g, "")
+                .includes("municipality of los banos")
+                ? "lb-logo.png"
+                : addedBy
+                    ?.toLowerCase()
+                    .normalize("NFD")
+                    .replace(/[\u0300-\u036f]/g, "")
+                    .replace(/\s+/g, "-") + "-logo.png"
+            }`}
+            alt={`${addedBy} logo`}
+            width={30}
+            height={30}
+            className="h-5 w-5 object-contain"
+          />
+        </span>
         <Link
           href={`disaster-updates/detail/${id}`}
           scroll={false}

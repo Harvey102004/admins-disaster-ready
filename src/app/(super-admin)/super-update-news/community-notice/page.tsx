@@ -5,7 +5,7 @@ import { AiFillFolderOpen } from "react-icons/ai";
 import { getCommunity } from "@/server/api/advisories";
 
 import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 
 import {
   filterCommunityData,
@@ -14,8 +14,6 @@ import {
 } from "@/lib/sort-filter-update-news";
 
 import Link from "next/link";
-
-import DateTimeDisplay from "@/components/DateConvertion";
 
 import { CommunityCards } from "@/components/cards/AdvisoryCards";
 import { CommunityNoticeSkeleton } from "@/components/skeleton/Skeleton-update-news";
@@ -31,6 +29,19 @@ export default function CommunityNotice() {
   const [filterBrgy, setFilterBrgy] = useState("default");
   const [filterDate, setFilterDate] = useState("all");
   const [searchText, setSearchText] = useState("");
+  const [currentUser, setCurrentUser] = useState<string | null>(null);
+
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      try {
+        const parsed = JSON.parse(user);
+        setCurrentUser(parsed.barangay);
+      } catch (e) {
+        console.error("Invalid JSON sa localStorage:", e);
+      }
+    }
+  }, []);
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["communityNotice"],
@@ -94,7 +105,7 @@ export default function CommunityNotice() {
               },
               {
                 label: "Added by",
-                value: "addeBy",
+                value: "added_by",
               },
 
               {
@@ -139,8 +150,9 @@ export default function CommunityNotice() {
               id={item.id}
               title={item.title}
               desc={item.details}
-              addedBy="Added by: Brgy wala pa"
+              addedBy={item.added_by}
               dateTime={item.date_time}
+              currentUser={currentUser ?? ""}
             />
           ))
         ) : (

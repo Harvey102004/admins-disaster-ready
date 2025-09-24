@@ -7,8 +7,6 @@ import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
 import Link from "next/link";
 
-import DateTimeDisplay from "@/components/DateConvertion";
-
 import Loader from "@/components/loading";
 import { showDeleteConfirmation } from "@/lib/toasts";
 import { toast } from "sonner";
@@ -27,6 +25,7 @@ import {
 import Image from "next/image";
 import { HiOutlineArrowsExpand, HiOutlineX } from "react-icons/hi";
 import NoIdFound from "@/components/NoIdFound";
+import DateTimeDisplay from "@/components/DateConvertion";
 
 export default function DisasterUpdatesDetail() {
   const router = useRouter();
@@ -44,16 +43,19 @@ export default function DisasterUpdatesDetail() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      return await deleteDisaster({ id: disasterId });
+      return await toast.promise(deleteDisaster({ id: disasterId }), {
+        loading: "Deleting Disaster updates...",
+        success: () => {
+          return "Disaster Updates deleted successfully!";
+        },
+        error: (err) => {
+          return err?.message || "Something went wrong!";
+        },
+      });
     },
-    onSuccess: async () => {
-      toast.success("Disaster Updates deleted successfully!");
-      await queryClient.invalidateQueries({ queryKey: ["disasterUpdates"] });
-      await queryClient.refetchQueries({ queryKey: ["disasterUpdates"] });
-      router.push("/super-update-news/disaster-updates");
-    },
-    onError: (error: any) => {
-      toast.error(error?.message || "Something went wrong!");
+    onSuccess: () => {
+      router.back();
+      queryClient.invalidateQueries({ queryKey: ["disasterUpdates"] });
     },
   });
 
@@ -86,7 +88,7 @@ export default function DisasterUpdatesDetail() {
             <div className="pl-5">
               <div
                 onClick={() => setImageOpen(true)}
-                className="group relative h-[450px] min-w-[500px] overflow-hidden rounded-md"
+                className="group relative h-[450px] min-w-[500px] overflow-hidden rounded-md bg-transparent"
               >
                 <Image
                   src={data?.image_url ?? ""}
@@ -156,8 +158,29 @@ export default function DisasterUpdatesDetail() {
                     {isPending ? "Deleting..." : "Delete"}
                   </button>
                 </div>
-
-                <p className="text-xs text-gray-500">Added By: Brgy Wala pa</p>
+                <span className="flex items-center gap-2 text-xs text-gray-800 dark:text-gray-500">
+                  Added by:
+                  <Image
+                    src={`/logos/${
+                      data?.added_by
+                        ?.toLowerCase()
+                        .normalize("NFD")
+                        .replace(/[\u0300-\u036f]/g, "")
+                        .includes("municipality of los banos")
+                        ? "lb-logo.png"
+                        : data?.added_by
+                            ?.toLowerCase()
+                            .normalize("NFD")
+                            .replace(/[\u0300-\u036f]/g, "")
+                            .replace(/\s+/g, "-") + "-logo.png"
+                    }`}
+                    alt={`${data?.added_by} logo`}
+                    width={20}
+                    height={20}
+                    className="h-5 w-5 object-contain"
+                  />
+                  {data?.added_by}
+                </span>{" "}
               </CardFooter>
             </div>
           </div>

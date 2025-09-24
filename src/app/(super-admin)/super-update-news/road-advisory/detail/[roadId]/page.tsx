@@ -26,6 +26,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import NoIdFound from "@/components/NoIdFound";
+import Image from "next/image";
 
 export default function RoadAdvisoryDetail() {
   const router = useRouter();
@@ -42,17 +43,22 @@ export default function RoadAdvisoryDetail() {
 
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      return await deleteRoad({ id: roadId });
+      return await toast.promise(deleteRoad({ id: roadId }), {
+        loading: "Deleting road advisory...",
+        success: () => {
+          return "Road Advisory deleted successfully!";
+        },
+        error: (err) => {
+          return err?.message || "Something went wrong!";
+        },
+      });
     },
-    onSuccess: async () => {
-      toast.success("Road Advisory deleted successfully!");
-      await queryClient.invalidateQueries({ queryKey: ["roadAdvisory"] });
+    onSuccess: () => {
       router.back();
-    },
-    onError: (error: any) => {
-      toast.error(error?.message || "Something went wrong!");
+      queryClient.invalidateQueries({ queryKey: ["roadAdvisory"] });
     },
   });
+
   if (isLoading || isRefetching) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
@@ -122,7 +128,29 @@ export default function RoadAdvisoryDetail() {
           <p>{data?.details}</p>
         </CardContent>
         <CardFooter className="mt-2 flex items-center justify-between">
-          <p className="text-sm text-gray-400">Added By: Brgy Wala pa</p>
+          <span className="flex items-center gap-2 text-xs text-gray-800 dark:text-gray-500">
+            Added by:
+            <Image
+              src={`/logos/${
+                data?.added_by
+                  ?.toLowerCase()
+                  .normalize("NFD")
+                  .replace(/[\u0300-\u036f]/g, "")
+                  .includes("municipality of los banos")
+                  ? "lb-logo.png"
+                  : data?.added_by
+                      ?.toLowerCase()
+                      .normalize("NFD")
+                      .replace(/[\u0300-\u036f]/g, "")
+                      .replace(/\s+/g, "-") + "-logo.png"
+              }`}
+              alt={`${data?.added_by} logo`}
+              width={20}
+              height={20}
+              className="h-5 w-5 object-contain"
+            />
+            {data?.added_by}
+          </span>
 
           <div className="flex items-center gap-3">
             <Link
