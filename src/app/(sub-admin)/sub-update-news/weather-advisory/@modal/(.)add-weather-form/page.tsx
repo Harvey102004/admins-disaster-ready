@@ -32,7 +32,6 @@ export default function AddWeatherFormModal() {
     resolver: zodResolver(weatherAdvisorySchema),
   });
 
-  // ✅ kunin barangay from localStorage
   useEffect(() => {
     const user = localStorage.getItem("user");
     if (user) {

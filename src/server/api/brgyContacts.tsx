@@ -24,7 +24,7 @@ export const addBrgyContact = async (data: BrgyContactFormData) => {
 export const getBrgyContacts = async () => {
   try {
     const response = await axios.get(API_CONTACT);
-    console.log(response.data);
+
     return response.data;
   } catch (error: any) {
     console.error(error);

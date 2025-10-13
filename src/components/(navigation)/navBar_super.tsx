@@ -2,7 +2,7 @@
 
 import { ModeToggleSideBar } from "../darkmode-toggle";
 import { MdSpaceDashboard, MdAnnouncement } from "react-icons/md";
-import { FaHouseCircleCheck } from "react-icons/fa6";
+import { FaBuildingShield } from "react-icons/fa6";
 import { RiTruckFill, RiCoinsFill, RiLogoutCircleLine } from "react-icons/ri";
 import { HiMiniMapPin } from "react-icons/hi2";
 import { BsFillTelephoneFill } from "react-icons/bs";
@@ -36,7 +36,7 @@ export default function NavbarSuperAdmin() {
     {
       name: "Evacuation Center",
       path: "/super-evacuation-center",
-      icon: <FaHouseCircleCheck />,
+      icon: <FaBuildingShield />,
     },
     {
       name: "Disaster Risk Mapping",

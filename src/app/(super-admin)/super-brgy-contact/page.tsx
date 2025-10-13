@@ -51,12 +51,15 @@ export default function SuperAdminBarangayContact() {
                     {/* Logo + Name */}
                     <div className="flex flex-col items-center justify-center px-4 py-6">
                       <Image
-                        src={`/logos/${item.barangay_name.toLowerCase()}-logo.png`}
+                        src={`/logos/${item.barangay_name
+                          ?.toLowerCase()
+                          .replace(/\s+/g, "-")}-logo.png`}
                         height={90}
                         width={90}
                         alt={item.barangay_name}
                         className="mb-3 drop-shadow-md transition-all duration-500 group-hover:scale-90"
                       />
+
                       <h2 className="text-lg font-semibold tracking-wide text-gray-900 capitalize dark:text-gray-100">
                         {item.barangay_name
                           .replace(/-/g, " ")

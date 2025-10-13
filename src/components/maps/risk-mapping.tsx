@@ -333,7 +333,7 @@ export default function RiskMappingMap() {
         center={[14.17, 121.2436]}
         zoom={13}
         minZoom={14}
-        maxZoom={18}
+        maxZoom={20}
         zoomControl={false}
         zoomSnap={1}
         zoomDelta={1}

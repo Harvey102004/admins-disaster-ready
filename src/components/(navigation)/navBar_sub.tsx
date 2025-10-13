@@ -3,7 +3,7 @@
 import { ModeToggleSideBar } from ".././darkmode-toggle";
 import { useRouter } from "next/navigation";
 import { MdSpaceDashboard, MdAnnouncement } from "react-icons/md";
-import { FaHouseCircleCheck } from "react-icons/fa6";
+import { FaBuildingShield } from "react-icons/fa6";
 import { RiLogoutCircleLine } from "react-icons/ri";
 import { HiMiniMapPin } from "react-icons/hi2";
 import { BsFillTelephoneFill } from "react-icons/bs";
@@ -29,7 +29,7 @@ export default function NavbarSubAdmin() {
     {
       name: "Evacuation Center",
       path: "/sub-evacuation-center",
-      icon: <FaHouseCircleCheck />,
+      icon: <FaBuildingShield />,
     },
     {
       name: "Disaster Risk Mapping",
@@ -92,7 +92,14 @@ export default function NavbarSubAdmin() {
 
             <div className="flex flex-col gap-1.5 text-nowrap">
               <h1 className="text-sm font-semibold">
-                {storedAccount?.barangay}
+                {storedAccount?.barangay
+                  ?.split(/[-\s]/)
+                  .map(
+                    (word) =>
+                      word.charAt(0).toUpperCase() +
+                      word.slice(1).toLowerCase(),
+                  )
+                  .join(" ")}{" "}
               </h1>
               <p className="max-w-[250px] truncate text-xs text-gray-800 dark:text-gray-400">
                 {storedAccount?.email}
