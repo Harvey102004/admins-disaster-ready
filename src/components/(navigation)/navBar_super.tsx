@@ -15,6 +15,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { SideBarSkeleton } from "../skeleton/Skeleton-update-news";
+import { IoIosPaper } from "react-icons/io";
 
 export default function NavbarSuperAdmin() {
   const pathname = usePathname();
@@ -37,6 +38,11 @@ export default function NavbarSuperAdmin() {
       name: "Evacuation Center",
       path: "/super-evacuation-center",
       icon: <FaBuildingShield />,
+    },
+    {
+      name: "Incident Reports",
+      path: "/super-incident-reports",
+      icon: <IoIosPaper />,
     },
     {
       name: "Disaster Risk Mapping",
@@ -123,7 +129,7 @@ export default function NavbarSuperAdmin() {
               <Link
                 key={i}
                 href={link.path}
-                className={`flex items-center gap-4 rounded-sm py-3 text-xs text-nowrap ${isActive ? "bg-dark-blue/90 text-puti" : "hover:bg-dark-blue/10"}`}
+                className={`flex items-center gap-4 rounded-sm py-2.5 text-[11px] text-nowrap ${isActive ? "bg-dark-blue/90 text-puti" : "hover:bg-dark-blue/10"}`}
               >
                 <div className="pl-4 text-lg">{link.icon}</div>
 

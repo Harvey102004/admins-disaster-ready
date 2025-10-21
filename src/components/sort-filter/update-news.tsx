@@ -426,23 +426,23 @@ export const FilteringDisaster = ({
         <p className="text-sm">Filter By:</p>
       </div>
 
-      <Select value={selectedBrgy} onValueChange={onBrgyChange}>
-        <SelectTrigger className="border-dark-blue/50 focus:border-dark-blue w-[120px] rounded-sm border text-xs shadow-none outline-none dark:border-gray-500/50 dark:bg-transparent">
-          <SelectValue placeholder="Select brgy" />
-        </SelectTrigger>
+        <Select value={selectedBrgy} onValueChange={onBrgyChange}>
+          <SelectTrigger className="border-dark-blue/50 focus:border-dark-blue w-[120px] rounded-sm border text-xs shadow-none outline-none dark:border-gray-500/50 dark:bg-transparent">
+            <SelectValue placeholder="Select brgy" />
+          </SelectTrigger>
 
-        <SelectContent className="dark:bg-light-black bg-light-blue text-xs">
-          {allBrgy.map((option) => (
-            <SelectItem
-              key={option.name}
-              value={option.value}
-              className="data-[highlighted]:bg-dark-blue/20 text-xs dark:data-[highlighted]:text-white"
-            >
-              {option.name}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+          <SelectContent className="dark:bg-light-black bg-light-blue text-xs">
+            {allBrgy.map((option) => (
+              <SelectItem
+                key={option.name}
+                value={option.value}
+                className="data-[highlighted]:bg-dark-blue/20 text-xs dark:data-[highlighted]:text-white"
+              >
+                {option.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
 
       <Select value={selectedDate} onValueChange={onDateChange}>
         <SelectTrigger className="border-dark-blue/50 focus:border-dark-blue w-[115px] rounded-sm border text-xs shadow-none outline-none dark:border-gray-500/50 dark:bg-transparent">

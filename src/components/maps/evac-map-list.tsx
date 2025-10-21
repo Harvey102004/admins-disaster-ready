@@ -171,7 +171,7 @@ export default function EvacuationListView() {
 
                       return (
                         <div
-                          className={`ml-auto h-2.5 w-2.5 rounded-full ${statusClass}`}
+                          className={`ml-auto h-2 w-2 rounded-full ${statusClass}`}
                         />
                       );
                     })()}

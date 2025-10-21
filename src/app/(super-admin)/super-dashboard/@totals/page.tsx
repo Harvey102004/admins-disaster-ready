@@ -5,6 +5,7 @@ import { HiUserGroup } from "react-icons/hi2";
 import { RiSendPlaneFill } from "react-icons/ri";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 import { getEvacuationCenters } from "@/server/api/evacuation";
 
@@ -13,25 +14,36 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+// ✅ define incident type
+interface Incident {
+  id: string;
+  reporter_name: string;
+  reporter_contact: string;
+  description: string;
+  media: string;
+  status: string;
+  responded_by: string;
+  created_at: string;
+  updated_at: string;
+  lat: string;
+  lng: string;
+  severity: "Critical" | "Moderate" | "Minor" | string;
+}
+
 export default function TotalsPage() {
-  const {
-    data = [],
-    isLoading,
-    error,
-  } = useQuery({
+  // ✅ evacuation centers
+  const { data: evacData = [] } = useQuery({
     queryKey: ["evacuationsCenter"],
     queryFn: getEvacuationCenters,
   });
 
-  const totalEvacuations = data.length;
-
+  const totalEvacuations = evacData.length;
   let plenty = 0;
   let almostFull = 0;
   let full = 0;
 
-  data.forEach((e) => {
+  evacData.forEach((e: any) => {
     const percent = ((e.current_evacuees ?? 0) / e.capacity) * 100;
-
     if (e.capacity === 0) return;
 
     if (e.current_evacuees === 0) {
@@ -42,6 +54,25 @@ export default function TotalsPage() {
       plenty++;
     }
   });
+
+  // ✅ incidents
+  const { data: reports = [], isLoading: isReportsLoading } = useQuery<
+    Incident[]
+  >({
+    queryKey: ["incidentReports"],
+    queryFn: async () => {
+      const res = await axios.get(
+        "http://localhost/Disaster-backend/controllers/getIncidents.php",
+      );
+      return res.data || [];
+    },
+  });
+
+  // ✅ fix: now r has proper type
+  const totalReports = reports.length;
+  const critical = reports.filter((r) => r.severity === "Critical").length;
+  const moderate = reports.filter((r) => r.severity === "Moderate").length;
+  const minor = reports.filter((r) => r.severity === "Minor").length;
 
   return (
     <div className="flex w-full gap-6">
@@ -54,7 +85,9 @@ export default function TotalsPage() {
             </h2>
           </div>
 
-          <h1 className="mb-2 text-4xl font-bold">23,000</h1>
+          <h1 className="mb-2 text-4xl font-bold">
+            {isReportsLoading ? "..." : totalReports}
+          </h1>
 
           <div className="relative mb-5 h-12 overflow-hidden">
             <svg
@@ -88,20 +121,20 @@ export default function TotalsPage() {
         <div className="flex justify-around gap-8">
           <div className="text-center">
             <p className="mb-1 text-sm text-white/80">Critical</p>
-            <p className="text-lg font-semibold text-white">10 %</p>
+            <p className="text-lg font-semibold text-white">{critical}</p>
           </div>
           <div className="text-center">
             <p className="mb-1 text-sm text-white/80">Moderate</p>
-            <p className="text-lg font-semibold text-white">30 %</p>
+            <p className="text-lg font-semibold text-white">{moderate}</p>
           </div>
           <div className="text-center">
             <p className="mb-1 text-sm text-white/80">Minor</p>
-            <p className="text-lg font-semibold text-white">60 %</p>
+            <p className="text-lg font-semibold text-white">{minor}</p>
           </div>
         </div>
       </div>
 
-      {/* POPULATION & REPORTS */}
+      {/* POPULATION & EVACUATION */}
       <div className="flex w-1/2 flex-col gap-3">
         {/* Total Populations */}
         <div className="border-dark-blue/50 relative flex w-full items-center justify-between rounded-xl border p-4 px-6 shadow-lg">
@@ -130,6 +163,7 @@ export default function TotalsPage() {
                 Total Evacuations
               </p>
               <p className="text-2xl font-bold">{totalEvacuations}</p>
+
               {/* Legend */}
               <div className="mt-2 flex w-full flex-col gap-1 text-xs">
                 <div className="flex items-center justify-between">
