@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { IoIosPaper } from "react-icons/io";
+import MapModal from "@/components/maps/reports-map";
+
 import {
   Table,
   TableBody,
@@ -25,6 +27,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 
 export default function IncidentReports() {
@@ -32,11 +35,13 @@ export default function IncidentReports() {
   const [loading, setLoading] = useState(true);
   const [selectedIncident, setSelectedIncident] = useState<any | null>(null);
   const [imageModalOpen, setImageModalOpen] = useState(false);
+  const [mapModalOpen, setMapModalOpen] = useState(false);
+  const [mapPosition, setMapPosition] = useState<[number, number] | null>(null);
 
   const fetchIncidents = async () => {
     try {
       const res = await axios.get(
-        "http://localhost/Disaster-backend/controllers/getIncidents.php",
+        "http://localhost/Disaster-backend/public/getIncidents.php",
       );
       setIncidents(res.data || []);
     } catch (error) {
@@ -50,13 +55,26 @@ export default function IncidentReports() {
     fetchIncidents();
   }, []);
 
+  const handleViewMap = (incident: any) => {
+    const lat = parseFloat(incident.lat);
+    const lng = parseFloat(incident.lng);
+
+    if (!lat || !lng || isNaN(lat) || isNaN(lng)) {
+      alert("⚠️ Invalid coordinates for this incident.");
+      return;
+    }
+
+    setMapPosition([lat, lng]);
+    setMapModalOpen(true);
+  };
+
   const handleStatusChange = async (id: number, status: string) => {
     const user = JSON.parse(localStorage.getItem("user") || "{}");
     const respondedBy = user?.barangay || "Unknown Responder";
 
     try {
       const response = await axios.post(
-        "http://localhost/Disaster-backend/controllers/updateIncident.php",
+        "http://localhost/Disaster-backend/public/updateIncident.php",
         {
           id,
           status,
@@ -88,8 +106,6 @@ export default function IncidentReports() {
     });
   };
 
-  if (loading) return <p className="p-8">Loading incident reports...</p>;
-
   return (
     <div className="relative h-screen w-full overflow-auto px-10 py-8 transition-all duration-300">
       {/* Header */}
@@ -115,12 +131,25 @@ export default function IncidentReports() {
           </TableHeader>
 
           <TableBody>
-            {incidents.length > 0 ? (
+            {loading ? (
+              Array.from({ length: 10 }).map((_, i) => (
+                <TableRow key={i} className="space-y-2">
+                  {Array.from({ length: 8 }).map((_, j) => (
+                    <TableCell key={j}>
+                      <Skeleton className="h-6 w-full rounded-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : incidents.length > 0 ? (
               incidents.map((incident) => (
                 <TableRow
                   key={incident.id}
                   className="cursor-pointer"
-                  onClick={() => setSelectedIncident(incident)}
+                  onClick={() => {
+                    setImageModalOpen(false);
+                    setSelectedIncident(incident);
+                  }}
                 >
                   <TableCell>{incident.id}</TableCell>
                   <TableCell>{incident.reporter_name}</TableCell>
@@ -171,7 +200,12 @@ export default function IncidentReports() {
       {/* Modal */}
       <Dialog
         open={!!selectedIncident}
-        onOpenChange={() => setSelectedIncident(null)}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSelectedIncident(null);
+            setImageModalOpen(false);
+          }
+        }}
       >
         <DialogContent className="p-6 sm:max-w-[800px]">
           {selectedIncident && (
@@ -197,30 +231,26 @@ export default function IncidentReports() {
               </p>
 
               <div className="mt-5 flex h-full justify-between gap-10">
-                {/* Left side info */}
+                {/* Left Info */}
                 <div className="flex-1 text-sm">
-                  {/* 2x2 grid */}
                   <div className="grid grid-cols-2 gap-x-10 gap-y-6">
-                    <div className="flex flex-col">
+                    <div>
                       <p className="text-sm">
                         {selectedIncident.reporter_name}
                       </p>
                       <span className="text-xs text-gray-500">Reporter</span>
                     </div>
-
-                    <div className="flex flex-col">
+                    <div>
                       <p className="text-sm">
                         {selectedIncident.reporter_contact}
                       </p>
                       <span className="text-xs text-gray-500">Contact</span>
                     </div>
-
-                    <div className="flex flex-col">
+                    <div>
                       <p className="text-sm">{selectedIncident.status}</p>
                       <span className="text-xs text-gray-500">Status</span>
                     </div>
-
-                    <div className="flex flex-col">
+                    <div>
                       <p className="text-sm">
                         {selectedIncident.responded_by || "—"}
                       </p>
@@ -238,7 +268,10 @@ export default function IncidentReports() {
                   </div>
 
                   <div className="absolute bottom-[5%] flex items-center gap-6">
-                    <button className="bg-dark-blue rounded-sm px-4 py-2 text-xs text-white">
+                    <button
+                      className="bg-dark-blue rounded-sm px-4 py-2 text-xs text-white"
+                      onClick={() => handleViewMap(selectedIncident)}
+                    >
                       View in Map
                     </button>
 
@@ -267,45 +300,51 @@ export default function IncidentReports() {
                   </div>
                 </div>
 
-                {/* Right side image thumbnail + fullscreen */}
+                {/* Right Image */}
                 {selectedIncident.media && (
-                  <>
-                    <div
-                      onClick={() => setImageModalOpen(true)}
-                      className="relative h-[320px] w-[320px] cursor-zoom-in overflow-hidden rounded-lg shadow-md"
-                    >
-                      <Image
-                        src={`http://localhost/Disaster-backend/uploads/${selectedIncident.media}`}
-                        alt="Incident Photo"
-                        fill
-                        className="object-cover object-center transition-all duration-200 hover:scale-105 hover:brightness-75"
-                      />
-                    </div>
-
-                    {imageModalOpen && (
-                      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90">
-                        <button
-                          className="absolute top-4 right-4 z-50 text-3xl font-bold text-white hover:text-gray-300"
-                          onClick={() => setImageModalOpen(false)}
-                        >
-                          ×
-                        </button>
-
-                        <img
-                          src={`http://localhost/Disaster-backend/uploads/${selectedIncident.media}`}
-                          alt="Incident Photo"
-                          className="max-h-[90vh] max-w-[90vw] cursor-zoom-out object-contain transition-all duration-200 hover:brightness-90"
-                          onClick={() => setImageModalOpen(false)}
-                        />
-                      </div>
-                    )}
-                  </>
+                  <div
+                    onClick={() => setImageModalOpen(true)}
+                    className="relative h-[320px] w-[320px] cursor-zoom-in overflow-hidden rounded-lg shadow-md"
+                  >
+                    <Image
+                      src={`http://localhost/Disaster-backend/uploads/${selectedIncident.media}`}
+                      alt="Incident Photo"
+                      fill
+                      className="object-cover object-center transition-all duration-200 hover:scale-105 hover:brightness-75"
+                    />
+                  </div>
                 )}
               </div>
             </>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Image Modal */}
+      {imageModalOpen && selectedIncident?.media && (
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/10 backdrop-blur-xs">
+          <button
+            className="absolute top-4 right-4 z-50 text-3xl font-bold text-white hover:text-gray-300"
+            onClick={() => setImageModalOpen(false)}
+          >
+            ×
+          </button>
+
+          <img
+            src={`http://localhost/Disaster-backend/uploads/${selectedIncident.media}`}
+            alt="Incident Photo"
+            className="max-h-[90vh] max-w-[90vw] cursor-zoom-out object-contain transition-all duration-200 hover:brightness-90"
+            onClick={() => setImageModalOpen(false)}
+          />
+        </div>
+      )}
+
+      {/* Map Modal */}
+      <MapModal
+        open={mapModalOpen}
+        onClose={() => setMapModalOpen(false)}
+        position={mapPosition}
+      />
     </div>
   );
 }

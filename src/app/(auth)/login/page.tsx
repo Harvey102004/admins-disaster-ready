@@ -6,7 +6,6 @@ import { IoMdEyeOff, IoMdEye } from "react-icons/io";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { WrongPassword, SuccessLogin } from "@/components/pop-up";
 import gsap from "gsap";
 import { MdEmail } from "react-icons/md";
 import { GoHomeFill } from "react-icons/go";
@@ -82,11 +81,49 @@ export default function Login() {
   const [showVerification, setShowVerification] = useState(false);
   const [serverMessage, setServerMessage] = useState("");
 
+  const [loginMessage, setLoginMessage] = useState("");
+  const [cooldown, setCooldown] = useState<number>(() => {
+    const saved = localStorage.getItem("loginCooldown");
+    return saved ? parseInt(saved) : 0;
+  });
+  const cooldownRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem("loginCooldown");
+    const savedCooldown = saved ? parseInt(saved) : 0;
+    if (savedCooldown > 0) {
+      startCooldown(savedCooldown);
+    }
+  }, []);
+
+  const startCooldown = (seconds: number) => {
+    let counter = seconds;
+    setCooldown(counter);
+    localStorage.setItem("loginCooldown", String(counter));
+
+    if (cooldownRef.current) clearInterval(cooldownRef.current);
+    cooldownRef.current = setInterval(() => {
+      counter -= 1;
+      setCooldown(counter);
+      localStorage.setItem("loginCooldown", String(counter));
+
+      if (counter <= 0) {
+        clearInterval(cooldownRef.current!);
+        cooldownRef.current = null;
+        localStorage.removeItem("loginCooldown");
+      }
+    }, 1000);
+  };
+
   /* ---------- LOGIN ---------- */
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (cooldown > 0) return;
+
     setIsLoading(true);
+    setLoginMessage("");
 
     try {
       const response = await axios.post(
@@ -97,21 +134,47 @@ export default function Login() {
         },
       );
 
+      console.log("📥 Backend response:", response.data);
+
       if (response.data.success) {
         const { password, role, ...safeAccount } = response.data.user;
-        localStorage.setItem("user", JSON.stringify(safeAccount));
+        // ✅ Check if running in browser
+        if (typeof window !== "undefined") {
+          localStorage.setItem("user", JSON.stringify(safeAccount));
+        }
+
+        setLoginMessage(" Login successful! Redirecting...");
         setIsSuccess(true);
 
         setTimeout(() => {
           router.push(role === 1 ? "/super-dashboard" : "/sub-dashboard");
           setIsSuccess(false);
+          setLoginMessage("");
         }, 1500);
       } else {
         setIsWrong(true);
+        setLoginMessage(
+          response.data.message || "❌ Invalid username or password.",
+        );
+
+        if (
+          response.data.message &&
+          response.data.message
+            .toLowerCase()
+            .includes("too many failed attempts")
+        ) {
+          const minutesMatch = response.data.message.match(/(\d+)\s*minute/);
+          const cooldownMinutes = minutesMatch ? parseInt(minutesMatch[1]) : 1;
+          const cooldownSeconds = cooldownMinutes * 60;
+
+          startCooldown(cooldownSeconds);
+        }
+
         setTimeout(() => setIsWrong(false), 2000);
       }
     } catch (error) {
       console.error("❌ Login error:", error);
+      setLoginMessage("⚠️ Server error. Please try again later.");
       setIsWrong(true);
       setTimeout(() => setIsWrong(false), 2000);
     } finally {
@@ -154,7 +217,6 @@ export default function Login() {
     } catch (err: any) {
       console.error("❌ Registration error:", err);
 
-      // If backend sends response with error message (like 400, 500)
       if (err.response?.data?.message) {
         setServerMessage(`❌ ${err.response.data.message}`);
       } else {
@@ -168,6 +230,8 @@ export default function Login() {
   /* ---------- VERIFICATION ---------- */
   const handleVerifyCode = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isLocked) return;
+
     setIsVerifying(true);
     setVerifyMessage("");
 
@@ -184,24 +248,26 @@ export default function Login() {
 
       if (data.success) {
         setVerifyMessage("✅ " + (data.message || "Verification successful."));
-
         setTimeout(() => {
-          setShowVerification(false); // hide verification modal
-          setIsLoginForm(true); // switch back to login form
+          setShowVerification(false);
+          setIsLoginForm(true);
           setCreateData({
-            // clear all create account inputs
             username: "",
             email: "",
             password: "",
             confirm_password: "",
             barangay: "",
           });
-          setServerMessage(""); // clear any server messages
-          setVerificationCode(""); // clear OTP input
+          setServerMessage("");
+          setVerificationCode("");
         }, 1500);
       } else {
-        // ensure there’s always a message
-        setVerifyMessage(data.message || "Incorrect verification code.");
+        setVerifyMessage(data.message || "❌ Incorrect verification code.");
+
+        // 🔒 kapag sinabi ng backend na 4 attempts na
+        if (data.message && data.message.toLowerCase().includes("4 attempts")) {
+          setIsLocked(true);
+        }
       }
     } catch (error) {
       console.error("Verification Error:", error);
@@ -211,21 +277,13 @@ export default function Login() {
     }
   };
 
-  /* ---------- GSAP POPUPS ---------- */
-  useEffect(() => {
-    gsap.fromTo(
-      ".popUp",
-      { opacity: 0, y: -20 },
-      { opacity: 1, y: 0, duration: 0.3 },
-    );
-  }, [isWrong, isSuccess]);
-
   /* ---------- FORGOT PASSWORD ---------- */
   const [showForgot, setShowForgot] = useState(false);
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotMessage, setForgotMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [isLocked, setIsLocked] = useState(false);
 
   const handleForgotPassword = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -374,15 +432,37 @@ export default function Login() {
 
                 <button
                   type="submit"
-                  disabled={isLoading}
-                  className={`bg-itim dark:bg-puti ${
-                    isLoading
-                      ? "cursor-not-allowed opacity-75"
-                      : "cursor-pointer hover:opacity-90"
-                  } dark:text-itim text-light mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-sm text-sm shadow-sm`}
+                  disabled={isLoading || cooldown > 0}
+                  className={`mx-auto mt-3 w-full rounded p-3 text-sm transition ${
+                    isLoading || cooldown > 0
+                      ? "cursor-not-allowed bg-gray-500 text-white"
+                      : "bg-dark-blue text-white"
+                  }`}
                 >
-                  {isLoading ? "Logging in...." : "Login"}
+                  {cooldown > 0
+                    ? `Try again later`
+                    : isLoading
+                      ? "Processing..."
+                      : "Login"}
                 </button>
+
+                {loginMessage && (
+                  <p
+                    className={`text-center text-xs ${
+                      loginMessage.includes("✅")
+                        ? "text-green-600"
+                        : "text-red-500"
+                    }`}
+                  >
+                    {loginMessage}
+                  </p>
+                )}
+
+                {cooldown > 0 && (
+                  <p className="mt-2 text-center text-xs text-red-500">
+                    Please wait {cooldown}s before trying again.
+                  </p>
+                )}
 
                 <div className="flex items-center gap-2 text-xs">
                   <p>Don't have an account?</p>
@@ -402,18 +482,6 @@ export default function Login() {
                   Forgot Password?
                 </button>
               </form>
-
-              {/* ---------- POPUPS ---------- */}
-              {isWrong && (
-                <div className="popUp absolute -top-12 left-1/2 -translate-x-1/2">
-                  <WrongPassword />
-                </div>
-              )}
-              {isSuccess && (
-                <div className="popUp absolute -top-12 left-1/2 -translate-x-1/2">
-                  <SuccessLogin />
-                </div>
-              )}
             </div>
           ) : (
             <div className="ml-5 h-5/6 w-[90%]">
@@ -714,13 +782,23 @@ export default function Login() {
                 </InputOTPGroup>
               </InputOTP>
 
-              <button
-                type="submit"
-                disabled={isVerifying}
-                className="w-full rounded bg-blue-600 py-3 text-sm text-white hover:bg-blue-700 disabled:opacity-70"
-              >
-                {isVerifying ? "Verifying..." : "Verify"}
-              </button>
+              {isLocked ? (
+                <button
+                  type="button"
+                  onClick={() => window.location.reload()}
+                  className="w-full rounded bg-red-600 py-3 text-sm text-white hover:bg-red-700"
+                >
+                  Retry
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={isVerifying}
+                  className="w-full rounded bg-blue-600 py-3 text-sm text-white hover:bg-blue-700 disabled:opacity-70"
+                >
+                  {isVerifying ? "Verifying..." : "Verify"}
+                </button>
+              )}
             </form>
 
             {verifyMessage && (
