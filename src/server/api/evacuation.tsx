@@ -8,7 +8,7 @@ import z from "zod";
 export type EvacuationCenterFormData = z.infer<typeof evacuationCenterSchema>;
 
 const API_ADD_EVACUATION =
-  "http://localhost/Disaster-backend/controllers/evacuationCenterController.php";
+  "http://localhost/Disaster-backend/public/evacuationCenter.php";
 
 export const addEvacuationCenter = async (data: EvacuationCenterFormData) => {
   try {
@@ -26,7 +26,7 @@ export const addEvacuationCenter = async (data: EvacuationCenterFormData) => {
 // -------- FETCH ALL EVACUATION CENTER ---------- //
 
 const API_GET_EVACUATIONS =
-  "http://localhost/Disaster-backend/controllers/evacuationCenterController.php";
+  "http://localhost/Disaster-backend/public/evacuationCenter.php";
 
 export const getEvacuationCenters = async (): Promise<
   EvacuationCenterProps[]
@@ -49,7 +49,7 @@ export const getEvacuationCenters = async (): Promise<
 export const getEvacuationDetails = async ({ id }: { id: string }) => {
   try {
     const response = await axios.get<EvacuationCenterProps>(
-      `http://localhost/Disaster-backend/controllers/evacuationCenterController.php?&id=${id}`,
+      `http://localhost/Disaster-backend/public/evacuationCenter.php?&id=${id}`,
     );
 
     console.log(response.data);
@@ -71,7 +71,7 @@ export const deleteEvacuationCenter = async ({ id }: { id: string }) => {
     formData.append("_method", "DELETE");
 
     const response = await axios.post(
-      `http://localhost/Disaster-backend/controllers/evacuationCenterController.php?&id=${id}`,
+      `http://localhost/Disaster-backend/public/evacuationCenter.php?&id=${id}`,
       formData,
     );
 
@@ -97,7 +97,7 @@ export const editEvacuationCenter = async ({
 }) => {
   try {
     const response = await axios.put(
-      `http://localhost/Disaster-backend/controllers/evacuationCenterController.php?id=${id}`,
+      `http://localhost/Disaster-backend/public/evacuationCenter.php?id=${id}`,
       {
         evac_name: data.name,
         evac_location: data.location,

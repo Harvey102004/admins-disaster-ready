@@ -1,7 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FaFacebook, FaPhone, FaUser } from "react-icons/fa6";
+import {
+  FaBook,
+  FaChild,
+  FaFacebook,
+  FaPhone,
+  FaUser,
+  FaUsers,
+} from "react-icons/fa6";
 import { useRouter } from "next/navigation";
 import { getBrgyContacts } from "@/server/api/brgyContacts";
 import { LiaEditSolid } from "react-icons/lia";
@@ -11,6 +18,7 @@ import { ImPhoneHangUp } from "react-icons/im";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import Loader from "@/components/loading";
+import { FaFemale, FaMale } from "react-icons/fa";
 
 const MapDetails = dynamic(() => import("@/components/maps/map-details"), {
   ssr: false,
@@ -27,6 +35,13 @@ export type BarangayContact = {
   contact_number: string;
   lat: number;
   long: number;
+  total_male?: number;
+  total_female?: number;
+  total_families?: number;
+  total_male_senior?: number;
+  total_female_senior?: number;
+  total_0_4_years?: number;
+  source?: string;
 };
 
 export default function SubAdminBarangayContact() {
@@ -114,72 +129,131 @@ export default function SubAdminBarangayContact() {
         <div className="relative flex justify-center gap-10">
           <div className="flex gap-12">
             {/* Contact Details */}
-            <div className="flex flex-col gap-6">
-              {/* Barangay Captain */}
-              <div className="flex items-center gap-3">
-                <FaUser className="text-dark-blue text-xl" />
-                <div className="text-lg">
-                  <p>{contact.captain_name}</p>
-                  <p className="text-xs text-nowrap">Barangay Captain</p>
+            <div className="flex items-center gap-6">
+              <div className="flex flex-col gap-6">
+                {/* Barangay Captain */}
+                <div className="flex items-center gap-3">
+                  <FaUser className="text-dark-blue text-xl" />
+                  <div className="text-lg">
+                    <p>{contact.captain_name}</p>
+                    <p className="text-xs text-nowrap">Barangay Captain</p>
+                  </div>
+                </div>
+
+                {/* Barangay Secretary */}
+                <div className="flex items-center gap-3">
+                  <FaUser className="text-dark-blue text-xl" />
+                  <div className="text-lg">
+                    <p>{contact.secretary_name}</p>
+                    <p className="text-xs text-nowrap">Barangay Secretary </p>
+                  </div>
+                </div>
+
+                {/* Email */}
+                <div className="flex items-center gap-3">
+                  <MdEmail className="text-dark-blue text-xl" />
+                  <div className="text-lg">
+                    <p>{contact.email}</p>
+                    <p className="text-xs text-nowrap">Email </p>
+                  </div>
                 </div>
               </div>
 
-              {/* Barangay Secretary */}
-              <div className="flex items-center gap-3">
-                <FaUser className="text-dark-blue text-xl" />
-                <div className="text-lg">
-                  <p>{contact.secretary_name}</p>
-                  <p className="text-xs text-nowrap">Barangay Secretary </p>
+              <div className="flex flex-col gap-6">
+                {/* Facebook Page */}
+                <div className="flex items-center gap-3">
+                  <FaFacebook className="text-dark-blue text-xl" />
+                  <div className="items-center text-lg">
+                    {contact.facebook_page ? (
+                      <a
+                        href={contact.facebook_page}
+                        target="_blank"
+                        className="text-blue-500 transition-all duration-300 hover:underline hover:underline-offset-8 hover:opacity-75"
+                      >
+                        Visit Facebook Page
+                      </a>
+                    ) : (
+                      <span className="text-gray-500">No page available</span>
+                    )}
+                    <p className="text-xs whitespace-nowrap">Facebook Page</p>
+                  </div>
+                </div>
+
+                {/* Landline */}
+                <div className="flex items-center gap-3">
+                  <ImPhoneHangUp className="text-dark-blue text-xl" />
+                  <div className="text-lg">
+                    <p>{contact.landline}</p>
+                    <p className="text-xs text-nowrap">Landline </p>
+                  </div>
+                </div>
+
+                {/* Contact Number */}
+                <div className="flex items-center gap-3">
+                  <FaPhone className="text-dark-blue text-xl" />
+                  <div className="text-lg">
+                    <p>{contact.contact_number}</p>
+                    <p className="text-xs text-nowrap">Contact Number </p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div className="flex flex-col gap-6">
-              {/* Email */}
-              <div className="flex items-center gap-3">
-                <MdEmail className="text-dark-blue text-xl" />
-                <div className="text-lg">
-                  <p>{contact.email}</p>
-                  <p className="text-xs text-nowrap">Email </p>
+            {/* Population Statistics */}
+            <div className="flex flex-col gap-4">
+              <div className="grid grid-cols-2 gap-6 text-sm">
+                {/* Total Male */}
+                <div className="flex items-center gap-3">
+                  <FaMale className="text-dark-blue text-2xl" />
+                  <div className="text-lg">
+                    <p>{contact.total_male ?? 0}</p>
+                    <p className="text-xs text-nowrap">Total Male</p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Facebook Page */}
-              <div className="flex items-center gap-3">
-                <FaFacebook className="text-dark-blue text-xl" />
-                <div className="items-center text-lg">
-                  {contact.facebook_page ? (
-                    <a
-                      href={contact.facebook_page}
-                      target="_blank"
-                      className="text-blue-500 transition-all duration-300 hover:underline hover:underline-offset-8 hover:opacity-75"
-                    >
-                      Visit Facebook Page
-                    </a>
-                  ) : (
-                    <span className="text-gray-500">No page available</span>
-                  )}
-                  <p className="text-xs whitespace-nowrap">Facebook Page</p>
+                {/* Total Female */}
+                <div className="flex items-center gap-3">
+                  <FaFemale className="text-dark-blue text-2xl" />
+                  <div className="text-lg">
+                    <p>{contact.total_female ?? 0}</p>
+                    <p className="text-xs text-nowrap">Total Female</p>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <div className="flex flex-col gap-6">
-              {/* Landline */}
-              <div className="flex items-center gap-3">
-                <ImPhoneHangUp className="text-dark-blue text-xl" />
-                <div className="text-lg">
-                  <p>{contact.landline}</p>
-                  <p className="text-xs text-nowrap">Landline </p>
+                {/* Total Families */}
+                <div className="flex items-center gap-3">
+                  <FaUsers className="text-dark-blue text-2xl" />
+                  <div className="text-lg">
+                    <p>{contact.total_families ?? 0}</p>
+                    <p className="text-xs text-nowrap">Total Families</p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Contact Number */}
-              <div className="flex items-center gap-3">
-                <FaPhone className="text-dark-blue text-xl" />
-                <div className="text-lg">
-                  <p>{contact.contact_number}</p>
-                  <p className="text-xs text-nowrap">Contact Number </p>
+                {/* Male Seniors */}
+                <div className="flex items-center gap-3">
+                  <FaMale className="text-dark-blue text-2xl" />
+                  <div className="text-lg">
+                    <p>{contact.total_male_senior ?? 0}</p>
+                    <p className="text-xs text-nowrap">Male Seniors</p>
+                  </div>
+                </div>
+
+                {/* Female Seniors */}
+                <div className="flex items-center gap-3">
+                  <FaFemale className="text-dark-blue text-2xl" />
+                  <div className="text-lg">
+                    <p>{contact.total_female_senior ?? 0}</p>
+                    <p className="text-xs text-nowrap">Female Seniors</p>
+                  </div>
+                </div>
+
+                {/* Children 0-4 */}
+                <div className="flex items-center gap-3">
+                  <FaChild className="text-dark-blue text-2xl" />
+                  <div className="text-lg">
+                    <p>{contact.total_0_4_years ?? 0}</p>
+                    <p className="text-xs text-nowrap">Children (0-4 y/o)</p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -189,7 +263,7 @@ export default function SubAdminBarangayContact() {
               href={`/sub-brgy-contact/edit-contact-form/${contact.id}`}
               className="bg-dark-blue absolute -bottom-25 left-1/2 mt-4 flex w-max -translate-x-1/2 items-center gap-2 rounded-md px-6 py-3 text-sm transition-all duration-300 hover:opacity-75"
             >
-              <LiaEditSolid className="text-xl" />
+              <LiaEditSolid className="text-xl text-white" />
               Edit Contact Details
             </Link>
           </div>

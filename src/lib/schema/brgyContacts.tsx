@@ -33,41 +33,50 @@ const createSchema = () => {
       .min(5, "Must be at least 5 characters long")
       .max(100, "Maximum of 100 characters only"),
 
-    facebook_page: z
-      .string()
-      .trim()
-      .min(1, "Facebook page link is required")
-      .regex(
-        /^https?:\/\/(www\.)?facebook\.com\/[A-Za-z0-9_.-]+\/?$/,
-        "Please provide a valid Facebook page link",
-      ),
-
-    landline: z
-      .string()
-      .trim()
-      .min(1, "Barangay landline is required")
-      .regex(
-        /^(\d{7}|\d{3}-\d{3}-\d{4}|\d{10,11})$/,
-        "Invalid landline format (e.g. 0491234567)",
-      ),
-
     contact_number: z
       .string()
       .trim()
       .min(1, "Barangay contact number is required")
       .regex(/^09\d{9}$/, "Contact number must start with 09 and be 11 digits"),
 
-    lat: z
-      .number({ invalid_type_error: "Latitude is required" })
-      .refine((val) => val !== 14.1717, {
-        message: "Please select a location on the map",
-      }),
+    landline: z.string().trim().optional(),
 
-    long: z
-      .number({ invalid_type_error: "Longitude is required" })
-      .refine((val) => val !== 121.2436, {
-        message: "Please select a location on the map",
-      }),
+    facebook_page: z.string().trim().optional(),
+
+    lat: z.number(),
+    long: z.number(),
+
+    total_male: z
+      .string()
+      .optional()
+      .transform((val) => Number(val) || 0),
+
+    total_female: z
+      .string()
+      .optional()
+      .transform((val) => Number(val) || 0),
+
+    total_families: z
+      .string()
+      .optional()
+      .transform((val) => Number(val) || 0),
+
+    total_male_senior: z
+      .string()
+      .optional()
+      .transform((val) => Number(val) || 0),
+
+    total_female_senior: z
+      .string()
+      .optional()
+      .transform((val) => Number(val) || 0),
+
+    total_0_4_years: z
+      .string()
+      .optional()
+      .transform((val) => Number(val) || 0),
+
+    source: z.string().trim().optional(),
   });
 };
 

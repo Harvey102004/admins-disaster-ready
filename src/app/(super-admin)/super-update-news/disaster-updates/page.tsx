@@ -137,7 +137,7 @@ export default function DisasterUpdates() {
           placeholder="Search by title..."
         />
       </div>{" "}
-      <div className="scrollBar grid max-h-[80vh] grid-cols-3 gap-7 overflow-auto px-8 pt-5 pb-20">
+      <div className="scrollBar grid max-h-[80vh] grid-cols-3 gap-7 overflow-auto overflow-x-hidden px-8 pt-5 pb-20">
         {data?.length === 0 ? (
           <div className="absolute top-1/2 left-1/2 flex w-full -translate-1/2 flex-col items-center justify-center gap-2">
             <AiFillFolderOpen className="text-dark-blue text-4xl" />

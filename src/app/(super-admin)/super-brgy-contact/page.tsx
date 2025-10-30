@@ -33,7 +33,7 @@ export default function SuperAdminBarangayContact() {
         </div>
         <div className="scrollBar relative overflow-auto">
           <div className="">
-            <div className="flex h-[87vh] flex-wrap items-start gap-x-10 pt-5">
+            <div className="flex h-[87vh] flex-wrap items-start gap-x-10">
               {isLoading ? (
                 <p className="col-span-full text-center text-gray-500 dark:text-gray-400">
                   Loading...
@@ -42,7 +42,7 @@ export default function SuperAdminBarangayContact() {
                 data.map((item: BarangayContact) => (
                   <div
                     key={item.id}
-                    className="group relative w-[330px] cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md transition-all duration-300 dark:border-gray-700 dark:bg-gray-900"
+                    className="group relative mt-7 w-[330px] cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md transition-all duration-300 dark:border-gray-700 dark:bg-gray-900"
                     onClick={() => {
                       setSelectedContact(item);
                       setIsDetailOpen(true);

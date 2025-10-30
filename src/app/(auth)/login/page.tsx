@@ -436,7 +436,7 @@ export default function Login() {
                   className={`mx-auto mt-3 w-full rounded p-3 text-sm transition ${
                     isLoading || cooldown > 0
                       ? "cursor-not-allowed bg-gray-500 text-white"
-                      : "bg-dark-blue text-white"
+                      : "bg-light-black dark:text-light-black text-white dark:bg-white"
                   }`}
                 >
                   {cooldown > 0
@@ -449,7 +449,7 @@ export default function Login() {
                 {loginMessage && (
                   <p
                     className={`text-center text-xs ${
-                      loginMessage.includes("✅")
+                      loginMessage.includes("Redirecting")
                         ? "text-green-600"
                         : "text-red-500"
                     }`}
