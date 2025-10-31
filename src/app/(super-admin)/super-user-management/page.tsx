@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { FaUserLock } from "react-icons/fa6";
 import { TiArrowBack } from "react-icons/ti";
 import { MdUnarchive } from "react-icons/md";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SuperAdminUserManagement() {
   const [showModal, setShowModal] = useState(false);
@@ -175,11 +176,6 @@ export default function SuperAdminUserManagement() {
       return (b.lastLogin?.getTime() || 0) - (a.lastLogin?.getTime() || 0);
     });
 
-  if (usersLoading) return <p>Loading...</p>;
-  if (usersError) return <p>Error loading users</p>;
-
-  console.log(archivedUsersData);
-
   const archivedCount = archivedUsersData?.data?.data?.length || 0;
 
   return (
@@ -213,51 +209,61 @@ export default function SuperAdminUserManagement() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b">
-                  <th className="sticky top-0 bg-white px-3 py-4 text-left text-sm font-semibold">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
                     ID
                   </th>
-                  <th className="sticky top-0 bg-white px-3 py-4 text-left text-sm font-semibold">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
                     Username
                   </th>
-                  <th className="sticky top-0 bg-white px-3 py-4 text-left text-sm font-semibold">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
                     Email
                   </th>
-                  <th className="sticky top-0 bg-white px-3 py-4 text-left text-sm font-semibold">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
                     Barangay
                   </th>
-                  <th className="sticky top-0 bg-white px-3 py-4 text-left text-sm font-semibold">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
                     Last Logged In
                   </th>
-                  <th className="sticky top-0 bg-white px-3 py-4 text-right text-sm font-semibold">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-right text-sm font-semibold">
                     Action
                   </th>
                 </tr>
               </thead>
 
               <tbody>
-                {sortedUsers.map((user: any) => (
-                  <tr key={user.id} className="border-b">
-                    <td className="p-3 text-[13px]">{user.id}</td>
-                    <td className="p-3 text-[13px]">{user.username}</td>
-                    <td className="p-3 text-[13px]">{user.email}</td>
-                    <td className="p-3 text-[13px]">{user.barangay}</td>
-                    <td
-                      className={`user p-3 text-[13px] ${
-                        user.isRed ? "font-medium text-red-500" : ""
-                      }`}
-                    >
-                      {user.displayTime}
-                    </td>
-                    <td className="p-3 text-right">
-                      <button
-                        className="bg-dark-blue rounded-full px-3 py-1.5 text-[10px] text-white"
-                        onClick={() => handleAction(user)}
-                      >
-                        Deactivate
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {usersLoading
+                  ? Array.from({ length: 10 }).map((_, i) => (
+                      <tr key={i} className="border-b">
+                        {Array.from({ length: 6 }).map((_, j) => (
+                          <td key={j} className="p-3">
+                            <Skeleton className="h-6 w-full rounded-full" />
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  : sortedUsers.map((user: any) => (
+                      <tr key={user.id} className="border-b">
+                        <td className="p-3 text-[13px]">{user.id}</td>
+                        <td className="p-3 text-[13px]">{user.username}</td>
+                        <td className="p-3 text-[13px]">{user.email}</td>
+                        <td className="p-3 text-[13px]">{user.barangay}</td>
+                        <td
+                          className={`user p-3 text-[13px] ${
+                            user.isRed ? "font-medium text-red-500" : ""
+                          }`}
+                        >
+                          {user.displayTime}
+                        </td>
+                        <td className="p-3 text-right">
+                          <button
+                            className="bg-dark-blue rounded-full px-3 py-1.5 text-[10px] text-white"
+                            onClick={() => handleAction(user)}
+                          >
+                            Deactivate
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>
@@ -265,11 +271,11 @@ export default function SuperAdminUserManagement() {
           {/* PASSWORD MODAL */}
           {showModal && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
-              <div className="w-[450px] space-y-4 rounded-lg bg-white p-6">
+              <div className="dark:bg-light-black w-[450px] space-y-4 rounded-lg bg-white p-6">
                 <h3 className="text-center text-lg font-semibold">
                   Confirm Deactivation
                 </h3>
-                <p className="text-center text-sm text-gray-600">
+                <p className="text-center text-sm text-gray-600 dark:text-gray-400">
                   User :{" "}
                   <span className="font-semibold">
                     {selectedUser?.username}
@@ -354,51 +360,61 @@ export default function SuperAdminUserManagement() {
             <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b">
-                  <th className="sticky top-0 bg-white px-3 py-4 text-left text-sm font-semibold">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
                     ID
                   </th>
-                  <th className="sticky top-0 bg-white px-3 py-4 text-left text-sm font-semibold">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
                     Username
                   </th>
-                  <th className="sticky top-0 bg-white px-3 py-4 text-left text-sm font-semibold">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
                     Email
                   </th>
-                  <th className="sticky top-0 bg-white px-3 py-4 text-left text-sm font-semibold">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
                     Barangay
                   </th>
-                  <th className="sticky top-0 bg-white px-3 py-4 text-left text-sm font-semibold">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
                     Status
                   </th>
-                  <th className="sticky top-0 bg-white px-3 py-4 text-right text-sm font-semibold">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-right text-sm font-semibold">
                     Action
                   </th>
                 </tr>
               </thead>
 
               <tbody>
-                {archivedUsersData?.data?.data.map((user: any) => (
-                  <tr key={user.id} className="border-b">
-                    <td className="p-3 text-[13px]">{user.id}</td>
-                    <td className="p-3 text-[13px]">{user.username}</td>
-                    <td className="p-3 text-[13px]">{user.email}</td>
-                    <td className="p-3 text-[13px]">{user.barangay}</td>
-                    <td
-                      className={`user p-3 text-[13px] ${
-                        user.isRed ? "font-medium text-red-500" : ""
-                      }`}
-                    >
-                      {user.status}
-                    </td>
-                    <td className="p-3">
-                      <div className="mr-2.5 flex items-center justify-end">
-                        <MdUnarchive
-                          className="cursor-pointer text-2xl"
-                          onClick={() => handleUnarchive(user)}
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+                {archivedLoading
+                  ? Array.from({ length: 10 }).map((_, i) => (
+                      <tr key={i} className="border-b">
+                        {Array.from({ length: 6 }).map((_, j) => (
+                          <td key={j} className="p-3">
+                            <Skeleton className="h-6 w-full rounded-full" />
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  : archivedUsersData?.data?.data.map((user: any) => (
+                      <tr key={user.id} className="border-b">
+                        <td className="p-3 text-[13px]">{user.id}</td>
+                        <td className="p-3 text-[13px]">{user.username}</td>
+                        <td className="p-3 text-[13px]">{user.email}</td>
+                        <td className="p-3 text-[13px]">{user.barangay}</td>
+                        <td
+                          className={`user p-3 text-[13px] ${
+                            user.isRed ? "font-medium text-red-500" : ""
+                          }`}
+                        >
+                          {user.status}
+                        </td>
+                        <td className="p-3">
+                          <div className="mr-2.5 flex items-center justify-end">
+                            <MdUnarchive
+                              className="cursor-pointer text-2xl"
+                              onClick={() => handleUnarchive(user)}
+                            />
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>
@@ -406,11 +422,11 @@ export default function SuperAdminUserManagement() {
           {/* PASSWORD MODAL */}
           {showModalArchived && (
             <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
-              <div className="w-[450px] space-y-4 rounded-lg bg-white p-6">
+              <div className="dark:bg-light-black w-[450px] space-y-4 rounded-lg bg-white p-6">
                 <h3 className="text-center text-lg font-semibold">
                   Confirm Deactivation
                 </h3>
-                <p className="text-center text-sm text-gray-600">
+                <p className="text-center text-sm text-gray-600 dark:text-gray-400">
                   User :{" "}
                   <span className="font-semibold">
                     {selectedUser?.username}
@@ -448,7 +464,7 @@ export default function SuperAdminUserManagement() {
                 <div className="flex items-center justify-center gap-3">
                   <button
                     onClick={() => {
-                      setShowModal(false);
+                      setShowModalArchived(false);
                       setPassword("");
                       setModalError(null);
                     }}

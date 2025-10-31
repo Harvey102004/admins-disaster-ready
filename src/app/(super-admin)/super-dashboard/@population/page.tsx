@@ -12,7 +12,7 @@ import {
   ChartData,
   Chart as ChartType,
 } from "chart.js";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
@@ -20,6 +20,12 @@ ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 export default function PopulationPage() {
   const chartRef = useRef<ChartType<"bar">>(null);
   const { theme } = useTheme(); // ✅ detects current theme ("light" or "dark")
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Function to create gradient color for bars
   const getGradient = () => {
@@ -124,6 +130,14 @@ export default function PopulationPage() {
     const chart = chartRef.current;
     if (chart) chart.update();
   }, [theme]);
+
+  if (!mounted) {
+    return (
+      <div className="flex h-full w-full items-center justify-center">
+        <p className="text-xs opacity-50">Loading chart…</p>
+      </div>
+    );
+  }
 
   return (
     <div className="border-dark-blue/50 flex h-full w-full flex-col items-center justify-around rounded-xl border bg-transparent p-6 shadow-lg">
