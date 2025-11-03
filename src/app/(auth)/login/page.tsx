@@ -83,11 +83,14 @@ export default function Login() {
   const [serverMessage, setServerMessage] = useState("");
 
   const [loginMessage, setLoginMessage] = useState("");
-  const [cooldown, setCooldown] = useState<number>(() => {
-    const saved = localStorage.getItem("loginCooldown");
-    return saved ? parseInt(saved) : 0;
-  });
+  const [cooldown, setCooldown] = useState<number>(0);
   const cooldownRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") return;
+    const saved = localStorage.getItem("loginCooldown");
+    if (saved && parseInt(saved) > 0) startCooldown(parseInt(saved));
+  }, []);
 
   useEffect(() => {
     const saved = localStorage.getItem("loginCooldown");
@@ -138,9 +141,6 @@ export default function Login() {
         {
           username: formData.username,
           password: formData.password,
-        },
-        {
-          withCredentials: true,
         },
       );
 

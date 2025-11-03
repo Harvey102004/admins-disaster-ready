@@ -56,7 +56,7 @@ export default function NotificationPage() {
     const fetchReports = async () => {
       try {
         const res = await axios.get(
-          "http://localhost/Disaster-backend/controllers/getIncidents.php",
+          "http://localhost/Disaster-backend/pupblic/getIncidents.php",
         );
         setReports(res.data || []);
       } catch (err) {

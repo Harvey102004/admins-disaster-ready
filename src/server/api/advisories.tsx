@@ -208,16 +208,16 @@ export const deleteCommunity = async ({ id }: { id: string }) => {
 // ADD  ADVISORIES
 
 const API_URL_ADD_WEATHER =
-  "http://localhost/disaster-backend/controllers/advisoryController.php?type=weather";
+  "http://localhost/disaster-backend/public/advisoryController.php?type=weather";
 
 const API_URL_ADD_ROAD =
-  "http://localhost/disaster-backend/controllers/advisoryController.php?type=road";
+  "http://localhost/disaster-backend/public/advisoryController.php?type=road";
 
 const API_URL_ADD_DISASTER =
-  "http://localhost/disaster-backend/controllers/advisoryController.php?type=disaster";
+  "http://localhost/disaster-backend/public/advisoryController.php?type=disaster";
 
 const API_URL_ADD_COMMUNITY =
-  "http://localhost/disaster-backend/controllers/advisoryController.php?type=community";
+  "http://localhost/disaster-backend/public/advisoryController.php?type=community";
 
 export type WeatherType = z.infer<typeof weatherAdvisorySchema>;
 export type RoadType = z.infer<typeof roadAdvisorySchema>;
