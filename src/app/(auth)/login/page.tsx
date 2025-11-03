@@ -23,6 +23,7 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
+import { toast } from "sonner";
 
 export default function Login() {
   /* ---------- STATES ---------- */
@@ -96,6 +97,12 @@ export default function Login() {
     }
   }, []);
 
+  useEffect(() => {
+    if (loginMessage.includes("Redirecting")) {
+      toast.success(loginMessage, { duration: 1500 });
+    }
+  }, [loginMessage]);
+
   const startCooldown = (seconds: number) => {
     let counter = seconds;
     setCooldown(counter);
@@ -132,13 +139,13 @@ export default function Login() {
           username: formData.username,
           password: formData.password,
         },
+        {
+          withCredentials: true,
+        },
       );
-
-      console.log("📥 Backend response:", response.data);
 
       if (response.data.success) {
         const { password, role, ...safeAccount } = response.data.user;
-        // ✅ Check if running in browser
         if (typeof window !== "undefined") {
           localStorage.setItem("user", JSON.stringify(safeAccount));
         }
@@ -187,7 +194,7 @@ export default function Login() {
   const handleCreateAccount = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
-    setServerMessage(""); // clear message
+    setServerMessage("");
 
     try {
       const res = await axios.post(
@@ -209,7 +216,6 @@ export default function Login() {
         );
         setShowVerification(true);
       } else {
-        // ❌ Show backend error message in UI
         setServerMessage(
           res.data.message || "Registration failed. Please check your inputs.",
         );
@@ -264,7 +270,6 @@ export default function Login() {
       } else {
         setVerifyMessage(data.message || "❌ Incorrect verification code.");
 
-        // 🔒 kapag sinabi ng backend na 4 attempts na
         if (data.message && data.message.toLowerCase().includes("4 attempts")) {
           setIsLocked(true);
         }
@@ -446,14 +451,8 @@ export default function Login() {
                       : "Login"}
                 </button>
 
-                {loginMessage && (
-                  <p
-                    className={`text-center text-xs ${
-                      loginMessage.includes("Redirecting")
-                        ? "text-green-600"
-                        : "text-red-500"
-                    }`}
-                  >
+                {loginMessage && !loginMessage.includes("Redirecting") && (
+                  <p className="text-center text-xs text-red-500">
                     {loginMessage}
                   </p>
                 )}
