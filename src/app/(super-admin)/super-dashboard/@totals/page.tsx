@@ -47,11 +47,13 @@ export default function TotalsPage() {
     if (e.capacity === 0) return;
 
     if (e.current_evacuees === 0) {
-      full++;
+      plenty++; // empty center
     } else if (percent >= 81 && percent <= 99) {
       almostFull++;
+    } else if (percent === 100) {
+      full++; // completely full
     } else if (percent <= 80) {
-      plenty++;
+      plenty++; // plenty space
     }
   });
 
@@ -62,11 +64,77 @@ export default function TotalsPage() {
     queryKey: ["incidentReports"],
     queryFn: async () => {
       const res = await axios.get(
-        "http://localhost/Disaster-backend/controllers/getIncidents.php",
+        "http://localhost:3001/public/getIncidents.php",
+        {
+          withCredentials: true,
+          responseType: "text",
+        },
       );
-      return res.data || [];
+
+      const raw = res.data;
+
+      const firstBracket = raw.indexOf("[");
+      const reportsStr = raw.slice(firstBracket);
+      const reports = JSON.parse(reportsStr);
+
+      return reports;
     },
   });
+
+  const { data: barangays = [] } = useQuery({
+    queryKey: ["barangayContacts"],
+    queryFn: async () => {
+      const res = await axios.get(
+        "http://localhost/Disaster-backend/public/barangayContact.php",
+        {
+          withCredentials: true,
+        },
+      );
+      return res.data;
+    },
+  });
+
+  // ✅ Fetch evacuation centers
+  const { data: evacCenters = [] } = useQuery({
+    queryKey: ["evacuationCenters"],
+    queryFn: async () => {
+      const res = await axios.get(
+        "http://localhost:3001/public/evacuationCenter.php",
+        {
+          withCredentials: true,
+          responseType: "text",
+        },
+      );
+
+      const raw = res.data;
+
+      const firstBracket = raw.indexOf("[");
+      const evacStr = raw.slice(firstBracket);
+      const evac = JSON.parse(evacStr);
+
+      return evac;
+    },
+  });
+
+  const totalEvacuees = Array.isArray(evacCenters)
+    ? evacCenters.reduce(
+        (sum: number, item: any) =>
+          sum + (parseInt(item.current_evacuees) || 0),
+        0,
+      )
+    : 0;
+
+  const totalMale = barangays.reduce(
+    (sum: number, b: any) => sum + (Number(b.total_male) || 0),
+    0,
+  );
+
+  const totalFemale = barangays.reduce(
+    (sum: number, b: any) => sum + (Number(b.total_female) || 0),
+    0,
+  );
+
+  const totalPopulation = totalMale + totalFemale;
 
   // ✅ fix: now r has proper type
   const totalReports = reports.length;
@@ -137,21 +205,24 @@ export default function TotalsPage() {
       {/* POPULATION & EVACUATION */}
       <div className="flex w-1/2 flex-col gap-3">
         {/* Total Populations */}
-        <div className="border-dark-blue/50 relative flex w-full items-center justify-between rounded-xl border p-4 px-6 shadow-lg">
-          <div className="flex h-full flex-col justify-between gap-4">
-            <p className="flex items-center gap-2 text-sm">
-              <HiUserGroup />
-              Total Populations
-            </p>
-            <p className="text-2xl font-bold">117,030</p>
-          </div>
+        <div className="relative flex w-full items-center justify-between overflow-hidden">
+          <div className="flex w-full items-center justify-between gap-4">
+            <div className="border-dark-blue/50 flex w-1/2 flex-col justify-between gap-4 rounded-xl border p-4 px-6 shadow-lg">
+              <p className="flex items-center gap-2 text-xs">
+                <HiUserGroup className="text-lg" />
+                Total Populations
+              </p>
+              <p className="text-2xl font-bold">{totalPopulation}</p>
+            </div>
 
-          <Image
-            src="/logos/lb-logo.png"
-            alt="People Illustration"
-            width={60}
-            height={60}
-          />
+            <div className="border-dark-blue/50 flex w-1/2 flex-col justify-between gap-4 rounded-xl border p-4 px-6 shadow-lg">
+              <p className="flex items-center gap-2 text-xs">
+                <HiUserGroup className="text-lg" />
+                Total Evacuees
+              </p>
+              <p className="text-2xl font-bold">{totalEvacuees}</p>
+            </div>
+          </div>
         </div>
 
         {/* Total Evacuations */}

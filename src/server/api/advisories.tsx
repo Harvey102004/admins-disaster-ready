@@ -17,20 +17,21 @@ import {
 // FETCH ADVISORIES
 
 const API_URL_WEATHER =
-  "http://localhost/Disaster-backend/public/getAdvisories.php?type=weather";
+  "http://localhost:3001/public/getAdvisories.php?type=weather";
 
-const API_URL_ROAD =
-  "http://localhost/Disaster-backend/public/getAdvisories.php?type=road";
+const API_URL_ROAD = "http://localhost:3001/public/getAdvisories.php?type=road";
 
 const API_URL_DISASTER =
-  "http://localhost/Disaster-backend/public/getAdvisories.php?type=disaster";
+  "http://localhost:3001/public/getAdvisories.php?type=disaster";
 
 const API_URL_COMMUNITY =
-  "http://localhost/Disaster-backend/public/getAdvisories.php?type=community";
+  "http://localhost:3001/public/getAdvisories.php?type=community";
 
 export const getWeather = async (): Promise<TWeatherAdvisory[]> => {
   try {
-    const response = await axios.get<TWeatherAdvisory[]>(API_URL_WEATHER);
+    const response = await axios.get<TWeatherAdvisory[]>(API_URL_WEATHER, {
+      withCredentials: true,
+    });
     if (Array.isArray(response.data)) {
       return response.data;
     }
@@ -44,7 +45,9 @@ export const getWeather = async (): Promise<TWeatherAdvisory[]> => {
 
 export const getRoad = async (): Promise<TRoadAdvisory[]> => {
   try {
-    const response = await axios.get<TRoadAdvisory[]>(API_URL_ROAD);
+    const response = await axios.get<TRoadAdvisory[]>(API_URL_ROAD, {
+      withCredentials: true,
+    });
     if (Array.isArray(response.data)) {
       return response.data;
     }
@@ -58,7 +61,9 @@ export const getRoad = async (): Promise<TRoadAdvisory[]> => {
 
 export const getDisaster = async (): Promise<TDisasterAdvisory[]> => {
   try {
-    const response = await axios.get<TDisasterAdvisory[]>(API_URL_DISASTER);
+    const response = await axios.get<TDisasterAdvisory[]>(API_URL_DISASTER, {
+      withCredentials: true,
+    });
     if (Array.isArray(response.data)) {
       return response.data;
     }
@@ -72,7 +77,9 @@ export const getDisaster = async (): Promise<TDisasterAdvisory[]> => {
 
 export const getCommunity = async (): Promise<TCommunity[]> => {
   try {
-    const response = await axios.get<TCommunity[]>(API_URL_COMMUNITY);
+    const response = await axios.get<TCommunity[]>(API_URL_COMMUNITY, {
+      withCredentials: true,
+    });
 
     if (Array.isArray(response.data)) {
       return response.data;
@@ -208,16 +215,16 @@ export const deleteCommunity = async ({ id }: { id: string }) => {
 // ADD  ADVISORIES
 
 const API_URL_ADD_WEATHER =
-  "http://localhost/disaster-backend/public/advisoryController.php?type=weather";
+  "http://localhost/Disaster-backend/public/postAdvisory.php?type=weather";
 
 const API_URL_ADD_ROAD =
-  "http://localhost/disaster-backend/public/advisoryController.php?type=road";
+  "http://localhost/Disaster-backend/public/postAdvisory.php?type=road";
 
 const API_URL_ADD_DISASTER =
-  "http://localhost/disaster-backend/public/advisoryController.php?type=disaster";
+  "http://localhost/Disaster-backend/public/postAdvisory.php?type=disaster";
 
 const API_URL_ADD_COMMUNITY =
-  "http://localhost/disaster-backend/public/advisoryController.php?type=community";
+  "http://localhost/Disaster-backend/public/postAdvisory.php?type=community";
 
 export type WeatherType = z.infer<typeof weatherAdvisorySchema>;
 export type RoadType = z.infer<typeof roadAdvisorySchema>;

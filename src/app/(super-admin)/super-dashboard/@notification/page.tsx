@@ -56,9 +56,34 @@ export default function NotificationPage() {
     const fetchReports = async () => {
       try {
         const res = await axios.get(
-          "http://localhost/Disaster-backend/pupblic/getIncidents.php",
+          "http://localhost:3001/public/getIncidents.php",
+          {
+            withCredentials: true,
+          },
         );
-        setReports(res.data || []);
+
+        let responseData = res.data;
+
+        if (!Array.isArray(responseData)) {
+          const keys = Object.keys(responseData);
+          const arrayKey = keys.find(
+            (key) =>
+              Array.isArray(responseData[key]) &&
+              responseData[key][0]?.created_at,
+          );
+          responseData = arrayKey ? responseData[arrayKey] : [];
+        }
+
+        // Ngayon safe na mag-sort
+        const sorted = responseData
+          .sort(
+            (a: Report, b: Report) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime(),
+          )
+          .slice(0, 10);
+
+        setReports(sorted);
       } catch (err) {
         console.error("Error fetching reports:", err);
       } finally {

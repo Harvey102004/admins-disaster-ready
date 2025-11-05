@@ -9,6 +9,7 @@ import {
   getDisaster,
   getCommunity,
 } from "@/server/api/advisories";
+import { getUsers } from "@/server/api/users";
 
 export default function Advisories() {
   const [totals, setTotals] = useState({
@@ -16,24 +17,32 @@ export default function Advisories() {
     road: 0,
     disaster: 0,
     community: 0,
+    users: 0,
   });
 
   useEffect(() => {
     async function fetchAll() {
       try {
-        const [weatherData, roadData, disasterData, communityData] =
-          await Promise.all([
-            getWeather(),
-            getRoad(),
-            getDisaster(),
-            getCommunity(),
-          ]);
+        const [
+          weatherData,
+          roadData,
+          disasterData,
+          communityData,
+          totalAccounts,
+        ] = await Promise.all([
+          getWeather(),
+          getRoad(),
+          getDisaster(),
+          getCommunity(),
+          getUsers(),
+        ]);
 
         setTotals({
           weather: weatherData.length,
           road: roadData.length,
           disaster: disasterData.length,
           community: communityData.length,
+          users: totalAccounts.data?.length || 0,
         });
       } catch (error) {
         console.error("Error fetching advisories:", error);
@@ -43,8 +52,7 @@ export default function Advisories() {
     fetchAll();
   }, []);
 
-  const totalAccounts =
-    totals.weather + totals.road + totals.disaster + totals.community;
+  console.log(totals.users);
 
   return (
     <div className="grid h-full w-full gap-6 rounded-lg">
@@ -52,7 +60,7 @@ export default function Advisories() {
       <div className="border-dark-blue/50 col-start-1 col-end-3 row-start-5 row-end-6 flex h-full w-full items-center justify-center gap-3 rounded-lg border shadow-lg">
         <div className="flex flex-col items-center justify-center gap-3 p-5">
           <h2 className="text-sm">Total Accounts</h2>
-          <p className="text-4xl font-semibold">{totalAccounts}</p>
+          <p className="text-4xl font-semibold">{totals.users}</p>
         </div>
       </div>
 

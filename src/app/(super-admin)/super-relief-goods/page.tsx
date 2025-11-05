@@ -11,6 +11,14 @@ import { useQuery } from "@tanstack/react-query";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getBrgyContacts } from "@/server/api/brgyContacts";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 interface ReliefFormData {
   description: string;
   total_packs: number;
@@ -22,6 +30,7 @@ export default function ReliefGoods() {
   const [serverError, setServerError] = useState("");
   const [reliefDetails, setReliefDetails] = useState({
     id: "",
+    name: "",
     total_packs: 0,
   });
   const [distributeForm, setDistributeForm] = useState(false);
@@ -159,6 +168,14 @@ export default function ReliefGoods() {
     }
   };
 
+  const remainingPacks = useMemo(() => {
+    const totalAllocated = Object.values(manualAllocations).reduce(
+      (sum, val) => sum + val,
+      0,
+    );
+    return Math.max(reliefDetails.total_packs - totalAllocated, 0);
+  }, [manualAllocations, reliefDetails.total_packs]);
+
   return (
     <div className="relative h-screen w-full overflow-auto px-10 py-8 transition-all duration-300">
       <div className="flex items-center justify-between">
@@ -227,11 +244,13 @@ export default function ReliefGoods() {
                     <td className="p-3 text-[13px]">{user.total_packs}</td>
                     <td className="p-3 text-end text-xs">
                       <button
+                        disabled={remainingPacks < 0}
                         onClick={() => {
                           setDistributeForm(true);
                           setReliefDetails((prev) => ({
                             ...prev,
                             id: user.id,
+                            name: user.description,
                             total_packs: user.total_packs,
                           }));
                         }}
@@ -249,16 +268,27 @@ export default function ReliefGoods() {
       {/* MODAL DISTRIBUTE FORM */}
       {distributeForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-          <div className="dark:bg-light-black relative w-[600px] rounded-md bg-white px-10 py-6 shadow-md">
+          <div className="dark:bg-light-black relative w-[800px] rounded-md bg-white px-10 py-6 shadow-md">
             <IoClose
               onClick={() => setDistributeForm(false)}
               className="absolute top-3 right-3"
             />
 
             <div className="flex flex-col gap-3">
-              <h1 className="text-lg font-semibold">Distribute Relief</h1>
-
-              <p> Available packs: {reliefDetails.total_packs}</p>
+              <h1 className="text-lg font-medium">
+                Distribute Relief
+                <span className="ml-2"> - </span>
+                <span className="ml-2 font-semibold">{reliefDetails.name}</span>
+              </h1>
+              <p>
+                Available packs:{" "}
+                <span className={remainingPacks <= 0 ? "text-red-500" : ""}>
+                  {remainingPacks}{" "}
+                  <span className="text-xs">
+                    {remainingPacks === 0 && "( Out of stocks! )"}
+                  </span>
+                </span>
+              </p>{" "}
             </div>
 
             <form>
@@ -273,14 +303,14 @@ export default function ReliefGoods() {
                 value={selectedBrgys}
               />
 
-              <div className="mt-10 grid grid-cols-4 gap-3">
+              <div className="mt-10 grid grid-cols-5 gap-3">
                 {isLoadingBrgyContacts ? (
                   <p className="text-xs text-gray-500">Loading barangays...</p>
                 ) : brgyContacts && brgyContacts.length > 0 ? (
                   brgyContacts.map((brgy: any) => (
                     <label
                       key={brgy.id}
-                      className="flex items-center gap-2 text-sm"
+                      className="flex items-center gap-2 text-sm capitalize"
                     >
                       <input
                         type="checkbox"
@@ -293,15 +323,17 @@ export default function ReliefGoods() {
                     </label>
                   ))
                 ) : (
-                  <p className="text-xs text-gray-500">No barangays found.</p>
+                  <p className="col-span-4 text-center text-sm text-nowrap text-gray-500">
+                    No barangays found.
+                  </p>
                 )}
               </div>
 
-              <div className="mt-10 flex flex-col gap-4">
+              <div className="mt-14 flex gap-4">
                 <p className="text-sm">Allocation Mode :</p>
 
-                <div className="flex gap-8">
-                  <label className="flex items-center gap-2 text-xs">
+                <div className="flex gap-5">
+                  <label className="flex items-center gap-2 text-sm">
                     <input
                       type="radio"
                       checked={allocationMode === "automatic"}
@@ -310,7 +342,7 @@ export default function ReliefGoods() {
                     Automatic
                   </label>
 
-                  <label className="flex items-center gap-2 text-xs">
+                  <label className="flex items-center gap-2 text-sm">
                     <input
                       type="radio"
                       checked={allocationMode === "manual"}
@@ -323,34 +355,37 @@ export default function ReliefGoods() {
 
               {/* ✅ Dropdown when AUTOMATIC selected */}
               {allocationMode === "automatic" && (
-                <div className="mt-2">
-                  <p className="mb-1 text-xs">Based On :</p>
-                  <select
+                <div className="mt-14 flex items-center gap-4">
+                  <p className="mb-1 text-sm">Based On :</p>
+                  <Select
                     value={basedOn}
-                    onChange={(e) =>
-                      setBasedOn(e.target.value as "population" | "families")
+                    onValueChange={(value: "population" | "families") =>
+                      setBasedOn(value)
                     }
-                    className="w-48 rounded border px-2 py-1 text-xs"
                   >
-                    <option value="population">Population</option>
-                    <option value="families">Families</option>
-                  </select>
+                    <SelectTrigger className="w-48 text-sm">
+                      <SelectValue placeholder="Select an option" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="population">Population</SelectItem>
+                      <SelectItem value="families">Families</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               )}
-
               {/* ✅ Display extra inputs if manual mode */}
               {allocationMode === "manual" && (
-                <div className="mt-6">
+                <div className="mt-14">
                   <p className="mb-2 text-sm font-semibold">
                     Enter Manual Allocation per Barangay:
                   </p>
 
                   {selectedBrgys.length === 0 ? (
-                    <p className="my-10 text-center text-sm">
+                    <p className="my-10 text-center text-sm text-gray-500">
                       No Barangay selected
                     </p>
                   ) : (
-                    <div className="mt-7 grid grid-cols-2 gap-3">
+                    <div className="mt-7 grid grid-cols-3 gap-3">
                       {selectedBrgys.map((id) => {
                         const brgy = brgyContacts.find((b: any) => b.id === id);
                         return (
@@ -358,11 +393,13 @@ export default function ReliefGoods() {
                             key={id}
                             className="flex items-center gap-3 text-sm"
                           >
-                            <span className="w-28">{brgy?.barangay_name}</span>
+                            <span className="w-28 capitalize">
+                              {brgy?.barangay_name}
+                            </span>
                             <input
                               type="number"
                               min={0}
-                              className="w-24 rounded border px-2 py-1"
+                              className="w-full rounded border px-2 py-1"
                               value={manualAllocations[id] || ""}
                               onChange={(e) =>
                                 handleManualAllocationChange(
@@ -430,6 +467,7 @@ export default function ReliefGoods() {
                     },
                   })}
                   type="text"
+                  autoComplete="off"
                   placeholder="Enter relief goods name..."
                   className="focus:ring-dark-blue/50 w-full rounded border p-3 text-sm outline-none focus:ring"
                 />
@@ -449,6 +487,7 @@ export default function ReliefGoods() {
                     min: { value: 1, message: "Minimum of 1 pack" },
                   })}
                   type="number"
+                  autoComplete="off"
                   placeholder="Total Packs"
                   className="focus:ring-dark-blue/50 w-full rounded border p-3 text-sm outline-none focus:ring"
                 />

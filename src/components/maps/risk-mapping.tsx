@@ -58,7 +58,7 @@ const HazardSelector = ({
   ];
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex gap-4">
       {types.map((type) => {
         const isActive = selectedType === type.type;
         return (
@@ -83,8 +83,8 @@ const HazardSelector = ({
               </button>
             </TooltipTrigger>
             <TooltipContent
-              side="left"
-              className="!bg-white text-xs text-gray-700"
+              side="top"
+              className="mb-3 !bg-white text-xs text-gray-700"
             >
               {type.type}
             </TooltipContent>
@@ -298,7 +298,7 @@ export default function RiskMappingMap() {
             <button
               key={type.type}
               onClick={() => handleFilterClick(type.type)}
-              className={`text-light-black flex items-center gap-2 rounded-full bg-white px-4 py-2 pr-8 text-sm transition hover:opacity-75 ${
+              className={`text-light-black flex items-center gap-2 rounded-full bg-white px-4 py-2 pr-8 text-xs transition hover:opacity-75 ${
                 isActive ? "" : "opacity-50"
               }`}
             >
@@ -310,22 +310,14 @@ export default function RiskMappingMap() {
       </div>
 
       {/* Hazard selector */}
-      <div
-        className={`${
-          isIconsOpen ? "w-8" : "px-5 py-7"
-        } absolute top-1/2 right-0 z-[40] flex h-[420px] -translate-y-1/2 items-center rounded-l-3xl bg-black/20 backdrop-blur-[1px] transition-all`}
-      >
-        <div
-          onClick={() => setIsIconsOpen((prev) => !prev)}
-          className="absolute top-1/2 -left-1 -translate-1/2 cursor-pointer rounded-full border border-black/30 bg-white p-2 text-xs text-gray-500 shadow-2xl"
-        >
-          {isIconsOpen ? <FaArrowLeftLong /> : <FaArrowRightLong />}
+      <div className="absolute bottom-6 left-1/2 z-[999] -translate-x-1/2">
+        <div className="flex items-center gap-3 rounded-full bg-white px-8 py-3 shadow-xl">
+          <HazardSelector
+            onSelect={setSelectedType}
+            selectedType={selectedType}
+            classname="p-3 bg-white shadow-xl rounded-full"
+          />
         </div>
-        <HazardSelector
-          onSelect={setSelectedType}
-          selectedType={selectedType}
-          classname={`${isIconsOpen ? "hidden" : ""}`}
-        />
       </div>
 
       {/* Map */}

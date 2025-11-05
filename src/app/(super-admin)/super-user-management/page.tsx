@@ -347,7 +347,7 @@ export default function SuperAdminUserManagement() {
                 onClick={() => setIsUserPage(true)}
               >
                 {" "}
-                <span>
+                <span onClick={() => setIsUserPage(true)}>
                   <TiArrowBack />
                 </span>
                 Back

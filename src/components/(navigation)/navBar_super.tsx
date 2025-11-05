@@ -16,6 +16,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { SideBarSkeleton } from "../skeleton/Skeleton-update-news";
 import { IoIosPaper } from "react-icons/io";
+import axios from "axios";
 
 export default function NavbarSuperAdmin() {
   const pathname = usePathname();
@@ -167,8 +168,22 @@ export default function NavbarSuperAdmin() {
               </button>
               <button
                 className="rounded bg-red-500 px-6 py-2 text-white"
-                onClick={() => {
+                onClick={async () => {
+                  try {
+                    await axios.post(
+                      "http://localhost:3001/public/logout.php",
+                      {},
+                      { withCredentials: true },
+                    );
+                  } catch (error) {
+                    console.error(
+                      "Logout failed (maybe already logged out):",
+                      error,
+                    );
+                  }
+
                   localStorage.removeItem("user");
+                  setIsLogout(false);
                   router.push("/login");
                   router.refresh();
                 }}

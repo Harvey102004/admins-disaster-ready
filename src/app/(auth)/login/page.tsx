@@ -6,7 +6,6 @@ import { IoMdEyeOff, IoMdEye } from "react-icons/io";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import gsap from "gsap";
 import { MdEmail } from "react-icons/md";
 import { GoHomeFill } from "react-icons/go";
 
@@ -87,7 +86,6 @@ export default function Login() {
   const cooldownRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined") return;
     const saved = localStorage.getItem("loginCooldown");
     if (saved && parseInt(saved) > 0) startCooldown(parseInt(saved));
   }, []);
@@ -141,6 +139,9 @@ export default function Login() {
         {
           username: formData.username,
           password: formData.password,
+        },
+        {
+          withCredentials: true,
         },
       );
 
@@ -447,7 +448,7 @@ export default function Login() {
                   {cooldown > 0
                     ? `Try again later`
                     : isLoading
-                      ? "Processing..."
+                      ? "Logging in..."
                       : "Login"}
                 </button>
 

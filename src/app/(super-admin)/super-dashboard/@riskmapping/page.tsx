@@ -1,5 +1,6 @@
 "use client";
 
+import axios from "axios";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -25,12 +26,16 @@ export default function RiskMappingOverview() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch(
-          "http://localhost/Disaster-backend/public/disasterMapping.php",
+        const res = await axios.get(
+          "http://localhost:3001/public/disasterMapping.php",
+          {
+            withCredentials: true,
+          },
         );
-        const json = await res.json();
 
-        if (json.success && Array.isArray(json.data)) {
+        const data = res.data;
+
+        if (data.success && Array.isArray(data.data)) {
           const tempCounts: MappingCount = {
             Flood: 0,
             RoadBlockage: 0,
@@ -40,7 +45,7 @@ export default function RiskMappingOverview() {
             Pharmacy: 0,
           };
 
-          json.data.forEach((item: any) => {
+          data.data.forEach((item: any) => {
             const type = item.type as keyof MappingCount;
             if (tempCounts[type] !== undefined) {
               tempCounts[type]++;

@@ -27,7 +27,7 @@ export default function SuperDashboardLayout({
         <div className="col-start-1 col-end-6 row-start-1 row-end-3">
           {totals}
         </div>
-        <div className="col-start-1 col-end-6 row-start-3 row-end-6">
+        <div className="col-start-1 col-end-6 row-start-3 row-end-6 mt-4">
           {evacuation}
         </div>
         <div className="col-start-6 col-end-8 row-start-1 row-end-4">

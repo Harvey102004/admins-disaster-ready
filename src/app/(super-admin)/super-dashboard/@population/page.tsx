@@ -14,62 +14,62 @@ import {
 } from "chart.js";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 export default function PopulationPage() {
   const chartRef = useRef<ChartType<"bar">>(null);
-  const { theme } = useTheme(); // ✅ detects current theme ("light" or "dark")
+  const { theme } = useTheme();
 
   const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  // ✅ Fetch barangay data
+  const { data: barangays = [], isLoading } = useQuery({
+    queryKey: ["barangayContacts"],
+    queryFn: async () => {
+      const res = await axios.get(
+        "http://localhost/Disaster-backend/public/barangayContact.php",
+      );
+      return res.data;
+    },
+  });
 
-  // Function to create gradient color for bars
+  const brgyArray = Array.isArray(barangays) ? barangays : [];
+
+  // ✅ Extract correct label field: barangay_name
+  const labels = brgyArray.map((b: any) => b.barangay_name);
+
+  // ✅ Compute population (even if some are zero)
+  const values = brgyArray.map(
+    (b: any) => (parseInt(b.total_male) || 0) + (parseInt(b.total_female) || 0),
+  );
+
+  console.log("📌 RAW RESPONSE:", barangays);
+
+  // ✅ Dynamic chart color gradient
   const getGradient = () => {
     const chart = chartRef.current;
-    if (!chart) return "rgba(30, 58, 138, 0.8)";
+    if (!chart) return "#1E3A8A";
     const ctx = chart.ctx;
     const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-    gradient.addColorStop(0, "rgba(56, 189, 248, 0.9)"); // sky-400
-    gradient.addColorStop(1, "rgba(29, 78, 216, 0.9)"); // blue-700
+    gradient.addColorStop(0, "rgba(56, 189, 248, 0.9)");
+    gradient.addColorStop(1, "rgba(29, 78, 216, 0.9)");
     return gradient;
   };
 
   const data: ChartData<"bar"> = {
-    labels: [
-      "Brgy. San Isidro",
-      "Brgy. Mabini",
-      "Brgy. Del Pilar",
-      "Brgy. Malabanan",
-      "Brgy. Poblacion",
-      "Brgy. Sta. Cruz",
-      "Brgy. San Pedro",
-      "Brgy. San Juan",
-      "Brgy. San Jose",
-      "Brgy. Calumpang",
-      "Brgy. Bagong Silang",
-      "Brgy. San Antonio",
-      "Brgy. San Vicente",
-      "Brgy. Sto. Niño",
-      "Brgy. San Rafael",
-      "Brgy. San Roque",
-      "Brgy. San Agustin",
-    ],
+    labels,
     datasets: [
       {
         label: "Total Population",
-        data: [
-          2300, 1800, 2500, 1900, 3200, 2100, 2800, 1750, 3000, 2600, 2400,
-          2200, 3100, 2000, 2700, 1850, 2950,
-        ],
+        data: values,
         backgroundColor: () => getGradient(),
-        borderColor: "rgba(255, 255, 255, 0.9)",
+        borderColor: "rgba(255,255,255,0.9)",
         borderWidth: 1,
         borderRadius: 6,
-        hoverBackgroundColor: "rgba(56, 189, 248, 1)",
       },
     ],
   };
@@ -80,12 +80,8 @@ export default function PopulationPage() {
       legend: { display: false },
       tooltip: {
         enabled: true,
-        titleColor: theme === "dark" ? "white" : "black",
-        bodyColor: theme === "dark" ? "white" : "black",
-        backgroundColor:
-          theme === "dark"
-            ? "rgba(30, 58, 138, 0.9)"
-            : "rgba(240, 240, 240, 0.9)",
+        titleColor: "white",
+        bodyColor: "white",
       },
     },
     scales: {
@@ -96,14 +92,9 @@ export default function PopulationPage() {
           maxRotation: 60,
           minRotation: 40,
         },
-        grid: {
-          color:
-            theme === "dark"
-              ? "rgba(255, 255, 255, 0.2)"
-              : "rgba(128, 128, 128, 0.2)",
-        },
       },
       y: {
+        beginAtZero: true,
         ticks: {
           color: theme === "dark" ? "white" : "black",
           font: { family: "Poppins", size: 10 },
@@ -112,26 +103,16 @@ export default function PopulationPage() {
           display: true,
           text: "Population",
           color: theme === "dark" ? "white" : "black",
-          font: { family: "Poppins", size: 11 },
-          padding: 10,
-        },
-        beginAtZero: true,
-        grid: {
-          color:
-            theme === "dark"
-              ? "rgba(255, 255, 255, 0.2)"
-              : "rgba(128, 128, 128, 0.2)",
         },
       },
     },
   };
 
   useEffect(() => {
-    const chart = chartRef.current;
-    if (chart) chart.update();
-  }, [theme]);
+    chartRef.current?.update();
+  }, [theme, barangays]);
 
-  if (!mounted) {
+  if (!mounted || isLoading) {
     return (
       <div className="flex h-full w-full items-center justify-center">
         <p className="text-xs opacity-50">Loading chart…</p>

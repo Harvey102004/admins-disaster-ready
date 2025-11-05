@@ -10,13 +10,12 @@ import { MdEmail } from "react-icons/md";
 import { ImPhoneHangUp } from "react-icons/im";
 import { IoCloseCircleSharp } from "react-icons/io5";
 import MapDetails from "@/components/maps/map-details";
+import { FaFemale, FaMale } from "react-icons/fa";
 
 export default function SuperAdminBarangayContact() {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedContact, setSelectedContact] =
     useState<BarangayContact | null>(null);
-
-  const [isMapOpen, setIsMapOpen] = useState(false);
 
   const { data = [], isLoading } = useQuery({
     queryKey: ["barangayContacts"],
@@ -33,7 +32,7 @@ export default function SuperAdminBarangayContact() {
         </div>
         <div className="scrollBar relative overflow-auto">
           <div className="">
-            <div className="flex h-[87vh] flex-wrap items-start gap-x-10">
+            <div className="mt-8 flex max-h-[87vh] flex-wrap items-start gap-10">
               {isLoading ? (
                 <p className="col-span-full text-center text-gray-500 dark:text-gray-400">
                   Loading...
@@ -42,7 +41,7 @@ export default function SuperAdminBarangayContact() {
                 data.map((item: BarangayContact) => (
                   <div
                     key={item.id}
-                    className="group relative mt-7 w-[330px] cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md transition-all duration-300 dark:border-gray-700 dark:bg-gray-900"
+                    className="group relative w-[330px] cursor-pointer overflow-hidden rounded-xl border border-gray-200 bg-white shadow-md transition-all duration-300 dark:border-gray-700 dark:bg-gray-900"
                     onClick={() => {
                       setSelectedContact(item);
                       setIsDetailOpen(true);
@@ -149,11 +148,11 @@ export default function SuperAdminBarangayContact() {
                   <div className="pointer-events-none absolute bottom-0 left-0 z-40 h-full w-full bg-gradient-to-t from-black/70 to-transparent" />
                 </div>
 
-                <div className="absolute top-30 left-1/2 z-50 mb-5 flex -translate-x-1/2 items-center gap-4">
+                <div className="absolute top-25 left-1/2 z-50 mb-5 flex -translate-x-1/2 items-center gap-4">
                   <Image
                     src={`/logos/${selectedContact.barangay_name.toLowerCase()}-logo.png`}
-                    height={80}
-                    width={80}
+                    height={100}
+                    width={100}
                     alt={selectedContact.barangay_name}
                   />
                 </div>
@@ -171,71 +170,137 @@ export default function SuperAdminBarangayContact() {
                     .join(" ")}
                 </h1>
 
-                <div className="mx-12 mt-10 mb-12 flex items-center gap-16">
-                  <div className="flex flex-col gap-5">
-                    <div className="flex items-center gap-3">
-                      <FaUser className="text-dark-blue text-xl" />
-                      <div className="text-lg">
-                        <p>{selectedContact.captain_name || "N/A"}</p>
-                        <p className="text-xs text-nowrap">Barangay Captain</p>
+                <div className="mx-12 mt-10 mb-12 flex flex-col gap-7 pl-14">
+                  <div className="flex items-center justify-between gap-16">
+                    <div className="flex w-[200px] flex-col gap-5">
+                      <div className="flex items-center gap-3">
+                        <FaUser className="text-dark-blue text-xl" />
+                        <div className="text-lg">
+                          <p>{selectedContact.captain_name || "N/A"}</p>
+                          <p className="text-xs text-nowrap">
+                            Barangay Captain
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <FaUser className="text-dark-blue text-xl" />
+                        <div className="text-lg">
+                          <p>{selectedContact.secretary_name || "N/A"}</p>
+                          <p className="text-xs text-nowrap">
+                            Barangay Secretary
+                          </p>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <FaUser className="text-dark-blue text-xl" />
-                      <div className="text-lg">
-                        <p>{selectedContact.secretary_name || "N/A"}</p>
-                        <p className="text-xs text-nowrap">
-                          Barangay Secretary
-                        </p>
+                    <div className="flex w-[200px] flex-col gap-5">
+                      <div className="flex items-center gap-3">
+                        <FaPhone className="text-dark-blue text-xl" />
+                        <div className="text-lg">
+                          <p>{selectedContact.contact_number || "N/A"}</p>
+                          <p className="text-xs text-nowrap">Contact Number</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <ImPhoneHangUp className="text-dark-blue text-xl" />
+                        <div className="text-lg">
+                          <p>{selectedContact.landline || "N/A"}</p>
+                          <p className="text-xs text-nowrap">Landline</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex w-[300px] flex-col gap-5">
+                      <div className="flex items-center gap-3">
+                        <MdEmail className="text-dark-blue text-xl" />
+                        <div>
+                          <a
+                            href={`mailto:${selectedContact.email}`}
+                            className="hover:underline"
+                          >
+                            {selectedContact.email || "N/A"}
+                          </a>
+                          <p className="text-xs text-nowrap">Email Address</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <FaFacebook className="text-dark-blue text-xl" />
+                        <div className="text-lg">
+                          <a
+                            href={selectedContact.facebook_page}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-dark-blue transition-all duration-300 hover:opacity-85"
+                          >
+                            Visit Facebook Page
+                          </a>
+                          <p className="text-xs text-nowrap">Facebook</p>
+                        </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-5">
-                    <div className="flex items-center gap-3">
-                      <MdEmail className="text-dark-blue text-xl" />
-                      <div>
-                        <a
-                          href={`mailto:${selectedContact.email}`}
-                          className="hover:underline"
-                        >
-                          {selectedContact.email || "N/A"}
-                        </a>
-                        <p className="text-xs text-nowrap">Email Address</p>
+                  <div className="flex items-center justify-between gap-16">
+                    <div className="flex w-[200px] flex-col gap-5">
+                      <div className="flex items-center gap-3">
+                        <FaMale className="text-dark-blue text-xl" />
+                        <div className="text-lg">
+                          <p>{selectedContact.total_male || "N/A"}</p>
+                          <p className="text-xs text-nowrap">Total Male</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <FaFemale className="text-dark-blue text-xl" />
+                        <div className="text-lg">
+                          <p>{selectedContact.total_female || "N/A"}</p>
+                          <p className="text-xs text-nowrap">Total Female</p>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <FaFacebook className="text-dark-blue text-xl" />
-                      <div className="text-lg">
-                        <a
-                          href={selectedContact.facebook_page}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-dark-blue transition-all duration-300 hover:opacity-85"
-                        >
-                          Visit Facebook Page
-                        </a>
-                        <p className="text-xs text-nowrap">Facebook</p>
+                    <div className="flex w-[200px] flex-col gap-5">
+                      <div className="flex items-center gap-3">
+                        <FaMale className="text-dark-blue text-xl" />
+                        <div className="text-lg">
+                          <p>{selectedContact.total_male_senior || "N/A"}</p>
+                          <p className="text-xs text-nowrap">
+                            Total Male Senior
+                          </p>
+                        </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="flex flex-col gap-5">
-                    <div className="flex items-center gap-3">
-                      <FaPhone className="text-dark-blue text-xl" />
-                      <div className="text-lg">
-                        <p>{selectedContact.contact_number || "N/A"}</p>
-                        <p className="text-xs text-nowrap">Contact Number</p>
+                      <div className="flex items-center gap-3">
+                        <FaFemale className="text-dark-blue text-xl" />
+                        <div className="text-lg">
+                          <p>{selectedContact.total_female_senior || "N/A"}</p>
+                          <p className="text-xs text-nowrap">
+                            Total Female Senior
+                          </p>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                      <ImPhoneHangUp className="text-dark-blue text-xl" />
-                      <div className="text-lg">
-                        <p>{selectedContact.landline || "N/A"}</p>
-                        <p className="text-xs text-nowrap">Landline</p>
+                    <div className="flex w-[300px] flex-col gap-5">
+                      <div className="flex items-center gap-3">
+                        <FaMale className="text-dark-blue text-xl" />
+                        <div className="text-lg">
+                          <p>{selectedContact.total_families || "N/A"}</p>
+                          <p className="text-xs text-nowrap">Total Families</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3">
+                        <FaFemale className="text-dark-blue text-xl" />
+                        <div className="text-lg">
+                          <p>{selectedContact.total_0_4_years || "N/A"}</p>
+                          <p className="text-xs text-nowrap">
+                            Total 0-4 years old
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -245,7 +310,6 @@ export default function SuperAdminBarangayContact() {
                   className="absolute top-5 right-5 cursor-pointer text-xl text-black"
                   onClick={() => {
                     setIsDetailOpen(false);
-                    setIsMapOpen(false);
                   }}
                 />
               </div>

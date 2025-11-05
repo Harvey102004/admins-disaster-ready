@@ -1,10 +1,12 @@
 import axios from "axios";
 
-const API_GET_USERS = "http://localhost/Disaster-backend/public/fetchUser.php";
+const API_GET_USERS = "http://localhost:3001/public/fetchUser.php";
 
 export const getUsers = async () => {
   try {
-    const response = await axios.get(API_GET_USERS);
+    const response = await axios.get(API_GET_USERS, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -12,8 +14,7 @@ export const getUsers = async () => {
   }
 };
 
-const API_USER_ACTION =
-  "http://localhost/Disaster-backend/public/userController.php";
+const API_USER_ACTION = "http://localhost:3001/public/userController.php";
 
 export const toggleUserStatus = async ({
   userId,
@@ -33,16 +34,19 @@ export const toggleUserStatus = async ({
     super_admin_password: superAdminPassword,
   };
 
-  const response = await axios.post(API_USER_ACTION, payload);
+  const response = await axios.post(API_USER_ACTION, payload, {
+    withCredentials: true,
+  });
   return response.data;
 };
 
-const API_GET_ARCHIVED =
-  "http://localhost/Disaster-backend/public/fetchArchivedUser.php";
+const API_GET_ARCHIVED = "http://localhost:3001/public/fetchArchivedUser.php";
 
 export const getArchivedUsers = async () => {
   try {
-    const response = await axios.get(API_GET_ARCHIVED);
+    const response = await axios.get(API_GET_ARCHIVED, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching archived users:", error);

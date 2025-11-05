@@ -25,17 +25,26 @@ export const addEvacuationCenter = async (data: EvacuationCenterFormData) => {
 
 // -------- FETCH ALL EVACUATION CENTER ---------- //
 
-const API_GET_EVACUATIONS =
-  "http://localhost/Disaster-backend/public/evacuationCenter.php";
+const API_GET_EVACUATIONS = "http://localhost:3001/public/evacuationCenter.php";
 
 export const getEvacuationCenters = async (): Promise<
   EvacuationCenterProps[]
 > => {
   try {
-    const response =
-      await axios.get<EvacuationCenterProps[]>(API_GET_EVACUATIONS);
+    const response = await axios.get(API_GET_EVACUATIONS, {
+      withCredentials: true,
+      responseType: "text",
+    });
 
-    return response.data;
+    const raw = response.data;
+
+    const firstBracket = raw.indexOf("[");
+    if (firstBracket === -1) return [];
+
+    const evacStr = raw.slice(firstBracket);
+    const evac = JSON.parse(evacStr);
+
+    return evac;
   } catch (error: any) {
     console.error(error);
     throw new Error(

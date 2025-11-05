@@ -22,7 +22,7 @@ L.Icon.Default.mergeOptions({
 
 const iconRed = new L.Icon({
   iconUrl: "/icons/gps.png",
-  iconSize: [60, 60],
+  iconSize: [50, 50],
   iconAnchor: [20, 40],
   popupAnchor: [0, -40],
 });
