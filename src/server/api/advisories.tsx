@@ -97,7 +97,10 @@ export const getCommunity = async (): Promise<TCommunity[]> => {
 export const getWeatherDetails = async ({ id }: { id: string }) => {
   try {
     const response = await axios.get<TWeatherAdvisory>(
-      `http://localhost/Disaster-backend/public/getAdvisories.php?type=weather&id=${id}`,
+      `http://localhost:3001/public/getAdvisories.php?type=weather&id=${id}`,
+      {
+        withCredentials: true,
+      },
     );
 
     return response.data;
@@ -110,7 +113,10 @@ export const getWeatherDetails = async ({ id }: { id: string }) => {
 export const getRoadDetails = async ({ id }: { id: string }) => {
   try {
     const response = await axios.get<TRoadAdvisory>(
-      `http://localhost/Disaster-backend/public/getAdvisories.php?type=road&id=${id}`,
+      `http://localhost:3001/public/getAdvisories.php?type=road&id=${id}`,
+      {
+        withCredentials: true,
+      },
     );
 
     return response.data;
@@ -123,7 +129,10 @@ export const getRoadDetails = async ({ id }: { id: string }) => {
 export const getDisasterDetails = async ({ id }: { id: string }) => {
   try {
     const response = await axios.get<TDisasterAdvisory>(
-      `http://localhost/Disaster-backend/public/getAdvisories.php?type=disaster&id=${id}`,
+      `http://localhost:3001/public/getAdvisories.php?type=disaster&id=${id}`,
+      {
+        withCredentials: true,
+      },
     );
 
     return response.data;
@@ -136,7 +145,10 @@ export const getDisasterDetails = async ({ id }: { id: string }) => {
 export const getCommunityDetails = async ({ id }: { id: string }) => {
   try {
     const response = await axios.get<TWeatherAdvisory>(
-      `http://localhost/Disaster-backend/public/getAdvisories.php?type=community&id=${id}`,
+      `http://localhost:3001/public/getAdvisories.php?type=community&id=${id}`,
+      {
+        withCredentials: true,
+      },
     );
 
     return response.data;
@@ -154,8 +166,11 @@ export const deleteWeather = async ({ id }: { id: string }) => {
 
   try {
     const response = await axios.post(
-      `http://localhost/Disaster-backend/public/deleteAdvisory.php?type=weather&id=${id}`,
+      `http://localhost:3001/public/deleteAdvisory.php?type=weather&id=${id}`,
       formData,
+      {
+        withCredentials: true,
+      },
     );
 
     return response.data;
@@ -170,8 +185,11 @@ export const deleteRoad = async ({ id }: { id: string }) => {
 
   try {
     const response = await axios.post(
-      `http://localhost/Disaster-backend/public/deleteAdvisory.php?type=road&id=${id}`,
+      `http://localhost:3001/public/deleteAdvisory.php?type=road&id=${id}`,
       formData,
+      {
+        withCredentials: true,
+      },
     );
 
     return response.data;
@@ -186,8 +204,11 @@ export const deleteDisaster = async ({ id }: { id: string }) => {
 
   try {
     const response = await axios.post(
-      `http://localhost/Disaster-backend/public/deleteAdvisory.php?type=disaster&id=${id}`,
+      `http://localhost:3001/public/deleteAdvisory.php?type=disaster&id=${id}`,
       formData,
+      {
+        withCredentials: true,
+      },
     );
 
     return response.data;
@@ -202,8 +223,9 @@ export const deleteCommunity = async ({ id }: { id: string }) => {
 
   try {
     const response = await axios.post(
-      `http://localhost/Disaster-backend/public/deleteAdvisory.php?type=community&id=${id}`,
+      `http://localhost:3001/public/deleteAdvisory.php?type=community&id=${id}`,
       formData,
+      { withCredentials: true },
     );
 
     return response.data;
@@ -215,16 +237,16 @@ export const deleteCommunity = async ({ id }: { id: string }) => {
 // ADD  ADVISORIES
 
 const API_URL_ADD_WEATHER =
-  "http://localhost/Disaster-backend/public/postAdvisory.php?type=weather";
+  "http://localhost:3001/public/postAdvisory.php?type=weather";
 
 const API_URL_ADD_ROAD =
-  "http://localhost/Disaster-backend/public/postAdvisory.php?type=road";
+  "http://localhost:3001/public/postAdvisory.php?type=road";
 
 const API_URL_ADD_DISASTER =
-  "http://localhost/Disaster-backend/public/postAdvisory.php?type=disaster";
+  "http://localhost:3001/public/postAdvisory.php?type=disaster";
 
 const API_URL_ADD_COMMUNITY =
-  "http://localhost/Disaster-backend/public/postAdvisory.php?type=community";
+  "http://localhost:3001/public/postAdvisory.php?type=community";
 
 export type WeatherType = z.infer<typeof weatherAdvisorySchema>;
 export type RoadType = z.infer<typeof roadAdvisorySchema>;
@@ -245,6 +267,7 @@ export const addWeatherAdvisory = async (data: WeatherType) => {
         headers: {
           "Content-Type": "application/json",
         },
+        withCredentials: true,
       },
     );
 
@@ -272,6 +295,7 @@ export const addRoadAdvisory = async (data: RoadType) => {
         headers: {
           "Content-Type": "application/json",
         },
+        withCredentials: true,
       },
     );
 
@@ -294,7 +318,9 @@ export const addDisasterUpdates = async (data: DisasterType) => {
     formData.append("image", data.image[0]);
     formData.append("added_by", data.added_by);
 
-    const response = await axios.post(API_URL_ADD_DISASTER, formData);
+    const response = await axios.post(API_URL_ADD_DISASTER, formData, {
+      withCredentials: true,
+    });
 
     return response.data;
   } catch (error: any) {
@@ -319,6 +345,8 @@ export const addCommunityNotice = async (data: WeatherType) => {
         headers: {
           "Content-Type": "application/json",
         },
+
+        withCredentials: true,
       },
     );
 
@@ -342,7 +370,7 @@ export const editWeatherAdvisory = async ({
 }) => {
   try {
     const response = await axios.post(
-      `http://localhost/Disaster-backend/public/updateAdvisory.php?type=weather&id=${id}`,
+      `http://localhost:3001/public/updateAdvisory.php?type=weather&id=${id}`,
       {
         title: data.title,
         details: data.details,
@@ -351,6 +379,7 @@ export const editWeatherAdvisory = async ({
       },
       {
         headers: { "Content-Type": "application/json" },
+        withCredentials: true,
       },
     );
 
@@ -372,7 +401,7 @@ export const editRoadAvisory = async ({
 }) => {
   try {
     const response = await axios.post(
-      `http://localhost/Disaster-backend/public/updateAdvisory.php?type=road&id=${id}`,
+      `http://localhost:3001/public/updateAdvisory.php?type=road&id=${id}`,
       {
         title: data.title,
         details: data.details,
@@ -382,6 +411,7 @@ export const editRoadAvisory = async ({
       },
       {
         headers: { "Content-Type": "application/json" },
+        withCredentials: true,
       },
     );
 
@@ -416,8 +446,9 @@ export const editDisasterUpdates = async ({
     formData.append("added_by", data.added_by ?? "");
 
     const response = await axios.post(
-      `http://localhost/Disaster-backend/public/updateAdvisory.php?type=disaster&id=${id}`,
+      `http://localhost:3001/public/updateAdvisory.php?type=disaster&id=${id}`,
       formData,
+      { withCredentials: true },
     );
 
     return response.data;
@@ -438,7 +469,7 @@ export const editCommunityNotice = async ({
 }) => {
   try {
     const response = await axios.post(
-      `http://localhost/Disaster-backend/public/updateAdvisory.php?type=community&id=${id}`,
+      `http://localhost:3001/public/updateAdvisory.php?type=community&id=${id}`,
       {
         title: data.title,
         details: data.details,
@@ -447,6 +478,7 @@ export const editCommunityNotice = async ({
       },
       {
         headers: { "Content-Type": "application/json" },
+        withCredentials: true,
       },
     );
 

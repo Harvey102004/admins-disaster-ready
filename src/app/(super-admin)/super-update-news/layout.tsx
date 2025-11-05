@@ -1,6 +1,7 @@
 import React from "react";
 import type { Metadata } from "next";
 import UpdateNewsNavSuper from "@/components/(navigation)/UpdateNewsNav";
+import ProtectedRoute from "@/components/ProtectedRoutes";
 export const metadata: Metadata = {
   title: "Update & News",
 };
@@ -13,11 +14,13 @@ export default function UpdateNewsLayout({
   modal: React.ReactNode;
 }) {
   return (
-    <div className="relative w-full pl-8 transition-all duration-300">
-      <UpdateNewsNavSuper />
+    <ProtectedRoute>
+      <div className="relative w-full pl-8 transition-all duration-300">
+        <UpdateNewsNavSuper />
 
-      {children}
-      {modal}
-    </div>
+        {children}
+        {modal}
+      </div>
+    </ProtectedRoute>
   );
 }

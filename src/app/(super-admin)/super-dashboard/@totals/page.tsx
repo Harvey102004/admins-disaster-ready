@@ -67,17 +67,10 @@ export default function TotalsPage() {
         "http://localhost:3001/public/getIncidents.php",
         {
           withCredentials: true,
-          responseType: "text",
         },
       );
 
-      const raw = res.data;
-
-      const firstBracket = raw.indexOf("[");
-      const reportsStr = raw.slice(firstBracket);
-      const reports = JSON.parse(reportsStr);
-
-      return reports;
+      return res.data;
     },
   });
 
@@ -85,7 +78,7 @@ export default function TotalsPage() {
     queryKey: ["barangayContacts"],
     queryFn: async () => {
       const res = await axios.get(
-        "http://localhost/Disaster-backend/public/barangayContact.php",
+        "http://localhost:3001/public/barangayContact.php",
         {
           withCredentials: true,
         },
@@ -102,17 +95,10 @@ export default function TotalsPage() {
         "http://localhost:3001/public/evacuationCenter.php",
         {
           withCredentials: true,
-          responseType: "text",
         },
       );
 
-      const raw = res.data;
-
-      const firstBracket = raw.indexOf("[");
-      const evacStr = raw.slice(firstBracket);
-      const evac = JSON.parse(evacStr);
-
-      return evac;
+      return res.data;
     },
   });
 

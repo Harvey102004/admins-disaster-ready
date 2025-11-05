@@ -82,20 +82,46 @@ export default function Login() {
   const [serverMessage, setServerMessage] = useState("");
 
   const [loginMessage, setLoginMessage] = useState("");
-  const [cooldown, setCooldown] = useState<number>(0);
+  const [cooldown, setCooldown] = useState(0);
   const cooldownRef = useRef<NodeJS.Timeout | null>(null);
 
-  useEffect(() => {
-    const saved = localStorage.getItem("loginCooldown");
-    if (saved && parseInt(saved) > 0) startCooldown(parseInt(saved));
-  }, []);
+  // ✅ START COOLDOWN function
+  const startCooldown = (seconds: number) => {
+    const endTime = Date.now() + seconds * 1000;
+    localStorage.setItem("loginCooldownEnd", endTime.toString());
+    updateCooldown(); // immediately update UI
+  };
+
+  // ✅ UPDATE COOLDOWN function
+  const updateCooldown = () => {
+    const savedEndTime = localStorage.getItem("loginCooldownEnd");
+    if (!savedEndTime) {
+      setCooldown(0);
+      return;
+    }
+
+    const remaining = Math.max(
+      0,
+      Math.ceil((parseInt(savedEndTime) - Date.now()) / 1000),
+    );
+    setCooldown(remaining);
+
+    if (remaining <= 0) {
+      localStorage.removeItem("loginCooldownEnd");
+      if (cooldownRef.current) clearInterval(cooldownRef.current);
+      cooldownRef.current = null;
+    }
+  };
 
   useEffect(() => {
-    const saved = localStorage.getItem("loginCooldown");
-    const savedCooldown = saved ? parseInt(saved) : 0;
-    if (savedCooldown > 0) {
-      startCooldown(savedCooldown);
-    }
+    updateCooldown(); // initial check
+
+    if (cooldownRef.current) clearInterval(cooldownRef.current);
+    cooldownRef.current = setInterval(updateCooldown, 1000);
+
+    return () => {
+      if (cooldownRef.current) clearInterval(cooldownRef.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -103,25 +129,6 @@ export default function Login() {
       toast.success(loginMessage, { duration: 1500 });
     }
   }, [loginMessage]);
-
-  const startCooldown = (seconds: number) => {
-    let counter = seconds;
-    setCooldown(counter);
-    localStorage.setItem("loginCooldown", String(counter));
-
-    if (cooldownRef.current) clearInterval(cooldownRef.current);
-    cooldownRef.current = setInterval(() => {
-      counter -= 1;
-      setCooldown(counter);
-      localStorage.setItem("loginCooldown", String(counter));
-
-      if (counter <= 0) {
-        clearInterval(cooldownRef.current!);
-        cooldownRef.current = null;
-        localStorage.removeItem("loginCooldown");
-      }
-    }, 1000);
-  };
 
   /* ---------- LOGIN ---------- */
 
@@ -207,6 +214,9 @@ export default function Login() {
           confirm_password: createData.confirm_password,
           barangay: createData.barangay,
         },
+        {
+          withCredentials: true,
+        },
       );
 
       console.log("📥 Registration response:", res.data);
@@ -248,6 +258,9 @@ export default function Login() {
         {
           email: createData.email,
           code: verificationCode,
+        },
+        {
+          withCredentials: true,
         },
       );
 
@@ -299,8 +312,9 @@ export default function Login() {
 
     try {
       const res = await axios.post(
-        "http://localhost/Disaster-backend/public/forgotPass.php",
+        "http://localhost:3001/public/forgotPass.php",
         { email: forgotEmail },
+        { withCredentials: true },
       );
 
       console.log("📥 Backend response:", res.data);

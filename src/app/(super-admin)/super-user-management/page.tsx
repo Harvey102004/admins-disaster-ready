@@ -14,6 +14,7 @@ import { FaUserLock } from "react-icons/fa6";
 import { TiArrowBack } from "react-icons/ti";
 import { MdUnarchive } from "react-icons/md";
 import { Skeleton } from "@/components/ui/skeleton";
+import ProtectedRoute from "@/components/ProtectedRoutes";
 
 export default function SuperAdminUserManagement() {
   const [showModal, setShowModal] = useState(false);
@@ -108,9 +109,14 @@ export default function SuperAdminUserManagement() {
       };
 
       const response = await axios.post(
-        "http://localhost/Disaster-backend/public/userController.php",
+        "http://localhost:3001/public/userController.php",
         JSON.stringify(payload),
-        { headers: { "Content-Type": "application/json" } },
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        },
       );
 
       if (response.data?.success) {
@@ -179,7 +185,7 @@ export default function SuperAdminUserManagement() {
   const archivedCount = archivedUsersData?.data?.data?.length || 0;
 
   return (
-    <>
+    <ProtectedRoute>
       {isUserPage ? (
         <div className="w-full px-14 py-10 transition-all duration-300">
           <div className="flex w-full items-center justify-between">
@@ -231,39 +237,50 @@ export default function SuperAdminUserManagement() {
               </thead>
 
               <tbody>
-                {usersLoading
-                  ? Array.from({ length: 10 }).map((_, i) => (
-                      <tr key={i} className="border-b">
-                        {Array.from({ length: 6 }).map((_, j) => (
-                          <td key={j} className="p-3">
-                            <Skeleton className="h-6 w-full rounded-full" />
-                          </td>
-                        ))}
-                      </tr>
-                    ))
-                  : sortedUsers.map((user: any) => (
-                      <tr key={user.id} className="border-b">
-                        <td className="p-3 text-[13px]">{user.id}</td>
-                        <td className="p-3 text-[13px]">{user.username}</td>
-                        <td className="p-3 text-[13px]">{user.email}</td>
-                        <td className="p-3 text-[13px]">{user.barangay}</td>
-                        <td
-                          className={`user p-3 text-[13px] ${
-                            user.isRed ? "font-medium text-red-500" : ""
+                {usersLoading ? (
+                  Array.from({ length: 10 }).map((_, i) => (
+                    <tr key={i} className="border-b">
+                      {Array.from({ length: 6 }).map((_, j) => (
+                        <td key={j} className="p-3">
+                          <Skeleton className="h-6 w-full rounded-full" />
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : sortedUsers.length > 0 ? (
+                  sortedUsers.map((user: any) => (
+                    <tr key={user.id} className="border-b">
+                      <td className="p-3 text-[13px]">{user.id}</td>
+                      <td className="p-3 text-[13px]">{user.username}</td>
+                      <td className="p-3 text-[13px]">{user.email}</td>
+                      <td className="p-3 text-[13px]">{user.barangay}</td>
+                      <td
+                        className={`user p-3 text-[13px] ${user.isRed ? "font-medium text-red-500" : ""}`}
+                      >
+                        {user.displayTime}
+                      </td>
+                      <td className="p-3 text-right">
+                        <button
+                          className={`rounded-full px-3 py-1.5 text-[10px] text-white ${
+                            user?.role === 1
+                              ? "cursor-not-allowed bg-gray-400"
+                              : "bg-dark-blue hover:opacity-90"
                           }`}
+                          onClick={() => handleAction(user)}
+                          disabled={user?.role === 1}
                         >
-                          {user.displayTime}
-                        </td>
-                        <td className="p-3 text-right">
-                          <button
-                            className="bg-dark-blue rounded-full px-3 py-1.5 text-[10px] text-white"
-                            onClick={() => handleAction(user)}
-                          >
-                            Deactivate
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
+                          Deactivate
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="py-5 text-center text-gray-500">
+                      No users found
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -382,39 +399,50 @@ export default function SuperAdminUserManagement() {
               </thead>
 
               <tbody>
-                {archivedLoading
-                  ? Array.from({ length: 10 }).map((_, i) => (
-                      <tr key={i} className="border-b">
-                        {Array.from({ length: 6 }).map((_, j) => (
-                          <td key={j} className="p-3">
-                            <Skeleton className="h-6 w-full rounded-full" />
-                          </td>
-                        ))}
-                      </tr>
-                    ))
-                  : archivedUsersData?.data?.data.map((user: any) => (
-                      <tr key={user.id} className="border-b">
-                        <td className="p-3 text-[13px]">{user.id}</td>
-                        <td className="p-3 text-[13px]">{user.username}</td>
-                        <td className="p-3 text-[13px]">{user.email}</td>
-                        <td className="p-3 text-[13px]">{user.barangay}</td>
-                        <td
-                          className={`user p-3 text-[13px] ${
-                            user.isRed ? "font-medium text-red-500" : ""
-                          }`}
-                        >
-                          {user.status}
+                {archivedLoading ? (
+                  Array.from({ length: 10 }).map((_, i) => (
+                    <tr key={i} className="border-b">
+                      {Array.from({ length: 6 }).map((_, j) => (
+                        <td key={j} className="p-3">
+                          <Skeleton className="h-6 w-full rounded-full" />
                         </td>
-                        <td className="p-3">
-                          <div className="mr-2.5 flex items-center justify-end">
-                            <MdUnarchive
-                              className="cursor-pointer text-2xl"
-                              onClick={() => handleUnarchive(user)}
-                            />
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                      ))}
+                    </tr>
+                  ))
+                ) : (archivedUsersData?.data?.data ?? []).length > 0 ? ( // ✅ fallback sa empty array
+                  (archivedUsersData?.data?.data ?? []).map((user: any) => (
+                    <tr key={user.id} className="border-b">
+                      <td className="p-3 text-[13px]">{user.id}</td>
+                      <td className="p-3 text-[13px]">{user.username}</td>
+                      <td className="p-3 text-[13px]">{user.email}</td>
+                      <td className="p-3 text-[13px]">{user.barangay}</td>
+                      <td
+                        className={`user p-3 text-[13px] ${
+                          user.isRed ? "font-medium text-red-500" : ""
+                        }`}
+                      >
+                        {user.status}
+                      </td>
+                      <td className="p-3">
+                        <div className="mr-2.5 flex items-center justify-end">
+                          <MdUnarchive
+                            className="cursor-pointer text-2xl"
+                            onClick={() => handleUnarchive(user)}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="py-10 text-center text-sm text-gray-500"
+                    >
+                      No archived users
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -485,6 +513,6 @@ export default function SuperAdminUserManagement() {
           )}
         </div>
       )}
-    </>
+    </ProtectedRoute>
   );
 }

@@ -21,9 +21,9 @@ import {
 import { Poppins } from "next/font/google";
 import Image from "next/image";
 import { IoClose } from "react-icons/io5";
-import { FaArrowLeftLong, FaArrowRightLong } from "react-icons/fa6";
 import { LuFilter } from "react-icons/lu";
 import { showDeleteConfirmation } from "@/lib/toasts";
+import axios from "axios";
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -166,12 +166,14 @@ export default function RiskMappingMap() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(
-          "http://localhost/Disaster-backend/public/disasterMapping.php",
+        const res = await axios.get(
+          "http://localhost:3001/public/disasterMapping.php",
+          {
+            withCredentials: true,
+          },
         );
-        if (!res.ok) throw new Error("Failed to fetch markers");
 
-        const result = await res.json();
+        const result = res.data;
 
         if (result.success && Array.isArray(result.data)) {
           const fetchedMarkers = await Promise.all(
@@ -212,21 +214,21 @@ export default function RiskMappingMap() {
     }
 
     try {
-      const res = await fetch(
-        "http://localhost/Disaster-backend/public/disasterMapping.php",
+      const res = await axios.post(
+        "http://localhost:3001/public/disasterMapping.php",
         {
-          method: "POST",
+          type: selectedType,
+          lat: latlng.lat,
+          lng: latlng.lng,
+          created_by: createdBy,
+        },
+        {
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            type: selectedType,
-            lat: latlng.lat,
-            lng: latlng.lng,
-            created_by: createdBy,
-          }),
+          withCredentials: true,
         },
       );
-      if (!res.ok) throw new Error("Failed to save marker");
-      const savedData = await res.json();
+
+      const savedData = res.data; // ✅ already parsed JSON
 
       const address = await reverseGeocode(latlng.lat, latlng.lng);
 
@@ -245,14 +247,14 @@ export default function RiskMappingMap() {
       toast.success(`${selectedType} added successfully`, {
         style: { marginLeft: "160px" },
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
       toast.error("Error saving marker", {
         style: { marginLeft: "160px" },
       });
+    } finally {
+      setSelectedType(null);
     }
-
-    setSelectedType(null);
   };
 
   // Toggle filters
@@ -373,15 +375,18 @@ export default function RiskMappingMap() {
                               id: "delete-marker",
                               style: { marginLeft: "160px" },
                             });
+
                             try {
-                              const res = await fetch(
-                                `http://localhost/Disaster-backend/public/disasterMapping.php?id=${encodeURIComponent(
+                              const res = await axios.delete(
+                                `http://localhost:3001/public/disasterMapping.php?id=${encodeURIComponent(
                                   m.id,
                                 )}`,
-                                { method: "DELETE" },
+                                {
+                                  withCredentials: true,
+                                },
                               );
 
-                              const result = await res.json();
+                              const result = res.data;
                               if (!result.success)
                                 throw new Error(
                                   result.message || "Delete failed",
@@ -391,14 +396,14 @@ export default function RiskMappingMap() {
                                 prev.filter((marker) => marker.id !== m.id),
                               );
 
-                              toast.success(" Successfully deleted", {
+                              toast.success("Successfully deleted", {
                                 id: "delete-marker",
                                 style: { marginLeft: "160px" },
                               });
-                            } catch (err) {
+                            } catch (err: any) {
                               console.error(err);
                               toast.error(
-                                "Error deleting marker, Try refreshing the page.",
+                                "Error deleting marker, try refreshing the page.",
                                 {
                                   id: "delete-marker",
                                 },

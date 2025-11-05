@@ -29,6 +29,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { toast } from "sonner";
 import { RiFilter2Fill } from "react-icons/ri";
+import ProtectedRoute from "@/components/ProtectedRoutes";
 
 export default function IncidentReports() {
   const [incidents, setIncidents] = useState<any[]>([]);
@@ -44,7 +45,10 @@ export default function IncidentReports() {
   const fetchIncidents = async () => {
     try {
       const res = await axios.get(
-        "http://localhost/Disaster-backend/public/getIncidents.php",
+        "http://localhost:3001/public/getIncidents.php",
+        {
+          withCredentials: true,
+        },
       );
       setIncidents(res.data || []);
     } catch (error) {
@@ -89,7 +93,7 @@ export default function IncidentReports() {
 
     try {
       const response = await axios.post(
-        "http://localhost/Disaster-backend/public/updateIncident.php",
+        "http://localhost:3001/public/updateIncident.php",
         {
           id,
           status,
@@ -97,14 +101,19 @@ export default function IncidentReports() {
         },
         {
           headers: { "Content-Type": "application/json" },
+          withCredentials: true,
         },
       );
 
       if (response.data.success) {
-        toast.success("Status updated successfully!");
+        toast.success("Status updated successfully!", {
+          style: { marginLeft: "160px" },
+        });
         fetchIncidents();
       } else {
-        toast.error(response.data.error || " Failed to update status");
+        toast.error(response.data.error || "Failed to update status", {
+          style: { marginLeft: "160px" },
+        });
       }
     } catch (error) {
       console.error("Update error:", error);
@@ -122,335 +131,341 @@ export default function IncidentReports() {
   };
 
   return (
-    <div className="relative h-screen w-full overflow-auto px-10 py-8 transition-all duration-300">
-      {/* Header */}
-      <div className="mb-3 flex items-center gap-2">
-        <IoIosPaper className="text-2xl" />
-        <h2 className="text-2xl font-semibold">Incident Reports</h2>
-      </div>
-
-      {/* Filter */}
-
-      <div className="mt-4 h-12 w-full">
-        <div className="flex items-center justify-end gap-4">
-          {/* Severity Filter */}
-          <div>
-            <Select value={filterSeverity} onValueChange={setFilterSeverity}>
-              <SelectTrigger className="text-xs">
-                <SelectValue placeholder="Select Severity" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All Severities</SelectItem>
-                <SelectItem value="Critical">Critical</SelectItem>
-                <SelectItem value="Moderate">Moderate</SelectItem>
-                <SelectItem value="Minor">Minor</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Status Filter */}
-          <div>
-            <Select value={filterStatus} onValueChange={setFilterStatus}>
-              <SelectTrigger className="text-xs">
-                <SelectValue placeholder="Select Status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="All">All Status</SelectItem>
-                <SelectItem value="Pending">Pending</SelectItem>
-                <SelectItem value="Ongoing">Ongoing</SelectItem>
-                <SelectItem value="Resolved">Resolved</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Sorting */}
-          <div>
-            <Select value={sortOrder} onValueChange={setSortOrder}>
-              <SelectTrigger className="text-xs">
-                <SelectValue placeholder="Sort By" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="Newest">Newest First</SelectItem>
-                <SelectItem value="Oldest">Oldest First</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <RiFilter2Fill className="text-2xl" />
+    <ProtectedRoute>
+      <div className="relative h-screen w-full overflow-auto px-10 py-8 transition-all duration-300">
+        {/* Header */}
+        <div className="mb-3 flex items-center gap-2">
+          <IoIosPaper className="text-2xl" />
+          <h2 className="text-2xl font-semibold">Incident Reports</h2>
         </div>
-      </div>
 
-      {/* INCIDENT REPORTS TABLE */}
-      <div className="scrollBar relative mt-2 max-h-[75vh] overflow-y-auto rounded-xl border px-4 pb-4 shadow-sm">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr className="border-b">
-              <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
-                ID
-              </th>
-              <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
-                Reporter
-              </th>
-              <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
-                Contact
-              </th>
-              <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
-                Description
-              </th>
-              <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
-                Severity
-              </th>
-              <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
-                Status
-              </th>
-              <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
-                Responded By
-              </th>
-              <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
-                Received
-              </th>
-            </tr>
-          </thead>
+        {/* Filter */}
 
-          <tbody>
-            {loading ? (
-              Array.from({ length: 10 }).map((_, i) => (
-                <tr key={i} className="border-b">
-                  {Array.from({ length: 8 }).map((_, j) => (
-                    <td key={j} className="p-3">
-                      <Skeleton className="h-6 w-full rounded-full" />
-                    </td>
-                  ))}
-                </tr>
-              ))
-            ) : filteredIncidents.length > 0 ? (
-              filteredIncidents.map((incident: any) => (
-                <tr
-                  key={incident.id}
-                  className="cursor-pointer border-b select-none hover:bg-gray-50 dark:hover:bg-gray-800"
-                  onClick={() => {
-                    setImageModalOpen(false);
-                    setSelectedIncident(incident);
-                  }}
-                >
-                  <td className="p-3 text-[13px]">{incident.id}</td>
-                  <td className="p-3 text-[13px]">{incident.reporter_name}</td>
-                  <td className="p-3 text-[13px]">
-                    {incident.reporter_contact}
-                  </td>
+        <div className="mt-4 h-12 w-full">
+          <div className="flex items-center justify-end gap-4">
+            {/* Severity Filter */}
+            <div>
+              <Select value={filterSeverity} onValueChange={setFilterSeverity}>
+                <SelectTrigger className="text-xs">
+                  <SelectValue placeholder="Select Severity" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Severities</SelectItem>
+                  <SelectItem value="Critical">Critical</SelectItem>
+                  <SelectItem value="Moderate">Moderate</SelectItem>
+                  <SelectItem value="Minor">Minor</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-                  <td className="max-w-[200px] truncate p-3 text-[13px]">
-                    {incident.description}
-                  </td>
+            {/* Status Filter */}
+            <div>
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="text-xs">
+                  <SelectValue placeholder="Select Status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="All">All Status</SelectItem>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Ongoing">Ongoing</SelectItem>
+                  <SelectItem value="Resolved">Resolved</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-                  <td className="p-3 text-[13px]">
-                    <span
-                      className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-medium ${
-                        incident.severity === "Critical"
-                          ? "bg-red-500/20 text-red-600"
-                          : incident.severity === "Moderate"
-                            ? "bg-yellow-400/20 text-yellow-600"
-                            : "bg-green-500/20 text-green-600"
-                      }`}
-                    >
-                      {incident.severity}
-                    </span>
-                  </td>
+            {/* Sorting */}
+            <div>
+              <Select value={sortOrder} onValueChange={setSortOrder}>
+                <SelectTrigger className="text-xs">
+                  <SelectValue placeholder="Sort By" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Newest">Newest First</SelectItem>
+                  <SelectItem value="Oldest">Oldest First</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-                  <td
-                    className="p-3 text-[13px]"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Select
-                      value={incident.status}
-                      onValueChange={(value) =>
-                        handleStatusChange(incident.id, value)
-                      }
-                    >
-                      <SelectTrigger className="h-8 w-[120px] text-[12px]">
-                        <SelectValue placeholder="Select Status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Pending">Pending</SelectItem>
-                        <SelectItem value="Ongoing">Ongoing</SelectItem>
-                        <SelectItem value="Resolved">Resolved</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </td>
+            <RiFilter2Fill className="text-2xl" />
+          </div>
+        </div>
 
-                  <td className="p-3 text-[13px]">
-                    {incident.responded_by || "—"}
-                  </td>
-
-                  <td className="p-3 text-[13px]">
-                    {incident.created_at
-                      ? formatDate(incident.created_at)
-                      : "—"}
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td
-                  colSpan={8}
-                  className="py-6 text-center text-sm text-gray-500"
-                >
-                  No incident reports found.
-                </td>
+        {/* INCIDENT REPORTS TABLE */}
+        <div className="scrollBar relative mt-2 max-h-[75vh] overflow-y-auto rounded-xl border px-4 pb-4 shadow-sm">
+          <table className="w-full border-collapse">
+            <thead>
+              <tr className="border-b">
+                <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                  ID
+                </th>
+                <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                  Reporter
+                </th>
+                <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                  Contact
+                </th>
+                <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                  Description
+                </th>
+                <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                  Severity
+                </th>
+                <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                  Status
+                </th>
+                <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                  Responded By
+                </th>
+                <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                  Received
+                </th>
               </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+            </thead>
 
-      {/* Modal */}
-      <Dialog
-        open={!!selectedIncident}
-        onOpenChange={(open) => {
-          if (!open) {
-            setSelectedIncident(null);
-            setImageModalOpen(false);
-          }
-        }}
-      >
-        <DialogContent className="dark:bg-light-black bg-white p-6 sm:max-w-[800px]">
-          {selectedIncident && (
-            <>
-              <DialogHeader>
-                <div className="flex items-center gap-5">
-                  <IoIosPaper className="text-3xl" />
-                  <div>
-                    <DialogTitle className="text-lg font-semibold">
-                      Incident Details
-                    </DialogTitle>
-                    <DialogDescription>
-                      Full information about the selected report.
-                    </DialogDescription>
-                  </div>
-                </div>
-              </DialogHeader>
+            <tbody>
+              {loading ? (
+                Array.from({ length: 10 }).map((_, i) => (
+                  <tr key={i} className="border-b">
+                    {Array.from({ length: 8 }).map((_, j) => (
+                      <td key={j} className="p-3">
+                        <Skeleton className="h-6 w-full rounded-full" />
+                      </td>
+                    ))}
+                  </tr>
+                ))
+              ) : filteredIncidents.length > 0 ? (
+                filteredIncidents.map((incident: any) => (
+                  <tr
+                    key={incident.id}
+                    className="cursor-pointer border-b select-none hover:bg-gray-50 dark:hover:bg-gray-800"
+                    onClick={() => {
+                      setImageModalOpen(false);
+                      setSelectedIncident(incident);
+                    }}
+                  >
+                    <td className="p-3 text-[13px]">{incident.id}</td>
+                    <td className="p-3 text-[13px]">
+                      {incident.reporter_name}
+                    </td>
+                    <td className="p-3 text-[13px]">
+                      {incident.reporter_contact}
+                    </td>
 
-              <p className="absolute top-[7%] right-[8%] text-sm">
-                {selectedIncident.created_at
-                  ? formatDate(selectedIncident.created_at)
-                  : "—"}
-              </p>
+                    <td className="max-w-[200px] truncate p-3 text-[13px]">
+                      {incident.description}
+                    </td>
 
-              <div className="mt-5 flex h-full justify-between gap-10">
-                {/* Left Info */}
-                <div className="flex-1 text-sm">
-                  <div className="grid grid-cols-2 gap-x-10 gap-y-6">
-                    <div>
-                      <p className="text-sm">
-                        {selectedIncident.reporter_name}
-                      </p>
-                      <span className="text-xs text-gray-500">Reporter</span>
-                    </div>
-                    <div>
-                      <p className="text-sm">
-                        {selectedIncident.reporter_contact}
-                      </p>
-                      <span className="text-xs text-gray-500">Contact</span>
-                    </div>
-                    <div>
-                      <p className="text-sm">{selectedIncident.status}</p>
-                      <span className="text-xs text-gray-500">Status</span>
-                    </div>
-                    <div>
-                      <p className="text-sm">
-                        {selectedIncident.responded_by || "—"}
-                      </p>
-                      <span className="text-xs text-gray-500">
-                        Responded By
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="mt-6">
-                    <span className="text-xs text-gray-500">Description :</span>
-                    <div className="mt-1 rounded-md text-xs text-gray-800 dark:text-zinc-300">
-                      {selectedIncident.description}
-                    </div>
-                  </div>
-
-                  <div className="absolute bottom-[5%] flex items-center gap-6">
-                    <button
-                      className="bg-dark-blue rounded-sm px-4 py-2 text-xs text-white"
-                      onClick={() => handleViewMap(selectedIncident)}
-                    >
-                      View in Map
-                    </button>
-
-                    <div className="flex items-center">
+                    <td className="p-3 text-[13px]">
                       <span
-                        className={`mr-2 inline-block h-2.5 w-2.5 rounded-full ${
-                          selectedIncident.severity === "Critical"
-                            ? "bg-red-500"
-                            : selectedIncident.severity === "Moderate"
-                              ? "bg-yellow-400"
-                              : "bg-green-500"
-                        }`}
-                      ></span>
-                      <span
-                        className={`text-sm capitalize ${
-                          selectedIncident.severity === "Critical"
-                            ? "text-red-500"
-                            : selectedIncident.severity === "Moderate"
-                              ? "text-yellow-500"
-                              : "text-green-500"
+                        className={`inline-block rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                          incident.severity === "Critical"
+                            ? "bg-red-500/20 text-red-600"
+                            : incident.severity === "Moderate"
+                              ? "bg-yellow-400/20 text-yellow-600"
+                              : "bg-green-500/20 text-green-600"
                         }`}
                       >
-                        {selectedIncident.severity}
+                        {incident.severity}
                       </span>
+                    </td>
+
+                    <td
+                      className="p-3 text-[13px]"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <Select
+                        value={incident.status}
+                        onValueChange={(value) =>
+                          handleStatusChange(incident.id, value)
+                        }
+                      >
+                        <SelectTrigger className="h-8 w-[120px] text-[12px]">
+                          <SelectValue placeholder="Select Status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Pending">Pending</SelectItem>
+                          <SelectItem value="Ongoing">Ongoing</SelectItem>
+                          <SelectItem value="Resolved">Resolved</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </td>
+
+                    <td className="p-3 text-[13px]">
+                      {incident.responded_by || "—"}
+                    </td>
+
+                    <td className="p-3 text-[13px]">
+                      {incident.created_at
+                        ? formatDate(incident.created_at)
+                        : "—"}
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td
+                    colSpan={8}
+                    className="py-6 text-center text-sm text-gray-500"
+                  >
+                    No incident reports found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Modal */}
+        <Dialog
+          open={!!selectedIncident}
+          onOpenChange={(open) => {
+            if (!open) {
+              setSelectedIncident(null);
+              setImageModalOpen(false);
+            }
+          }}
+        >
+          <DialogContent className="dark:bg-light-black bg-white p-6 sm:max-w-[800px]">
+            {selectedIncident && (
+              <>
+                <DialogHeader>
+                  <div className="flex items-center gap-5">
+                    <IoIosPaper className="text-3xl" />
+                    <div>
+                      <DialogTitle className="text-lg font-semibold">
+                        Incident Details
+                      </DialogTitle>
+                      <DialogDescription>
+                        Full information about the selected report.
+                      </DialogDescription>
                     </div>
                   </div>
-                </div>
+                </DialogHeader>
 
-                {/* Right Image */}
-                {selectedIncident.media && (
-                  <div
-                    onClick={() => setImageModalOpen(true)}
-                    className="relative h-[320px] w-[320px] cursor-zoom-in overflow-hidden rounded-lg shadow-md"
-                  >
-                    <Image
-                      src={`http://localhost/Disaster-backend/uploads/${selectedIncident.media}`}
-                      alt="Incident Photo"
-                      fill
-                      className="object-cover object-center transition-all duration-200 hover:scale-105 hover:brightness-75"
-                    />
+                <p className="absolute top-[7%] right-[8%] text-sm">
+                  {selectedIncident.created_at
+                    ? formatDate(selectedIncident.created_at)
+                    : "—"}
+                </p>
+
+                <div className="mt-5 flex h-full justify-between gap-10">
+                  {/* Left Info */}
+                  <div className="flex-1 text-sm">
+                    <div className="grid grid-cols-2 gap-x-10 gap-y-6">
+                      <div>
+                        <p className="text-sm">
+                          {selectedIncident.reporter_name}
+                        </p>
+                        <span className="text-xs text-gray-500">Reporter</span>
+                      </div>
+                      <div>
+                        <p className="text-sm">
+                          {selectedIncident.reporter_contact}
+                        </p>
+                        <span className="text-xs text-gray-500">Contact</span>
+                      </div>
+                      <div>
+                        <p className="text-sm">{selectedIncident.status}</p>
+                        <span className="text-xs text-gray-500">Status</span>
+                      </div>
+                      <div>
+                        <p className="text-sm">
+                          {selectedIncident.responded_by || "—"}
+                        </p>
+                        <span className="text-xs text-gray-500">
+                          Responded By
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="mt-6">
+                      <span className="text-xs text-gray-500">
+                        Description :
+                      </span>
+                      <div className="mt-1 rounded-md text-xs text-gray-800 dark:text-zinc-300">
+                        {selectedIncident.description}
+                      </div>
+                    </div>
+
+                    <div className="absolute bottom-[5%] flex items-center gap-6">
+                      <button
+                        className="bg-dark-blue rounded-sm px-4 py-2 text-xs text-white"
+                        onClick={() => handleViewMap(selectedIncident)}
+                      >
+                        View in Map
+                      </button>
+
+                      <div className="flex items-center">
+                        <span
+                          className={`mr-2 inline-block h-2.5 w-2.5 rounded-full ${
+                            selectedIncident.severity === "Critical"
+                              ? "bg-red-500"
+                              : selectedIncident.severity === "Moderate"
+                                ? "bg-yellow-400"
+                                : "bg-green-500"
+                          }`}
+                        ></span>
+                        <span
+                          className={`text-sm capitalize ${
+                            selectedIncident.severity === "Critical"
+                              ? "text-red-500"
+                              : selectedIncident.severity === "Moderate"
+                                ? "text-yellow-500"
+                                : "text-green-500"
+                          }`}
+                        >
+                          {selectedIncident.severity}
+                        </span>
+                      </div>
+                    </div>
                   </div>
-                )}
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
 
-      {/* Image Modal */}
-      {imageModalOpen && selectedIncident?.media && (
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/10 backdrop-blur-xs">
-          <button
-            className="absolute top-4 right-4 z-50 text-3xl font-bold text-white hover:text-gray-300"
-            onClick={() => setImageModalOpen(false)}
-          >
-            ×
-          </button>
+                  {/* Right Image */}
+                  {selectedIncident.media && (
+                    <div
+                      onClick={() => setImageModalOpen(true)}
+                      className="relative h-[320px] w-[320px] cursor-zoom-in overflow-hidden rounded-lg shadow-md"
+                    >
+                      <Image
+                        src={`http://localhost/Disaster-backend/uploads/${selectedIncident.media}`}
+                        alt="Incident Photo"
+                        fill
+                        className="object-cover object-center transition-all duration-200 hover:scale-105 hover:brightness-75"
+                      />
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </DialogContent>
+        </Dialog>
 
-          <img
-            src={`http://localhost/Disaster-backend/uploads/${selectedIncident.media}`}
-            alt="Incident Photo"
-            className="max-h-[90vh] max-w-[90vw] cursor-zoom-out object-contain transition-all duration-200 hover:brightness-90"
-            onClick={() => setImageModalOpen(false)}
-          />
-        </div>
-      )}
+        {/* Image Modal */}
+        {imageModalOpen && selectedIncident?.media && (
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/10 backdrop-blur-xs">
+            <button
+              className="absolute top-4 right-4 z-50 text-3xl font-bold text-white hover:text-gray-300"
+              onClick={() => setImageModalOpen(false)}
+            >
+              ×
+            </button>
 
-      {/* Map Modal */}
-      <MapModal
-        open={mapModalOpen}
-        onClose={() => setMapModalOpen(false)}
-        position={mapPosition}
-      />
-    </div>
+            <img
+              src={`http://localhost/Disaster-backend/uploads/${selectedIncident.media}`}
+              alt="Incident Photo"
+              className="max-h-[90vh] max-w-[90vw] cursor-zoom-out object-contain transition-all duration-200 hover:brightness-90"
+              onClick={() => setImageModalOpen(false)}
+            />
+          </div>
+        )}
+
+        {/* Map Modal */}
+        <MapModal
+          open={mapModalOpen}
+          onClose={() => setMapModalOpen(false)}
+          position={mapPosition}
+        />
+      </div>
+    </ProtectedRoute>
   );
 }

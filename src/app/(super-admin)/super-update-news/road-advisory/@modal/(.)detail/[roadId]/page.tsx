@@ -1,5 +1,5 @@
 "use client";
-import { IoCloseCircleSharp } from "react-icons/io5";
+import { IoClose, IoCloseCircleSharp } from "react-icons/io5";
 import { AiFillDelete } from "react-icons/ai";
 import { LiaEditSolid } from "react-icons/lia";
 
@@ -121,7 +121,7 @@ export default function RoadAdvisoryDetailModal() {
             onClick={() => router.back()}
             className={`${isToastOpen ? "pointer-events-none opacity-80" : "hover:text-red-500"} text-2xl transition-all duration-300`}
           >
-            <IoCloseCircleSharp />
+            <IoClose />
           </CardAction>
         </CardHeader>
         <CardContent className="scrollBar mr-2 max-h-[300px] overflow-auto leading-relaxed tracking-normal whitespace-pre-line text-gray-800 dark:text-gray-300">

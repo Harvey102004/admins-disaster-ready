@@ -1,5 +1,6 @@
 "use client";
 
+import ProtectedRoute from "@/components/ProtectedRoutes";
 import dynamic from "next/dynamic";
 
 const EvacuationListView = dynamic(
@@ -11,8 +12,10 @@ const EvacuationListView = dynamic(
 
 export default function Page() {
   return (
-    <div className="relative h-screen w-full pl-4">
-      <EvacuationListView />
-    </div>
+    <ProtectedRoute>
+      <div className="relative h-screen w-full pl-4">
+        <EvacuationListView />
+      </div>
+    </ProtectedRoute>
   );
 }

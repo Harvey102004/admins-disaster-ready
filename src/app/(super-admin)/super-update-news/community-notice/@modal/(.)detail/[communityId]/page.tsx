@@ -2,7 +2,7 @@
 
 import { AiFillDelete } from "react-icons/ai";
 import { LiaEditSolid } from "react-icons/lia";
-import { IoCloseCircleSharp } from "react-icons/io5";
+import { IoClose, IoCloseCircleSharp } from "react-icons/io5";
 
 import { useParams } from "next/navigation";
 import { useRouter } from "next/navigation";
@@ -95,7 +95,7 @@ export default function CommunityNoticeDetailModal() {
             onClick={() => router.back()}
             className={`${isToastOpen ? "pointer-events-none opacity-80" : "hover:text-red-500"} text-2xl transition-all duration-300`}
           >
-            <IoCloseCircleSharp />
+            <IoClose />
           </CardAction>
         </CardHeader>
         <CardContent className="scrollBar mr-2 max-h-[40%] overflow-auto leading-relaxed tracking-normal text-gray-800 dark:text-gray-300">

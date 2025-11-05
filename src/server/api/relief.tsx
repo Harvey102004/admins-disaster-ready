@@ -1,11 +1,12 @@
 import axios from "axios";
 
-const API_GET_RELIEFS =
-  "http://localhost/Disaster-backend/public/fetchRelief.php";
+const API_GET_RELIEFS = "http://localhost:3001/public/fetchRelief.php";
 
 export const getReliefs = async () => {
   try {
-    const response = await axios.get(API_GET_RELIEFS);
+    const response = await axios.get(API_GET_RELIEFS, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error) {
     console.error("Error fetching reliefs:", error);
@@ -19,8 +20,7 @@ interface AddReliefProps {
   date_input: string;
 }
 
-const API_ADD_RELIEF =
-  "http://localhost/Disaster-backend/public/reliefDistribution.php";
+const API_ADD_RELIEF = "http://localhost:3001/public/reliefDistribution.php";
 
 export const addRelief = async ({
   description,
@@ -28,11 +28,17 @@ export const addRelief = async ({
   date_input,
 }: AddReliefProps) => {
   try {
-    const response = await axios.post(API_ADD_RELIEF, {
-      description,
-      total_packs,
-      date_input,
-    });
+    const response = await axios.post(
+      API_ADD_RELIEF,
+      {
+        description,
+        total_packs,
+        date_input,
+      },
+      {
+        withCredentials: true,
+      },
+    );
     return response.data;
   } catch (error) {
     console.error("Error adding relief:", error);

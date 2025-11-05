@@ -134,14 +134,14 @@ export default function EvacuationDetailModal() {
   }
 
   const barangayOnly = data.created_by
-    ? data.created_by.split(",").pop()?.trim()
+    ? data.created_by.split(",")[1]?.trim() ||
+      data.created_by.split(",")[0]?.trim()
     : "Unknown";
 
-  const barangayLogo = barangayOnly
-    ? barangayOnly.toLowerCase().includes("municipality of los baños")
+  const barangayLogo =
+    barangayOnly === "Municipal of Los Baños"
       ? "lb-logo.png"
-      : barangayOnly.toLowerCase().replace(/\s+/g, "-") + "-logo.png"
-    : "default-logo.png";
+      : barangayOnly.toLowerCase().replace(/\s+/g, "-").concat("-logo.png");
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">

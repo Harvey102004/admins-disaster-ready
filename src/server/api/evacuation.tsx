@@ -7,12 +7,13 @@ import z from "zod";
 
 export type EvacuationCenterFormData = z.infer<typeof evacuationCenterSchema>;
 
-const API_ADD_EVACUATION =
-  "http://localhost/Disaster-backend/public/evacuationCenter.php";
+const API_ADD_EVACUATION = "http://localhost:3001/public/evacuationCenter.php";
 
 export const addEvacuationCenter = async (data: EvacuationCenterFormData) => {
   try {
-    const response = await axios.post(API_ADD_EVACUATION, data);
+    const response = await axios.post(API_ADD_EVACUATION, data, {
+      withCredentials: true,
+    });
 
     return response.data;
   } catch (error: any) {
@@ -58,7 +59,10 @@ export const getEvacuationCenters = async (): Promise<
 export const getEvacuationDetails = async ({ id }: { id: string }) => {
   try {
     const response = await axios.get<EvacuationCenterProps>(
-      `http://localhost/Disaster-backend/public/evacuationCenter.php?&id=${id}`,
+      `http://localhost:3001/public/evacuationCenter.php?&id=${id}`,
+      {
+        withCredentials: true,
+      },
     );
 
     console.log(response.data);
@@ -80,8 +84,11 @@ export const deleteEvacuationCenter = async ({ id }: { id: string }) => {
     formData.append("_method", "DELETE");
 
     const response = await axios.post(
-      `http://localhost/Disaster-backend/public/evacuationCenter.php?&id=${id}`,
+      `http://localhost:3001/public/evacuationCenter.php?&id=${id}`,
       formData,
+      {
+        withCredentials: true,
+      },
     );
 
     return response.data;
@@ -106,7 +113,7 @@ export const editEvacuationCenter = async ({
 }) => {
   try {
     const response = await axios.put(
-      `http://localhost/Disaster-backend/public/evacuationCenter.php?id=${id}`,
+      `http://localhost:3001/public/evacuationCenter.php?id=${id}`,
       {
         evac_name: data.name,
         evac_location: data.location,
@@ -117,6 +124,9 @@ export const editEvacuationCenter = async ({
         lat: data.lat,
         long: data.long,
         created_by: data.created_by,
+      },
+      {
+        withCredentials: true,
       },
     );
 

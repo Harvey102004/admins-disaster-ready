@@ -4,12 +4,13 @@ import { brgyContactSchema } from "@/lib/schema/brgyContacts";
 
 export type BrgyContactFormData = z.infer<typeof brgyContactSchema>;
 
-const API_CONTACT =
-  "http://localhost/Disaster-backend/public/barangayContact.php";
+const API_CONTACT = "http://localhost:3001/public/barangayContact.php";
 
 export const addBrgyContact = async (data: BrgyContactFormData) => {
   try {
-    const response = await axios.post(API_CONTACT, data);
+    const response = await axios.post(API_CONTACT, data, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error: any) {
     console.error(error);
@@ -23,7 +24,9 @@ export const addBrgyContact = async (data: BrgyContactFormData) => {
 
 export const getBrgyContacts = async () => {
   try {
-    const response = await axios.get(API_CONTACT);
+    const response = await axios.get(API_CONTACT, {
+      withCredentials: true,
+    });
 
     return response.data;
   } catch (error: any) {
@@ -37,7 +40,9 @@ export const getBrgyContacts = async () => {
 // GET SPECIFIC CONTACT
 export const getBrgyContactDetails = async ({ id }: { id: string }) => {
   try {
-    const response = await axios.get(`${API_CONTACT}?id=${id}`);
+    const response = await axios.get(`${API_CONTACT}?id=${id}`, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error: any) {
     console.error(error);
@@ -57,7 +62,9 @@ export const editBrgyContact = async ({
   data: BrgyContactFormData;
 }) => {
   try {
-    const response = await axios.put(`${API_CONTACT}?id=${id}`, data);
+    const response = await axios.put(`${API_CONTACT}?id=${id}`, data, {
+      withCredentials: true,
+    });
     return response.data;
   } catch (error: any) {
     console.error(error);

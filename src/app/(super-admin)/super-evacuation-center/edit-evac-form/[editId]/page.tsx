@@ -17,6 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { editEvacuationCenterSchema } from "@/lib/schema/evacuation";
 import { z } from "zod";
 import NoIdFound from "@/components/NoIdFound";
+import ProtectedRoute from "@/components/ProtectedRoutes";
 
 type EditEvacuationCenterSchema = z.infer<typeof editEvacuationCenterSchema>;
 
@@ -89,9 +90,11 @@ export default function EditEvacForm() {
 
   if (isLoading || isRefetching) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-        <Loader />
-      </div>
+      <ProtectedRoute>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <Loader />
+        </div>
+      </ProtectedRoute>
     );
   }
 
@@ -109,69 +112,71 @@ export default function EditEvacForm() {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="bg-transparent-blue border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex w-[600px] flex-col gap-8 rounded-xl border px-10 py-8 backdrop-blur-sm"
-      >
-        <p className="text-dark-blue/70 dark:text-puti/60 mb-3 text-center text-sm">
-          Only Evacuees, Contact Person, and Contact Number are editable.
-        </p>
+    <ProtectedRoute>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex w-[600px] flex-col gap-8 rounded-xl border px-10 py-8 backdrop-blur-sm"
+        >
+          <p className="text-dark-blue/70 dark:text-puti/60 mb-3 text-center text-sm">
+            Only Evacuees, Contact Person, and Contact Number are editable.
+          </p>
 
-        <HiddenInput name="name" register={register} errors={errors} />
-        <HiddenInput name="capacity" register={register} errors={errors} />
-        <HiddenInput name="location" register={register} errors={errors} />
-        <HiddenInput name="lat" register={register} errors={errors} />
-        <HiddenInput name="long" register={register} errors={errors} />
+          <HiddenInput name="name" register={register} errors={errors} />
+          <HiddenInput name="capacity" register={register} errors={errors} />
+          <HiddenInput name="location" register={register} errors={errors} />
+          <HiddenInput name="lat" register={register} errors={errors} />
+          <HiddenInput name="long" register={register} errors={errors} />
 
-        <NumberInput
-          name="current_evacuees"
-          icon={<FaUsers />}
-          label="Evacuees"
-          register={register}
-          errors={errors}
-          placeholder="Enter number of evacuees..."
-        />
-        <TextInput
-          name="contact_person"
-          icon={<FaUser />}
-          label="Contact Person"
-          register={register}
-          errors={errors}
-          placeholder="Enter contact person..."
-        />
-        <TextInput
-          name="contact_number"
-          icon={<FaPhone />}
-          label="Contact Number"
-          register={register}
-          errors={errors}
-          placeholder="Enter contact number..."
-        />
+          <NumberInput
+            name="current_evacuees"
+            icon={<FaUsers />}
+            label="Evacuees"
+            register={register}
+            errors={errors}
+            placeholder="Enter number of evacuees..."
+          />
+          <TextInput
+            name="contact_person"
+            icon={<FaUser />}
+            label="Contact Person"
+            register={register}
+            errors={errors}
+            placeholder="Enter contact person..."
+          />
+          <TextInput
+            name="contact_number"
+            icon={<FaPhone />}
+            label="Contact Number"
+            register={register}
+            errors={errors}
+            placeholder="Enter contact number..."
+          />
 
-        <div className="flex w-full items-center gap-8">
-          <button
-            type="submit"
-            disabled={isPending}
-            className={`bg-dark-blue text-puti mt-4 w-1/2 rounded-md border py-3 text-sm transition-all duration-300 ${
-              isPending ? "cursor-not-allowed opacity-60" : "hover:opacity-90"
-            }`}
-          >
-            {isPending ? "Saving..." : "Save Changes"}
-          </button>
+          <div className="flex w-full items-center gap-8">
+            <button
+              type="submit"
+              disabled={isPending}
+              className={`bg-dark-blue text-puti mt-4 w-1/2 rounded-md border py-3 text-sm transition-all duration-300 ${
+                isPending ? "cursor-not-allowed opacity-60" : "hover:opacity-90"
+              }`}
+            >
+              {isPending ? "Saving..." : "Save Changes"}
+            </button>
 
-          <button
-            type="button"
-            onClick={() => router.back()}
-            disabled={isPending}
-            className={`text-puti mt-4 w-1/2 rounded-md border bg-red-500 py-3 text-sm transition-all duration-300 ${
-              isPending ? "cursor-not-allowed opacity-60" : "hover:opacity-90"
-            }`}
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
-    </div>
+            <button
+              type="button"
+              onClick={() => router.back()}
+              disabled={isPending}
+              className={`text-puti mt-4 w-1/2 rounded-md border bg-red-500 py-3 text-sm transition-all duration-300 ${
+                isPending ? "cursor-not-allowed opacity-60" : "hover:opacity-90"
+              }`}
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </ProtectedRoute>
   );
 }

@@ -22,6 +22,7 @@ import { communityNoticeSchema } from "@/lib/schema/updateNews";
 import { toast } from "sonner";
 import Loader from "@/components/loading";
 import { DateTimeInput, TextAreaInput, TextInput } from "@/components/Inputs";
+import ProtectedRoute from "@/components/ProtectedRoutes";
 
 export default function EditCommunityNoticeForm() {
   const router = useRouter();
@@ -104,83 +105,91 @@ export default function EditCommunityNoticeForm() {
 
   if (isLoading || isRefetching) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-        <Loader />
-      </div>
+      <ProtectedRoute>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <Loader />
+        </div>
+      </ProtectedRoute>
     );
   }
 
   if (error) {
-    return <p>{error.message}</p>;
+    return (
+      <ProtectedRoute>
+        <p>{error.message}</p>
+      </ProtectedRoute>
+    );
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex w-[45vw] flex-col gap-5 rounded-xl border bg-white px-10 py-8 backdrop-blur-sm"
-      >
-        <HiOutlineX
-          onClick={() => router.back()}
-          className={`${noClose ? "pointer-events-none" : "hover:text-red-500"} absolute top-5 right-5 text-xl transition-all duration-300`}
-        />
-        <div className="mx-auto flex items-center gap-4">
-          <FaUsers className="text-dark-blue text-xl" />
-          <h2>Edit Community Notice</h2>
-        </div>
-
-        <input
-          type="hidden"
-          value={barangay}
-          {...register("added_by")}
-          readOnly
-        />
-
-        <TextInput
-          name="title"
-          label="Title"
-          icon={<FaHeading />}
-          placeholder="Enter weather advisory title"
-          register={register}
-          errors={errors}
-        />
-
-        <TextAreaInput
-          name="details"
-          label="Details"
-          icon={<MdOutlineNotes />}
-          placeholder="Enter details maximum of (2500 characters)"
-          register={register}
-          errors={errors}
-        />
-
-        <DateTimeInput
-          name="dateTime"
-          label="Date & Time"
-          icon={<FaClock />}
-          register={register}
-          errors={errors}
-        />
-
-        <button
-          disabled={isPending}
-          type="submit"
-          onClick={() => {
-            setNoClose(true);
-
-            setTimeout(() => {
-              setNoClose(false);
-            }, 5000);
-          }}
-          className={`text-puti mt-3 rounded-md border px-4 py-3 transition-all duration-300 ${
-            isPending
-              ? "cursor-not-allowed bg-gray-500 opacity-70"
-              : "bg-dark-blue cursor-pointer hover:opacity-90"
-          } `}
+    <ProtectedRoute>
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex w-[45vw] flex-col gap-5 rounded-xl border bg-white px-10 py-8 backdrop-blur-sm"
         >
-          {isPending ? "Updating..." : "Update"}
-        </button>
-      </form>
-    </div>
+          <HiOutlineX
+            onClick={() => router.back()}
+            className={`${noClose ? "pointer-events-none" : "hover:text-red-500"} absolute top-5 right-5 text-xl transition-all duration-300`}
+          />
+          <div className="mx-auto flex items-center gap-4">
+            <FaUsers className="text-dark-blue text-xl" />
+            <h2>Edit Community Notice</h2>
+          </div>
+
+          <input
+            type="hidden"
+            value={barangay}
+            {...register("added_by")}
+            readOnly
+          />
+
+          <TextInput
+            name="title"
+            label="Title"
+            icon={<FaHeading />}
+            placeholder="Enter weather advisory title"
+            register={register}
+            errors={errors}
+          />
+
+          <TextAreaInput
+            name="details"
+            label="Details"
+            icon={<MdOutlineNotes />}
+            placeholder="Enter details maximum of (2500 characters)"
+            register={register}
+            errors={errors}
+          />
+
+          <DateTimeInput
+            name="dateTime"
+            label="Date & Time"
+            icon={<FaClock />}
+            register={register}
+            errors={errors}
+          />
+
+          <button
+            disabled={isPending}
+            type="submit"
+            onClick={() => {
+              setNoClose(true);
+
+              setTimeout(() => {
+                setNoClose(false);
+              }, 5000);
+            }}
+            className={`text-puti mt-3 rounded-md border px-4 py-3 transition-all duration-300 ${
+              isPending
+                ? "cursor-not-allowed bg-gray-500 opacity-70"
+                : "bg-dark-blue cursor-pointer hover:opacity-90"
+            } `}
+          >
+            {isPending ? "Updating..." : "Update"}
+          </button>
+        </form>
+      </div>
+    </ProtectedRoute>
   );
 }
