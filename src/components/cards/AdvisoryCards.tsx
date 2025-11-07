@@ -126,7 +126,7 @@ export const WeatherCards = ({
 
         {(currentUser?.toLowerCase() === addedBy?.toLowerCase() ||
           currentUser?.toLowerCase() ===
-            "municipality of los baños".toLowerCase()) && (
+            "municipal of los baños".toLowerCase()) && (
           <CardAction>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -185,7 +185,7 @@ export const WeatherCards = ({
                 ?.toLowerCase()
                 .normalize("NFD")
                 .replace(/[\u0300-\u036f]/g, "")
-                .includes("municipality of los banos")
+                .includes("municipal of los banos")
                 ? "lb-logo.png"
                 : addedBy
                     ?.toLowerCase()
@@ -259,7 +259,7 @@ export const CommunityCards = ({
         </CardDescription>
         {(currentUser?.toLowerCase() === addedBy?.toLowerCase() ||
           currentUser?.toLowerCase() ===
-            "municipality of los baños".toLowerCase()) && (
+            "municipal of los baños".toLowerCase()) && (
           <CardAction>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -321,7 +321,7 @@ export const CommunityCards = ({
                 ?.toLowerCase()
                 .normalize("NFD")
                 .replace(/[\u0300-\u036f]/g, "")
-                .includes("municipality of los banos")
+                .includes("municipal of los banos")
                 ? "lb-logo.png"
                 : addedBy
                     ?.toLowerCase()
@@ -395,7 +395,7 @@ export const RoadCards = ({
         </CardDescription>
         {(currentUser?.toLowerCase() === addedBy?.toLowerCase() ||
           currentUser?.toLowerCase() ===
-            "municipality of los baños".toLowerCase()) && (
+            "municipal of los baños".toLowerCase()) && (
           <CardAction>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -481,7 +481,7 @@ export const RoadCards = ({
                   ?.toLowerCase()
                   .normalize("NFD")
                   .replace(/[\u0300-\u036f]/g, "")
-                  .includes("municipality of los banos")
+                  .includes("municipal of los banos")
                   ? "lb-logo.png"
                   : addedBy
                       ?.toLowerCase()
@@ -574,7 +574,7 @@ export const DisasterCard = ({
 
           {(currentUser?.toLowerCase() === addedBy?.toLowerCase() ||
             currentUser?.toLowerCase() ===
-              "municipality of los baños".toLowerCase()) && (
+              "municipal of los baños".toLowerCase()) && (
             <CardAction className="absolute right-4">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -639,7 +639,7 @@ export const DisasterCard = ({
                 ?.toLowerCase()
                 .normalize("NFD")
                 .replace(/[\u0300-\u036f]/g, "")
-                .includes("municipality of los banos")
+                .includes("municipal of los banos")
                 ? "lb-logo.png"
                 : addedBy
                     ?.toLowerCase()

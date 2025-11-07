@@ -1,10 +1,24 @@
 import axios from "axios";
 
 const API_GET_RELIEFS = "http://localhost:3001/public/fetchRelief.php";
+const API_GET_RELIEFS_HISTORY =
+  "http://localhost:3001/public/fetchBarangayReceivedPacks.php";
 
 export const getReliefs = async () => {
   try {
     const response = await axios.get(API_GET_RELIEFS, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching reliefs:", error);
+    throw error;
+  }
+};
+
+export const getHistory = async () => {
+  try {
+    const response = await axios.get(API_GET_RELIEFS_HISTORY, {
       withCredentials: true,
     });
     return response.data;

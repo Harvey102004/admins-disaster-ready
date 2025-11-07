@@ -2,7 +2,12 @@
 
 import { FaUserEdit } from "react-icons/fa";
 import { IoMdArchive } from "react-icons/io";
-import { getUsers, getArchivedUsers } from "../../../server/api/users";
+import {
+  getUsers,
+  getArchivedUsers,
+  getPendingUsers,
+  getBlockedUsers,
+} from "../../../server/api/users";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import axios from "axios";
@@ -10,21 +15,31 @@ import { useState } from "react";
 import { IoEye } from "react-icons/io5";
 import { IoMdEyeOff } from "react-icons/io";
 import { toast } from "sonner";
-import { FaUserLock } from "react-icons/fa6";
+import { FaUserLock, FaUserSlash } from "react-icons/fa6";
 import { TiArrowBack } from "react-icons/ti";
 import { MdUnarchive } from "react-icons/md";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProtectedRoute from "@/components/ProtectedRoutes";
+import { ImBlocked, ImSpinner } from "react-icons/im";
 
 export default function SuperAdminUserManagement() {
   const [showModal, setShowModal] = useState(false);
   const [showModalArchived, setShowModalArchived] = useState(false);
+  const [showModalPending, setShowModalPending] = useState(false);
+  const [showModalUnblocked, setShowModalUnblocked] = useState(false);
+  const [showModalBlocked, setShowModalBlocked] = useState(false);
+  const [showModalDecline, setshowModalDecline] = useState(false);
   const [password, setPassword] = useState("");
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [modalError, setModalError] = useState<string | null>(null);
   const [isPassUnHide, setPassIsUnHide] = useState(false);
-  const [isUserPage, setIsUserPage] = useState(true);
+  const [allPages, setAllPages] = useState({
+    userPage: true,
+    archivePage: false,
+    pendingPage: false,
+    blockedPage: false,
+  });
 
   const {
     data: usersData,
@@ -44,6 +59,26 @@ export default function SuperAdminUserManagement() {
   } = useQuery({
     queryKey: ["archivedUsers"],
     queryFn: getArchivedUsers,
+  });
+
+  const {
+    data: pendingUsersData,
+    isLoading: pendingLoading,
+    error: pendingError,
+    refetch: refetchPending,
+  } = useQuery({
+    queryKey: ["pendingUsers"],
+    queryFn: getPendingUsers,
+  });
+
+  const {
+    data: blockedUsersData,
+    isLoading: blockedusersLoading,
+    error: blockedUsersError,
+    refetch: refetchBlocked,
+  } = useQuery({
+    queryKey: ["blockedUsers"],
+    queryFn: getBlockedUsers,
   });
 
   useEffect(() => {
@@ -87,6 +122,7 @@ export default function SuperAdminUserManagement() {
     setSelectedUser(user);
     setShowModalArchived(true);
   };
+
   const confirmAction = async () => {
     if (!currentUser?.id) {
       setModalError("Super admin not logged in!");
@@ -183,10 +219,181 @@ export default function SuperAdminUserManagement() {
     });
 
   const archivedCount = archivedUsersData?.data?.data?.length || 0;
+  const pendingUsersCount = pendingUsersData?.data?.length || 0;
+  const blockedUsersCount = blockedUsersData?.data?.length || 0;
+
+  const approvePendingUser = async () => {
+    if (!currentUser?.id) {
+      setModalError("Super admin not logged in!");
+      return;
+    }
+
+    if (!password) {
+      setModalError("Enter your password!");
+      return;
+    }
+
+    try {
+      const payload = {
+        id: selectedUser.id,
+        password: password,
+        action: "approve",
+      };
+
+      const response = await axios.post(
+        "http://localhost:3001/public/acceptRequest.php",
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        },
+      );
+
+      if (response.data?.success) {
+        toast.success(response.data.message || "User approved successfully!");
+
+        setShowModalPending(false);
+        setPassword("");
+        setModalError(null);
+
+        refetchPending();
+        refetchUsers();
+      } else {
+        setModalError(response.data?.message || "Something went wrong!");
+      }
+    } catch (err: any) {
+      setModalError(err.response?.data?.message || "Error occurred!");
+    }
+  };
+
+  const unblockedUser = async () => {
+    if (!currentUser?.id) {
+      setModalError("Super admin not logged in!");
+      return;
+    }
+
+    if (!password) {
+      setModalError("Enter your password!");
+      return;
+    }
+
+    try {
+      const payload = {
+        id: selectedUser.id,
+        password: password,
+        action: "unblock",
+      };
+
+      const response = await axios.post(
+        "http://localhost:3001/public/acceptRequest.php",
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        },
+      );
+
+      if (response.data?.success) {
+        toast.success(response.data.message || "User approved successfully!");
+
+        setShowModalUnblocked(false);
+        setPassword("");
+        setModalError(null);
+
+        refetchBlocked();
+        refetchUsers();
+      } else {
+        setModalError(response.data?.message || "Something went wrong!");
+      }
+    } catch (err: any) {
+      setModalError(err.response?.data?.message || "Error occurred!");
+    }
+  };
+
+  const blockedUser = async () => {
+    if (!currentUser?.id) {
+      setModalError("Super admin not logged in!");
+      return;
+    }
+
+    if (!password) {
+      setModalError("Enter your password!");
+      return;
+    }
+
+    try {
+      const payload = {
+        id: selectedUser.id,
+        password: password,
+        action: "block",
+      };
+
+      const response = await axios.post(
+        "http://localhost:3001/public/acceptRequest.php",
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        },
+      );
+
+      if (response.data?.success) {
+        toast.success(response.data.message || "User approved successfully!");
+
+        setShowModalBlocked(false);
+        setPassword("");
+        setModalError(null);
+
+        refetchPending();
+        refetchUsers();
+      } else {
+        setModalError(response.data?.message || "Something went wrong!");
+      }
+    } catch (err: any) {
+      setModalError(err.response?.data?.message || "Error occurred!");
+    }
+  };
+
+  const declineUser = async () => {
+    if (!currentUser?.id) {
+      setModalError("Super admin not logged in!");
+      return;
+    }
+
+    try {
+      const payload = {
+        id: selectedUser.id,
+        action: "decline",
+      };
+
+      const response = await axios.post(
+        "http://localhost:3001/public/acceptRequest.php",
+        payload,
+        {
+          headers: { "Content-Type": "application/json" },
+          withCredentials: true,
+        },
+      );
+
+      if (response.data?.success) {
+        toast.success(response.data.message || "User declined successfully!");
+
+        setshowModalDecline(false);
+        setModalError(null);
+
+        refetchPending();
+        refetchUsers();
+      } else {
+        setModalError(response.data?.message || "Something went wrong!");
+      }
+    } catch (err: any) {
+      setModalError(err.response?.data?.message || "Error occurred!");
+    }
+  };
 
   return (
     <ProtectedRoute>
-      {isUserPage ? (
+      {allPages.userPage && (
         <div className="w-full px-14 py-10 transition-all duration-300">
           <div className="flex w-full items-center justify-between">
             <div className="flex w-full items-center justify-between">
@@ -195,17 +402,69 @@ export default function SuperAdminUserManagement() {
                 <h2 className="text-xl font-semibold">User Management</h2>
               </div>
 
-              <div className="relative">
-                <IoMdArchive
-                  className="text-2xl"
-                  onClick={() => setIsUserPage(false)}
-                />
-
-                {archivedCount > 0 && (
-                  <span className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
-                    {archivedCount}
+              <div className="flex items-center gap-5">
+                <button
+                  onClick={() => {
+                    setAllPages((prev) => ({
+                      ...prev,
+                      userPage: false,
+                      archivePage: false,
+                      pendingPage: true,
+                    }));
+                  }}
+                  className="bg-dark-blue flex cursor-pointer items-center rounded-full px-4 py-2 text-xs text-white"
+                >
+                  Pending Accounts
+                  <span className="ml-3">
+                    {pendingUsersCount === 0 ? (
+                      <ImSpinner />
+                    ) : (
+                      pendingUsersCount
+                    )}
                   </span>
-                )}
+                </button>
+
+                <button
+                  onClick={() => {
+                    setAllPages((prev) => ({
+                      ...prev,
+                      userPage: false,
+                      archivePage: false,
+                      pendingPage: false,
+                      blockedPage: true,
+                    }));
+                  }}
+                  className="bg-dark-blue flex cursor-pointer items-center rounded-full px-4 py-2 text-xs text-white"
+                >
+                  Blocked Accounts
+                  <span className="ml-3">
+                    {blockedUsersCount === 0 ? (
+                      <ImBlocked />
+                    ) : (
+                      blockedUsersCount
+                    )}
+                  </span>
+                </button>
+
+                <div className="relative">
+                  <IoMdArchive
+                    className="cursor-pointer text-2xl"
+                    onClick={() =>
+                      setAllPages((prev) => ({
+                        ...prev,
+                        userPage: false,
+                        archivePage: true,
+                        pendingPage: false,
+                      }))
+                    }
+                  />
+
+                  {archivedCount > 0 && (
+                    <span className="pointer-events-none absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
+                      {archivedCount}
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -264,7 +523,7 @@ export default function SuperAdminUserManagement() {
                           className={`rounded-full px-3 py-1.5 text-[10px] text-white ${
                             user?.role === 1
                               ? "cursor-not-allowed bg-gray-400"
-                              : "bg-dark-blue hover:opacity-90"
+                              : "bg-dark-blue cursor-pointer hover:opacity-90"
                           }`}
                           onClick={() => handleAction(user)}
                           disabled={user?.role === 1}
@@ -350,7 +609,9 @@ export default function SuperAdminUserManagement() {
             </div>
           )}
         </div>
-      ) : (
+      )}
+
+      {allPages.archivePage && (
         <div className="w-full px-14 py-10 transition-all duration-300">
           <div className="flex w-full items-center justify-between">
             <div className="flex w-full items-center justify-between">
@@ -361,10 +622,26 @@ export default function SuperAdminUserManagement() {
 
               <p
                 className="flex cursor-pointer items-center gap-2"
-                onClick={() => setIsUserPage(true)}
+                onClick={() =>
+                  setAllPages((prev) => ({
+                    ...prev,
+                    userPage: true,
+                    archivePage: false,
+                    pendingPage: false,
+                  }))
+                }
               >
                 {" "}
-                <span onClick={() => setIsUserPage(true)}>
+                <span
+                  onClick={() =>
+                    setAllPages((prev) => ({
+                      ...prev,
+                      userPage: true,
+                      archivePage: false,
+                      pendingPage: false,
+                    }))
+                  }
+                >
                   <TiArrowBack />
                 </span>
                 Back
@@ -503,6 +780,491 @@ export default function SuperAdminUserManagement() {
 
                   <button
                     onClick={confirmAction}
+                    className="bg-dark-blue rounded px-4 py-3 text-xs text-white"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {allPages.pendingPage && (
+        <div className="w-full px-14 py-10 transition-all duration-300">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex w-full items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FaUserEdit className="text-2xl" />
+                <h2 className="text-xl font-semibold">
+                  Pending Account Request{" "}
+                </h2>
+              </div>
+
+              <p
+                className="flex cursor-pointer items-center gap-2"
+                onClick={() =>
+                  setAllPages((prev) => ({
+                    ...prev,
+                    userPage: true,
+                    archivePage: false,
+                    pendingPage: false,
+                  }))
+                }
+              >
+                {" "}
+                <span
+                  onClick={() =>
+                    setAllPages((prev) => ({
+                      ...prev,
+                      userPage: true,
+                      archivePage: false,
+                      pendingPage: false,
+                    }))
+                  }
+                >
+                  <TiArrowBack />
+                </span>
+                Back
+              </p>
+            </div>
+          </div>
+
+          {/* PENDING USERS TABLE */}
+          <div className="scrollBar relative mt-10 max-h-[78vh] overflow-y-auto rounded-xl border px-4 pb-4 shadow-sm">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                    ID
+                  </th>
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                    Username
+                  </th>
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                    Email
+                  </th>
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                    Barangay
+                  </th>
+                  <th className="bg-background sticky top-0 px-3 py-4 pr-14 text-end text-sm font-semibold">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {pendingLoading ? (
+                  Array.from({ length: 10 }).map((_, i) => (
+                    <tr key={i} className="border-b">
+                      {Array.from({ length: 6 }).map((_, j) => (
+                        <td key={j} className="p-3">
+                          <Skeleton className="h-6 w-full rounded-full" />
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : pendingUsersData.data.length > 0 ? (
+                  pendingUsersData.data.map((user: any) => (
+                    <tr key={user.id} className="border-b">
+                      <td className="p-3 text-[13px]">{user.id}</td>
+                      <td className="p-3 text-[13px]">{user.username}</td>
+                      <td className="p-3 text-[13px]">{user.email}</td>
+                      <td className="p-3 text-[13px]">{user.barangay}</td>
+                      <td className="items- flex justify-end gap-3 p-3 text-right">
+                        <button
+                          className={`rounded-full px-3 py-1.5 text-[10px] text-white ${
+                            user?.role === 1
+                              ? "cursor-not-allowed bg-gray-400"
+                              : "bg-dark-blue cursor-pointer hover:opacity-90"
+                          }`}
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setShowModalPending(true);
+                          }}
+                        >
+                          Approved
+                        </button>
+                        <button
+                          className={`rounded-full px-3 py-1.5 text-[10px] text-white ${
+                            user?.role === 1
+                              ? "cursor-not-allowed bg-gray-400"
+                              : "cursor-pointer bg-red-500 hover:opacity-90"
+                          }`}
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setShowModalBlocked(true);
+                          }}
+                          disabled={user?.role === 1}
+                        >
+                          Block
+                        </button>
+
+                        <button
+                          className={`rounded-full px-3 py-1.5 text-[10px] text-white ${
+                            user?.role === 1
+                              ? "cursor-not-allowed bg-gray-400"
+                              : "cursor-pointer bg-red-500 hover:opacity-90"
+                          }`}
+                          onClick={() => {
+                            handleAction(user), setshowModalDecline(true);
+                          }}
+                          disabled={user?.role === 1}
+                        >
+                          Decline
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="py-10 text-center text-sm text-gray-500"
+                    >
+                      No pending accounts yet
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* PENDING USER APPROVAL MODAL */}
+          {showModalPending && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
+              <div className="dark:bg-light-black w-[450px] space-y-4 rounded-lg bg-white p-6">
+                <h3 className="text-center text-lg font-semibold">
+                  Approved Account Request
+                </h3>
+                <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+                  User :{" "}
+                  <span className="font-semibold">
+                    {selectedUser?.username}
+                  </span>
+                </p>
+
+                {modalError && (
+                  <p className="mt-1 text-center text-sm text-red-500">
+                    {modalError}
+                  </p>
+                )}
+
+                <div className="relative">
+                  <input
+                    type={isPassUnHide ? "text" : "password"}
+                    placeholder="Enter your password"
+                    className="h-full w-full rounded border px-4 py-3 text-sm"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+
+                  {isPassUnHide ? (
+                    <IoEye
+                      className="absolute top-3 right-3 cursor-pointer text-xl text-gray-600"
+                      onClick={() => setPassIsUnHide(false)}
+                    />
+                  ) : (
+                    <IoMdEyeOff
+                      className="absolute top-3 right-3 cursor-pointer text-xl text-gray-600"
+                      onClick={() => setPassIsUnHide(true)}
+                    />
+                  )}
+                </div>
+
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    onClick={() => {
+                      setShowModalPending(false);
+                      setPassword("");
+                      setModalError(null);
+                    }}
+                    className="rounded bg-red-500 px-4 py-3 text-xs text-white"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={approvePendingUser}
+                    className="bg-dark-blue rounded px-4 py-3 text-xs text-white"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* BLOCKED USER APPROVAL MODAL */}
+          {showModalBlocked && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
+              <div className="dark:bg-light-black w-[450px] space-y-4 rounded-lg bg-white p-6">
+                <h3 className="text-center text-lg font-semibold">
+                  Block Account
+                </h3>
+                <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+                  User :{" "}
+                  <span className="font-semibold">
+                    {selectedUser?.username}
+                  </span>
+                </p>
+
+                {modalError && (
+                  <p className="mt-1 text-center text-sm text-red-500">
+                    {modalError}
+                  </p>
+                )}
+
+                <div className="relative">
+                  <input
+                    type={isPassUnHide ? "text" : "password"}
+                    placeholder="Enter your password"
+                    className="h-full w-full rounded border px-4 py-3 text-sm"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+
+                  {isPassUnHide ? (
+                    <IoEye
+                      className="absolute top-3 right-3 cursor-pointer text-xl text-gray-600"
+                      onClick={() => setPassIsUnHide(false)}
+                    />
+                  ) : (
+                    <IoMdEyeOff
+                      className="absolute top-3 right-3 cursor-pointer text-xl text-gray-600"
+                      onClick={() => setPassIsUnHide(true)}
+                    />
+                  )}
+                </div>
+
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    onClick={() => {
+                      setShowModalBlocked(false);
+                      setPassword("");
+                      setModalError(null);
+                    }}
+                    className="rounded bg-red-500 px-4 py-3 text-xs text-white"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={blockedUser}
+                    className="bg-dark-blue rounded px-4 py-3 text-xs text-white"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* BLOCKED USER APPROVAL MODAL */}
+          {showModalDecline && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
+              <div className="dark:bg-light-black w-[450px] space-y-4 rounded-lg bg-white p-6">
+                <h3 className="text-center text-lg font-semibold">
+                  Decline Account
+                </h3>
+                <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+                  User :{" "}
+                  <span className="font-semibold">
+                    {selectedUser?.username}
+                  </span>
+                </p>
+
+                {modalError && (
+                  <p className="mt-1 text-center text-sm text-red-500">
+                    {modalError}
+                  </p>
+                )}
+
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    onClick={() => {
+                      setshowModalDecline(false);
+                      setPassword("");
+                      setModalError(null);
+                    }}
+                    className="rounded bg-red-500 px-4 py-3 text-xs text-white"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={declineUser}
+                    className="bg-dark-blue rounded px-4 py-3 text-xs text-white"
+                  >
+                    Confirm
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {allPages.blockedPage && (
+        <div className="w-full px-14 py-10 transition-all duration-300">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex w-full items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FaUserSlash className="text-2xl" />
+                <h2 className="text-xl font-semibold">Blocked Users </h2>
+              </div>
+
+              <p
+                className="flex cursor-pointer items-center gap-2"
+                onClick={() =>
+                  setAllPages((prev) => ({
+                    ...prev,
+                    userPage: true,
+                    archivePage: false,
+                    pendingPage: false,
+                    blockedPage: false,
+                  }))
+                }
+              >
+                {" "}
+                <span
+                  onClick={() =>
+                    setAllPages((prev) => ({
+                      ...prev,
+                      userPage: true,
+                      archivePage: false,
+                      pendingPage: false,
+                      blockedPage: false,
+                    }))
+                  }
+                >
+                  <TiArrowBack />
+                </span>
+                Back
+              </p>
+            </div>
+          </div>
+
+          {/* BLOCKED USERS TABLE */}
+          <div className="scrollBar relative mt-10 max-h-[78vh] overflow-y-auto rounded-xl border px-4 pb-4 shadow-sm">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                    ID
+                  </th>
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                    Email
+                  </th>
+                  <th className="bg-background sticky top-0 px-3 py-4 pr-14 text-end text-sm font-semibold">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {blockedusersLoading ? (
+                  Array.from({ length: 10 }).map((_, i) => (
+                    <tr key={i} className="border-b">
+                      {Array.from({ length: 6 }).map((_, j) => (
+                        <td key={j} className="p-3">
+                          <Skeleton className="h-6 w-full rounded-full" />
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                ) : blockedUsersData.data.length > 0 ? (
+                  blockedUsersData.data.map((user: any) => (
+                    <tr key={user.id} className="border-b">
+                      <td className="p-3 text-[13px]">{user.id}</td>
+                      <td className="p-3 text-[13px]">{user.email}</td>
+                      <td className="items- flex justify-end gap-3 p-3 text-right">
+                        <button
+                          className={`rounded-full px-3 py-1.5 text-[10px] text-white ${
+                            user?.role === 1
+                              ? "cursor-not-allowed bg-gray-400"
+                              : "bg-dark-blue cursor-pointer hover:opacity-90"
+                          }`}
+                          onClick={() => {
+                            setSelectedUser(user);
+                            setShowModalUnblocked(true);
+                          }}
+                        >
+                          Unblocked
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="py-10 text-center text-sm text-gray-500"
+                    >
+                      No pending accounts yet
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* PENDING USER APPROVAL MODAL */}
+          {showModalUnblocked && (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50">
+              <div className="dark:bg-light-black w-[450px] space-y-4 rounded-lg bg-white p-6">
+                <h3 className="text-center text-lg font-semibold">
+                  Unblocked this account
+                </h3>
+                <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+                  User :{" "}
+                  <span className="font-semibold">{selectedUser?.email}</span>
+                </p>
+
+                {modalError && (
+                  <p className="mt-1 text-center text-sm text-red-500">
+                    {modalError}
+                  </p>
+                )}
+
+                <div className="relative">
+                  <input type="hidden" value={"unblock"} />
+                  <input
+                    type={isPassUnHide ? "text" : "password"}
+                    placeholder="Enter your password"
+                    className="h-full w-full rounded border px-4 py-3 text-sm"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
+
+                  {isPassUnHide ? (
+                    <IoEye
+                      className="absolute top-3 right-3 cursor-pointer text-xl text-gray-600"
+                      onClick={() => setPassIsUnHide(false)}
+                    />
+                  ) : (
+                    <IoMdEyeOff
+                      className="absolute top-3 right-3 cursor-pointer text-xl text-gray-600"
+                      onClick={() => setPassIsUnHide(true)}
+                    />
+                  )}
+                </div>
+
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    onClick={() => {
+                      setShowModalUnblocked(false);
+                      setPassword("");
+                      setModalError(null);
+                    }}
+                    className="rounded bg-red-500 px-4 py-3 text-xs text-white"
+                  >
+                    Cancel
+                  </button>
+
+                  <button
+                    onClick={unblockedUser}
                     className="bg-dark-blue rounded px-4 py-3 text-xs text-white"
                   >
                     Confirm

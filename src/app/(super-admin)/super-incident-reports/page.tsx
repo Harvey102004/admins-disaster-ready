@@ -134,64 +134,69 @@ export default function IncidentReports() {
     <ProtectedRoute>
       <div className="relative h-screen w-full overflow-auto px-10 py-8 transition-all duration-300">
         {/* Header */}
-        <div className="mb-3 flex items-center gap-2">
-          <IoIosPaper className="text-2xl" />
-          <h2 className="text-2xl font-semibold">Incident Reports</h2>
-        </div>
+        <div className="flex items-center justify-between">
+          <div className="mb-3 flex items-center gap-2">
+            <IoIosPaper className="text-2xl" />
+            <h2 className="text-2xl font-semibold">Incident Reports</h2>
+          </div>
 
-        {/* Filter */}
+          {/* Filter */}
 
-        <div className="mt-4 h-12 w-full">
-          <div className="flex items-center justify-end gap-4">
-            {/* Severity Filter */}
-            <div>
-              <Select value={filterSeverity} onValueChange={setFilterSeverity}>
-                <SelectTrigger className="text-xs">
-                  <SelectValue placeholder="Select Severity" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All">All Severities</SelectItem>
-                  <SelectItem value="Critical">Critical</SelectItem>
-                  <SelectItem value="Moderate">Moderate</SelectItem>
-                  <SelectItem value="Minor">Minor</SelectItem>
-                </SelectContent>
-              </Select>
+          <div>
+            <div className="flex items-center justify-end gap-4">
+              {/* Severity Filter */}
+              <div>
+                <Select
+                  value={filterSeverity}
+                  onValueChange={setFilterSeverity}
+                >
+                  <SelectTrigger className="text-xs">
+                    <SelectValue placeholder="Select Severity" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All Severities</SelectItem>
+                    <SelectItem value="Critical">Critical</SelectItem>
+                    <SelectItem value="Moderate">Moderate</SelectItem>
+                    <SelectItem value="Minor">Minor</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Status Filter */}
+              <div>
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger className="text-xs">
+                    <SelectValue placeholder="Select Status" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="All">All Status</SelectItem>
+                    <SelectItem value="Pending">Pending</SelectItem>
+                    <SelectItem value="Ongoing">Ongoing</SelectItem>
+                    <SelectItem value="Resolved">Resolved</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {/* Sorting */}
+              <div>
+                <Select value={sortOrder} onValueChange={setSortOrder}>
+                  <SelectTrigger className="text-xs">
+                    <SelectValue placeholder="Sort By" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Newest">Newest First</SelectItem>
+                    <SelectItem value="Oldest">Oldest First</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <RiFilter2Fill className="text-2xl" />
             </div>
-
-            {/* Status Filter */}
-            <div>
-              <Select value={filterStatus} onValueChange={setFilterStatus}>
-                <SelectTrigger className="text-xs">
-                  <SelectValue placeholder="Select Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="All">All Status</SelectItem>
-                  <SelectItem value="Pending">Pending</SelectItem>
-                  <SelectItem value="Ongoing">Ongoing</SelectItem>
-                  <SelectItem value="Resolved">Resolved</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Sorting */}
-            <div>
-              <Select value={sortOrder} onValueChange={setSortOrder}>
-                <SelectTrigger className="text-xs">
-                  <SelectValue placeholder="Sort By" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="Newest">Newest First</SelectItem>
-                  <SelectItem value="Oldest">Oldest First</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <RiFilter2Fill className="text-2xl" />
           </div>
         </div>
 
         {/* INCIDENT REPORTS TABLE */}
-        <div className="scrollBar relative mt-2 max-h-[75vh] overflow-y-auto rounded-xl border px-4 pb-4 shadow-sm">
+        <div className="scrollBar relative mt-6 max-h-[75vh] overflow-y-auto rounded-xl border px-4 pb-4 shadow-sm">
           <table className="w-full border-collapse">
             <thead>
               <tr className="border-b">

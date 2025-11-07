@@ -3,7 +3,7 @@ import React, { useState, useMemo } from "react";
 import { IoClose } from "react-icons/io5";
 import { RiTruckFill } from "react-icons/ri";
 import { useForm } from "react-hook-form";
-import { addRelief } from "@/server/api/relief";
+import { addRelief, getHistory } from "@/server/api/relief";
 import { IoAddSharp } from "react-icons/io5";
 import { toast } from "sonner";
 import { getReliefs } from "@/server/api/relief";
@@ -21,6 +21,10 @@ import {
 } from "@/components/ui/select";
 import axios from "axios";
 import ProtectedRoute from "@/components/ProtectedRoutes";
+import { FaBoxOpen } from "react-icons/fa6";
+import Image from "next/image";
+import { MdHistory, MdOutlineHistory } from "react-icons/md";
+import { TiArrowBack } from "react-icons/ti";
 
 interface ReliefFormData {
   description: string;
@@ -48,6 +52,8 @@ export default function ReliefGoods() {
   const [basedOn, setBasedOn] = useState<"population" | "families">(
     "population",
   );
+
+  const [isHistory, setIsHistory] = useState(false);
 
   const {
     register,
@@ -89,6 +95,15 @@ export default function ReliefGoods() {
   const { data, isLoading, error } = useQuery({
     queryKey: ["reliefs"],
     queryFn: getReliefs,
+  });
+
+  const {
+    data: history,
+    isLoading: isLoadingHistory,
+    error: historyError,
+  } = useQuery({
+    queryKey: ["reliefHistory"],
+    queryFn: getHistory,
   });
 
   const {
@@ -168,12 +183,30 @@ export default function ReliefGoods() {
         setManualAllocations({});
         queryClient.invalidateQueries({ queryKey: ["reliefs"] });
       } else {
-        toast.error(errorMsg, { style: { marginLeft: "160px" } });
+        toast.error(errorMsg);
       }
     } catch (error: any) {
-      console.error(error);
-      toast.error("Server Error ❌", { style: { marginLeft: "160px" } });
+      const msg = error.response?.data?.error || "Server Error ❌";
+
+      toast.error(msg);
     }
+  };
+
+  const handleDistributeEqually = () => {
+    if (selectedBrgys.length === 0) {
+      return toast.error("Select at least 1 barangay!");
+    }
+
+    const perBrgy = Math.floor(
+      reliefDetails.total_packs / selectedBrgys.length,
+    );
+
+    const updatedAllocations: { [key: string]: number } = {};
+    selectedBrgys.forEach((id) => {
+      updatedAllocations[id] = perBrgy;
+    });
+
+    setManualAllocations(updatedAllocations);
   };
 
   const remainingPacks = useMemo(() => {
@@ -188,121 +221,230 @@ export default function ReliefGoods() {
     <ProtectedRoute>
       <div className="relative h-screen w-full overflow-auto px-10 py-8 transition-all duration-300">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <RiTruckFill className="text-2xl" />
-            <h2 className="text-2xl font-semibold">Relief Goods</h2>
-          </div>
+          {isHistory ? (
+            <>
+              <div className="flex items-center gap-3">
+                <MdOutlineHistory className="text-2xl" />
+                <h2 className="text-2xl font-semibold">Distribution History</h2>
+              </div>
 
-          <button
-            onClick={() => {
-              setIsAddFormOpen(true);
-              setServerError("");
-            }}
-            className="bg-dark-blue flex cursor-pointer items-center gap-2 rounded-full py-2.5 pr-4 pl-6 text-xs text-white hover:opacity-90"
-          >
-            Add Relief <IoAddSharp />
-          </button>
+              <p
+                className="flex cursor-pointer items-center gap-2"
+                onClick={() => setIsHistory(false)}
+              >
+                {" "}
+                <span onClick={() => setIsHistory(true)}>
+                  <TiArrowBack />
+                </span>
+                Back
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center gap-3">
+                <RiTruckFill className="text-2xl" />
+                <h2 className="text-2xl font-semibold">Relief Goods</h2>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => {
+                    setIsAddFormOpen(true);
+                    setServerError("");
+                  }}
+                  className="bg-dark-blue flex cursor-pointer items-center gap-2 rounded-full py-2.5 pr-4 pl-6 text-xs text-white hover:opacity-90"
+                >
+                  Add Relief <IoAddSharp />
+                </button>
+
+                <button
+                  onClick={() => {
+                    setIsHistory(true);
+                  }}
+                  className="bg-dark-blue flex cursor-pointer items-center gap-2 rounded-full py-2.5 pr-4 pl-6 text-xs text-white hover:opacity-90"
+                >
+                  History <MdHistory />
+                </button>
+              </div>
+            </>
+          )}
         </div>
 
-        {/* RELIEF GOODS TABLE */}
-        <div className="scrollBar relative mt-10 max-h-[78vh] overflow-y-auto rounded-xl border px-4 pb-4 shadow-sm">
-          <table className="w-full border-collapse">
-            <thead>
-              <tr className="border-b">
-                <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
-                  ID
-                </th>
-                <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
-                  Name
-                </th>
+        {isHistory ? (
+          // ✅ HISTORY TABLE
+          <div className="scrollBar relative mt-10 max-h-[78vh] overflow-y-auto rounded-xl border px-4 pb-4 shadow-sm">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="border-b">
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                    ID
+                  </th>
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                    Relief Pack
+                  </th>
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                    Barangay
+                  </th>
 
-                <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
-                  Date added
-                </th>
-                <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
-                  Total packs
-                </th>
-                <th className="bg-background sticky top-0 px-3 py-4 text-end text-sm font-semibold">
-                  Actions
-                </th>
-              </tr>
-            </thead>
+                  <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                    Date Distributed
+                  </th>
+                  <th className="bg-background sticky top-0 px-3 py-4 text-end text-sm font-semibold">
+                    Allocated Packs
+                  </th>
+                </tr>
+              </thead>
 
-            <tbody>
-              {isLoading
-                ? Array.from({ length: 10 }).map((_, i) => (
-                    <tr key={i} className="border-b">
-                      {Array.from({ length: 6 }).map((_, j) => (
-                        <td key={j} className="p-3">
-                          <Skeleton className="h-6 w-full rounded-full" />
+              <tbody>
+                {isLoadingHistory
+                  ? Array.from({ length: 10 }).map((_, i) => (
+                      <tr key={i} className="border-b">
+                        {Array.from({ length: 5 }).map((_, j) => (
+                          <td key={j} className="p-3">
+                            <Skeleton className="h-6 w-full rounded-full" />
+                          </td>
+                        ))}
+                      </tr>
+                    ))
+                  : history?.listOfBarangays?.map((item: any) => (
+                      <tr key={item.id} className="border-b">
+                        <td className="p-3 text-[13px]">{item.id}</td>
+                        <td className="p-3 text-[13px] capitalize">
+                          {item.relief_pack_id}
                         </td>
+                        <td className="p-3 text-[13px] capitalize">
+                          {item.barangay_id}
+                        </td>
+
+                        <td className="p-3 text-[13px]">
+                          {new Date(item.created_at).toLocaleString("en-US", {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "numeric",
+                            minute: "2-digit",
+                            hour12: true,
+                          })}
+                        </td>
+                        <td className="p-3 text-end text-[13px]">
+                          {item.allocated_packs}
+                        </td>
+                      </tr>
+                    ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          // ✅ YOUR ORIGINAL RELIEF PACKS TABLE (UNCHANGED)
+          <>
+            <div className="scrollBar relative mt-10 max-h-[78vh] overflow-y-auto rounded-xl border px-4 pb-4 shadow-sm">
+              <table className="w-full border-collapse">
+                <thead>
+                  <tr className="border-b">
+                    <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                      ID
+                    </th>
+                    <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                      Name
+                    </th>
+                    <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                      Date added
+                    </th>
+                    <th className="bg-background sticky top-0 px-3 py-4 text-left text-sm font-semibold">
+                      Total packs
+                    </th>
+                    <th className="bg-background sticky top-0 px-3 py-4 text-end text-sm font-semibold">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {isLoading
+                    ? Array.from({ length: 10 }).map((_, i) => (
+                        <tr key={i} className="border-b">
+                          {Array.from({ length: 5 }).map((_, j) => (
+                            <td key={j} className="p-3">
+                              <Skeleton className="h-6 w-full rounded-full" />
+                            </td>
+                          ))}
+                        </tr>
+                      ))
+                    : data.relief_packs.map((user: any) => (
+                        <tr key={user.id} className="border-b">
+                          <td className="p-3 text-[13px]">{user.id}</td>
+                          <td className="p-3 text-[13px]">
+                            {user.description}
+                          </td>
+                          <td className="p-3 text-[13px]">
+                            {new Date(user.date_input).toLocaleDateString(
+                              "en-US",
+                              {
+                                year: "numeric",
+                                month: "long",
+                                day: "numeric",
+                              },
+                            )}
+                          </td>
+                          <td className="p-3 text-[13px]">
+                            {user.total_packs}
+                          </td>
+                          <td className="p-3 text-end text-xs">
+                            <button
+                              disabled={user.total_packs <= 0}
+                              onClick={() => {
+                                setDistributeForm(true);
+                                setReliefDetails({
+                                  id: user.id,
+                                  name: user.description,
+                                  total_packs: user.total_packs,
+                                });
+                              }}
+                              className="bg-dark-blue rounded-full px-3 py-1.5 text-[10px] text-white disabled:bg-gray-400"
+                            >
+                              Distribute
+                            </button>
+                          </td>
+                        </tr>
                       ))}
-                    </tr>
-                  ))
-                : data.relief_packs.map((user: any) => (
-                    <tr key={user.id} className="border-b">
-                      <td className="p-3 text-[13px]">{user.id}</td>
-                      <td className="p-3 text-[13px]">{user.description}</td>
-                      <td className="p-3 text-[13px]">
-                        {new Date(user.date_input).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </td>
-                      <td className="p-3 text-[13px]">{user.total_packs}</td>
-                      <td className="p-3 text-end text-xs">
-                        <button
-                          disabled={remainingPacks < 0}
-                          onClick={() => {
-                            setDistributeForm(true);
-                            setReliefDetails((prev) => ({
-                              ...prev,
-                              id: user.id,
-                              name: user.description,
-                              total_packs: user.total_packs,
-                            }));
-                          }}
-                          className="bg-dark-blue rounded-full px-3 py-1.5 text-[10px] text-white"
-                        >
-                          Distribute
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-            </tbody>
-          </table>
-        </div>
+                </tbody>
+              </table>
+            </div>
+          </>
+        )}
 
         {/* MODAL DISTRIBUTE FORM */}
         {distributeForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="dark:bg-light-black relative w-[800px] rounded-md bg-white px-10 py-6 shadow-md">
+            <div className="dark:bg-light-black relative w-[70vw] rounded-md bg-white px-10 py-6 shadow-md">
               <IoClose
                 onClick={() => setDistributeForm(false)}
                 className="absolute top-3 right-3"
               />
 
-              <div className="flex flex-col gap-3">
-                <h1 className="text-lg font-medium">
-                  Distribute Relief
-                  <span className="ml-2"> - </span>
-                  <span className="ml-2 font-semibold">
-                    {reliefDetails.name}
-                  </span>
-                </h1>
-                <p>
-                  Available packs:{" "}
-                  <span className={remainingPacks <= 0 ? "text-red-500" : ""}>
-                    {remainingPacks}{" "}
-                    <span className="text-xs">
-                      {remainingPacks === 0 && "( Out of stocks! )"}
+              <div className="flex items-center gap-5">
+                <FaBoxOpen className="text-3xl" />
+                <div className="flex flex-col gap-1">
+                  <h1 className="text-lg font-medium">
+                    Distribute Relief
+                    <span className="ml-2"> - </span>
+                    <span className="ml-2 font-semibold">
+                      {reliefDetails.name}
                     </span>
-                  </span>
-                </p>{" "}
+                  </h1>
+                  <p>
+                    Available packs:{" "}
+                    <span className={remainingPacks <= 0 ? "text-red-500" : ""}>
+                      {remainingPacks}{" "}
+                      <span className="text-xs">
+                        {remainingPacks === 0 && "( Out of stocks! )"}
+                      </span>
+                    </span>
+                  </p>{" "}
+                </div>
               </div>
 
-              <form>
+              <form className="flex pb-20">
                 <input
                   type="hidden"
                   name="relief_pack_id"
@@ -314,26 +456,49 @@ export default function ReliefGoods() {
                   value={selectedBrgys}
                 />
 
-                <div className="mt-10 grid grid-cols-5 gap-3">
+                <div className="scrollBar mt-10 flex h-[400px] w-[40%] flex-col gap-8 overflow-auto">
                   {isLoadingBrgyContacts ? (
                     <p className="text-xs text-gray-500">
                       Loading barangays...
                     </p>
                   ) : brgyContacts && brgyContacts.length > 0 ? (
                     brgyContacts.map((brgy: any) => (
-                      <label
-                        key={brgy.id}
-                        className="flex items-center gap-2 text-sm capitalize"
-                      >
-                        <input
-                          type="checkbox"
-                          value={brgy.id}
-                          checked={selectedBrgys.includes(brgy.id)}
-                          onChange={() => handleBrgySelection(brgy.id)}
-                          className="h-4 w-4"
-                        />
-                        {brgy.barangay_name}
-                      </label>
+                      <div key={brgy.id}>
+                        <label className="flex items-center gap-2 text-sm capitalize">
+                          <input
+                            type="checkbox"
+                            value={brgy.id}
+                            checked={selectedBrgys.includes(brgy.id)}
+                            onChange={() => handleBrgySelection(brgy.id)}
+                            className="h-4 w-4"
+                          />
+
+                          <Image
+                            src={`/logos/${brgy.barangay_name
+                              ?.toLowerCase()
+                              .normalize("NFD")
+                              .replace(/[\u0300-\u036f]/g, "")
+                              .replace(/\s+/g, "-")}-logo.png`}
+                            alt={`${brgy.barangay_name} logo`}
+                            width={20}
+                            height={20}
+                            className="ml-2 h-5 w-5 object-contain"
+                            onError={(e) => {
+                              e.currentTarget.style.display = "none";
+                            }}
+                          />
+
+                          {brgy.barangay_name}
+                        </label>
+
+                        <span className="mt-3 ml-7 flex items-center gap-2 text-xs">
+                          <span>Total Families: {brgy.total_families}</span>
+                          <span>
+                            Total Population:{" "}
+                            {brgy.total_female + brgy.total_male}
+                          </span>
+                        </span>
+                      </div>
                     ))
                   ) : (
                     <p className="col-span-4 text-center text-sm text-nowrap text-gray-500">
@@ -342,100 +507,116 @@ export default function ReliefGoods() {
                   )}
                 </div>
 
-                <div className="mt-14 flex gap-4">
-                  <p className="text-sm">Allocation Mode :</p>
+                <div className="scrollBar mt-10 flex h-[400px] w-[60%] flex-col gap-4 overflow-auto px-8">
+                  <div className="flex w-full flex-col gap-5">
+                    <p className="text-center text-sm">Allocation Mode :</p>
 
-                  <div className="flex gap-5">
-                    <label className="flex items-center gap-2 text-sm">
-                      <input
-                        type="radio"
-                        checked={allocationMode === "automatic"}
-                        onChange={() => setAllocationMode("automatic")}
-                      />
-                      Automatic
-                    </label>
+                    <div className="flex justify-center gap-5">
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="radio"
+                          checked={allocationMode === "automatic"}
+                          onChange={() => setAllocationMode("automatic")}
+                        />
+                        Automatic
+                      </label>
 
-                    <label className="flex items-center gap-2 text-sm">
-                      <input
-                        type="radio"
-                        checked={allocationMode === "manual"}
-                        onChange={() => setAllocationMode("manual")}
-                      />
-                      Manual
-                    </label>
+                      <label className="flex items-center gap-2 text-sm">
+                        <input
+                          type="radio"
+                          checked={allocationMode === "manual"}
+                          onChange={() => setAllocationMode("manual")}
+                        />
+                        Manual
+                      </label>
+                    </div>
                   </div>
-                </div>
 
-                {/* ✅ Dropdown when AUTOMATIC selected */}
-                {allocationMode === "automatic" && (
-                  <div className="mt-14 flex items-center gap-4">
-                    <p className="mb-1 text-sm">Based On :</p>
-                    <Select
-                      value={basedOn}
-                      onValueChange={(value: "population" | "families") =>
-                        setBasedOn(value)
-                      }
-                    >
-                      <SelectTrigger className="w-48 text-sm">
-                        <SelectValue placeholder="Select an option" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="population">Population</SelectItem>
-                        <SelectItem value="families">Families</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-                {/* ✅ Display extra inputs if manual mode */}
-                {allocationMode === "manual" && (
-                  <div className="mt-14">
-                    <p className="mb-2 text-sm font-semibold">
-                      Enter Manual Allocation per Barangay:
-                    </p>
+                  <div className="">
+                    {/* ✅ Dropdown when AUTOMATIC selected */}
+                    {allocationMode === "automatic" && (
+                      <div className="mt-14 flex flex-col items-center gap-4">
+                        <p className="mb-1 text-sm">Based On :</p>
+                        <Select
+                          value={basedOn}
+                          onValueChange={(value: "population" | "families") =>
+                            setBasedOn(value)
+                          }
+                        >
+                          <SelectTrigger className="w-48 text-sm">
+                            <SelectValue placeholder="Select an option" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="population">
+                              Population
+                            </SelectItem>
+                            <SelectItem value="families">Families</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    )}
+                    {/* ✅ Display extra inputs if manual mode */}
+                    {allocationMode === "manual" && (
+                      <div className="mt-5">
+                        <div className="flex items-center justify-center">
+                          <button
+                            type="button"
+                            onClick={handleDistributeEqually}
+                            className="bg-dark-blue mx-auto mb-3 rounded-full px-4 py-2 text-center text-[10px] text-white"
+                          >
+                            Distribute equally
+                          </button>
+                        </div>
 
-                    {selectedBrgys.length === 0 ? (
-                      <p className="my-10 text-center text-sm text-gray-500">
-                        No Barangay selected
-                      </p>
-                    ) : (
-                      <div className="mt-7 grid grid-cols-3 gap-3">
-                        {selectedBrgys.map((id) => {
-                          const brgy = brgyContacts.find(
-                            (b: any) => b.id === id,
-                          );
-                          return (
-                            <div
-                              key={id}
-                              className="flex items-center gap-3 text-sm"
-                            >
-                              <span className="w-28 capitalize">
-                                {brgy?.barangay_name}
-                              </span>
-                              <input
-                                type="number"
-                                min={0}
-                                className="w-full rounded border px-2 py-1"
-                                value={manualAllocations[id] || ""}
-                                onChange={(e) =>
-                                  handleManualAllocationChange(
-                                    id,
-                                    Number(e.target.value),
-                                  )
-                                }
-                                placeholder="Qty"
-                              />
-                            </div>
-                          );
-                        })}
+                        <p className="mb-2 text-center text-xs">
+                          Enter Manual Allocation per Barangay:
+                        </p>
+
+                        {selectedBrgys.length === 0 ? (
+                          <p className="my-10 text-center text-xs text-gray-500">
+                            No Barangay selected
+                          </p>
+                        ) : (
+                          <div className="mt-7 grid grid-cols-2 gap-5">
+                            {selectedBrgys.map((id) => {
+                              const brgy = brgyContacts.find(
+                                (b: any) => b.id === id,
+                              );
+                              return (
+                                <div
+                                  key={id}
+                                  className="flex items-center gap-3 text-sm"
+                                >
+                                  <span className="w-28 text-xs capitalize">
+                                    {brgy?.barangay_name}
+                                  </span>
+                                  <input
+                                    type="number"
+                                    min={0}
+                                    className="w-full rounded border p-2 px-4"
+                                    value={manualAllocations[id] || ""}
+                                    onChange={(e) =>
+                                      handleManualAllocationChange(
+                                        id,
+                                        Number(e.target.value),
+                                      )
+                                    }
+                                    placeholder="Qty"
+                                  />
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
-                )}
+                </div>
 
                 <button
                   type="button"
                   onClick={handleDistribute}
-                  className="bg-dark-blue mt-8 w-full rounded-md py-3 text-sm text-white"
+                  className="bg-dark-blue absolute bottom-0 left-1/2 w-[95%] -translate-1/2 rounded-md py-3 text-sm text-white duration-300 hover:opacity-85"
                 >
                   Distribute Now
                 </button>

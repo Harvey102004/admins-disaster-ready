@@ -111,7 +111,7 @@ export default function WeatherAdvisoryDetail() {
                     ?.toLowerCase()
                     .normalize("NFD")
                     .replace(/[\u0300-\u036f]/g, "")
-                    .includes("municipality of los banos")
+                    .includes("municipal of los banos")
                     ? "lb-logo.png"
                     : data?.added_by
                         ?.toLowerCase()

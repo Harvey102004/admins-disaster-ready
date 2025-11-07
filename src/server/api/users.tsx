@@ -53,3 +53,33 @@ export const getArchivedUsers = async () => {
     throw error;
   }
 };
+
+const API_GET_PENDING_USERS =
+  "http://localhost:3001/public/fetchPendingAccount.php";
+
+export const getPendingUsers = async () => {
+  try {
+    const response = await axios.get(API_GET_PENDING_USERS, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching archived users:", error);
+    throw error;
+  }
+};
+
+const API_GET_BLOCKED_USERS =
+  "http://localhost:3001/public/fetchBlockedEmails.php";
+
+export const getBlockedUsers = async () => {
+  try {
+    const response = await axios.get(API_GET_BLOCKED_USERS, {
+      withCredentials: true,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching archived users:", error);
+    throw error;
+  }
+};

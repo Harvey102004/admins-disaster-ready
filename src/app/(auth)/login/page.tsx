@@ -8,6 +8,8 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { MdEmail } from "react-icons/md";
 import { GoHomeFill } from "react-icons/go";
+import { ReactNode } from "react";
+import { CheckCircle2 } from "lucide-react";
 
 import {
   Select,
@@ -24,12 +26,46 @@ import {
 } from "@/components/ui/input-otp";
 import { toast } from "sonner";
 
+export function successToast(
+  message: string,
+  description?: string | ReactNode,
+  onConfirm?: () => void,
+) {
+  toast.success(message, {
+    description: description && (
+      <p className="overflow-hidden text-sm break-words whitespace-normal text-green-900">
+        {description}
+      </p>
+    ),
+    duration: Infinity,
+    className:
+      "!max-w-[550px] !gap-3 whitespace-normal !overflow-hidden " +
+      "bg-green-100 text-green-900 border border-green-300 shadow-md " +
+      "rounded-lg py-3 px-4 flex items-start",
+    icon: (
+      <CheckCircle2 className="h-6 w-6 shrink-0 fill-green-700 text-white" />
+    ),
+    classNames: {
+      title: "!font-semibold !text-green-900 text-sm",
+    },
+    action: (
+      <button
+        onClick={() => {
+          onConfirm?.();
+          toast.dismiss();
+        }}
+        className="ml-3 shrink-0 rounded-full bg-green-700 p-2 px-3 text-[10px] font-medium text-white hover:bg-green-800"
+      >
+        OK
+      </button>
+    ),
+  });
+}
+
 export default function Login() {
   /* ---------- STATES ---------- */
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [isLoading, setIsLoading] = useState(false);
-  const [isWrong, setIsWrong] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
 
   const [IsLoginForm, setIsLoginForm] = useState(true);
 
@@ -159,15 +195,12 @@ export default function Login() {
         }
 
         setLoginMessage(" Login successful! Redirecting...");
-        setIsSuccess(true);
 
         setTimeout(() => {
           router.push(role === 1 ? "/super-dashboard" : "/sub-dashboard");
-          setIsSuccess(false);
           setLoginMessage("");
         }, 1500);
       } else {
-        setIsWrong(true);
         setLoginMessage(
           response.data.message || "❌ Invalid username or password.",
         );
@@ -184,21 +217,16 @@ export default function Login() {
 
           startCooldown(cooldownSeconds);
         }
-
-        setTimeout(() => setIsWrong(false), 2000);
       }
     } catch (error) {
       console.error("❌ Login error:", error);
       setLoginMessage("⚠️ Server error. Please try again later.");
-      setIsWrong(true);
-      setTimeout(() => setIsWrong(false), 2000);
     } finally {
       setIsLoading(false);
     }
   };
 
   /* ---------- REGISTER ---------- */
-
   const handleCreateAccount = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
@@ -214,17 +242,15 @@ export default function Login() {
           confirm_password: createData.confirm_password,
           barangay: createData.barangay,
         },
-        {
-          withCredentials: true,
-        },
+        { withCredentials: true },
       );
 
-      console.log("📥 Registration response:", res.data);
-
       if (res.data.success) {
-        setServerMessage(
-          " Verification code sent to your email. Please check it.",
-        );
+        toast.success("Verification code sent!", {
+          description: "Open your email and enter the code to continue.",
+          duration: 5000,
+        });
+
         setShowVerification(true);
       } else {
         setServerMessage(
@@ -232,12 +258,11 @@ export default function Login() {
         );
       }
     } catch (err: any) {
-      console.error("❌ Registration error:", err);
-
+      console.error(" Registration error:", err);
       if (err.response?.data?.message) {
-        setServerMessage(`❌ ${err.response.data.message}`);
+        setServerMessage(` ${err.response.data.message}`);
       } else {
-        setServerMessage("⚠️ Server error. Please try again later.");
+        setServerMessage(" Server error. Please try again later.");
       }
     } finally {
       setIsLoading(false);
@@ -267,7 +292,10 @@ export default function Login() {
       const data = response.data;
 
       if (data.success) {
-        setVerifyMessage("✅ " + (data.message || "Verification successful."));
+        successToast("Verification Successful", data.message, () => {
+          setShowVerification(false);
+          setIsLoginForm(true);
+        });
         setTimeout(() => {
           setShowVerification(false);
           setIsLoginForm(true);
@@ -282,14 +310,13 @@ export default function Login() {
           setVerificationCode("");
         }, 1500);
       } else {
-        setVerifyMessage(data.message || "❌ Incorrect verification code.");
+        setVerifyMessage(data.message || "Incorrect verification code.");
 
         if (data.message && data.message.toLowerCase().includes("4 attempts")) {
           setIsLocked(true);
         }
       }
     } catch (error) {
-      console.error("Verification Error:", error);
       setVerifyMessage("Something went wrong. Please try again.");
     } finally {
       setIsVerifying(false);
@@ -356,6 +383,7 @@ export default function Login() {
   return (
     <div className="bg-light-blue dark:bg-background fixed inset-0 flex h-screen w-screen items-center justify-center overflow-hidden transition-colors duration-300">
       {/* ---------- BLUR BACKGROUND ---------- */}
+
       <div className="bg-dark-blue absolute -top-40 -left-40 h-[500px] w-[500px] rounded-full blur-md"></div>
       <div className="bg-dark-blue absolute bottom-10 left-40 h-16 w-16 rounded-full blur-md"></div>
       <div className="bg-dark-blue absolute top-20 left-1/2 h-36 w-36 rounded-full blur-md"></div>
@@ -375,7 +403,9 @@ export default function Login() {
           <div className="flex items-center gap-5">
             <button
               className="bg-itim text text-light dark:text-itim dark:bg-puti w-max cursor-pointer rounded-md border px-8 py-3 text-sm font-medium hover:opacity-90"
-              onClick={handleFocus}
+              onClick={() => {
+                setIsLoginForm(true), handleFocus;
+              }}
             >
               Login Now
             </button>
@@ -484,7 +514,7 @@ export default function Login() {
                     className="text-dark-blue cursor-pointer underline underline-offset-4"
                     onClick={() => setIsLoginForm(false)}
                   >
-                    Create account
+                    Request account
                   </p>
                 </div>
 
@@ -500,7 +530,7 @@ export default function Login() {
           ) : (
             <div className="ml-5 h-5/6 w-[90%]">
               <div className="text-center">
-                <h2 className="text-xl font-bold">Create Account</h2>
+                <h2 className="text-xl font-bold"> Request Account</h2>
                 <p className="mt-3 text-sm">
                   Fill out the form below to request your account access.
                 </p>
@@ -648,7 +678,7 @@ export default function Login() {
                       : "cursor-pointer hover:opacity-90"
                   } dark:text-itim text-light mt-3 flex h-12 w-full items-center justify-center gap-2 rounded-sm text-sm shadow-sm`}
                 >
-                  {isLoading ? "Creating account..." : "Create Account"}
+                  {isLoading ? "Requesting account..." : "Request Account"}
                 </button>
 
                 {serverMessage && (
