@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Loader from "@/components/loading";
+import ProtectedRoute from "@/components/ProtectedRoutes";
 
 export default function SuperUpdateNewsPage() {
   const router = useRouter();
@@ -12,8 +13,10 @@ export default function SuperUpdateNewsPage() {
   }, []);
 
   return (
-    <div className="relative flex h-[87vh] items-center justify-center">
-      <Loader />
-    </div>
+    <ProtectedRoute>
+      <div className="relative flex h-[87vh] items-center justify-center">
+        <Loader />
+      </div>
+    </ProtectedRoute>
   );
 }

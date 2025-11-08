@@ -1,5 +1,5 @@
 "use client";
-import { IoCloseCircleSharp } from "react-icons/io5";
+import { IoClose, IoCloseCircleSharp } from "react-icons/io5";
 import { AiFillDelete } from "react-icons/ai";
 import { LiaEditSolid } from "react-icons/lia";
 
@@ -113,7 +113,7 @@ export default function WeatherAdvisoryDetailModal() {
             onClick={() => router.back()}
             className={`${isToastOpen ? "pointer-events-none opacity-80" : "hover:text-red-500"} text-2xl transition-all duration-300`}
           >
-            <IoCloseCircleSharp />
+            <IoClose />
           </CardAction>
         </CardHeader>
 
@@ -130,7 +130,7 @@ export default function WeatherAdvisoryDetailModal() {
                   ?.toLowerCase()
                   .normalize("NFD")
                   .replace(/[\u0300-\u036f]/g, "")
-                  .includes("municipality of los banos")
+                  .includes("municipal of los banos")
                   ? "lb-logo.png"
                   : data?.added_by
                       ?.toLowerCase()
@@ -149,7 +149,7 @@ export default function WeatherAdvisoryDetailModal() {
           {canEditOrDelete && (
             <div className="flex items-center gap-3">
               <Link
-                href={`sub-update-news/weather-advisory/edit-weather-form/${weatherId}`}
+                href={`/sub-update-news/weather-advisory/edit-weather-form/${weatherId}`}
               >
                 <button
                   disabled={isPending || isToastOpen}

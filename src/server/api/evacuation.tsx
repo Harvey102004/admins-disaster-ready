@@ -7,7 +7,8 @@ import z from "zod";
 
 export type EvacuationCenterFormData = z.infer<typeof evacuationCenterSchema>;
 
-const API_ADD_EVACUATION = "http://localhost:3001/public/evacuationCenter.php";
+const API_ADD_EVACUATION =
+  "https://greenyellow-lion-623632.hostingersite.com/public/evacuationCenter.php";
 
 export const addEvacuationCenter = async (data: EvacuationCenterFormData) => {
   try {
@@ -26,7 +27,8 @@ export const addEvacuationCenter = async (data: EvacuationCenterFormData) => {
 
 // -------- FETCH ALL EVACUATION CENTER ---------- //
 
-const API_GET_EVACUATIONS = "http://localhost:3001/public/evacuationCenter.php";
+const API_GET_EVACUATIONS =
+  "https://greenyellow-lion-623632.hostingersite.com/public/evacuationCenter.php";
 
 export const getEvacuationCenters = async (): Promise<
   EvacuationCenterProps[]
@@ -59,7 +61,7 @@ export const getEvacuationCenters = async (): Promise<
 export const getEvacuationDetails = async ({ id }: { id: string }) => {
   try {
     const response = await axios.get<EvacuationCenterProps>(
-      `http://localhost:3001/public/evacuationCenter.php?&id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/evacuationCenter.php?&id=${id}`,
       {
         withCredentials: true,
       },
@@ -84,7 +86,7 @@ export const deleteEvacuationCenter = async ({ id }: { id: string }) => {
     formData.append("_method", "DELETE");
 
     const response = await axios.post(
-      `http://localhost:3001/public/evacuationCenter.php?&id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/evacuationCenter.php?&id=${id}`,
       formData,
       {
         withCredentials: true,
@@ -113,7 +115,7 @@ export const editEvacuationCenter = async ({
 }) => {
   try {
     const response = await axios.put(
-      `http://localhost:3001/public/evacuationCenter.php?id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/evacuationCenter.php?id=${id}`,
       {
         evac_name: data.name,
         evac_location: data.location,

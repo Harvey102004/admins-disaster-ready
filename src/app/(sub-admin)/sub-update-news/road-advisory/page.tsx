@@ -22,6 +22,7 @@ import {
   SortDropdown,
 } from "@/components/sort-filter/update-news";
 import { SearchInput } from "@/components/Inputs";
+import ProtectedRoute from "@/components/ProtectedRoutes";
 
 export default function RoadAdvisory() {
   const [sortBy, setSortBy] = useState<SortBy>("default");
@@ -68,7 +69,7 @@ export default function RoadAdvisory() {
 
   if (isLoading) {
     return (
-      <>
+      <ProtectedRoute>
         <div className="w-ful h-14 px-8">
           <Skeleton className="h-full w-full" />
         </div>
@@ -80,97 +81,101 @@ export default function RoadAdvisory() {
               <RoadAdvisorySkeleton key={index} />
             ))}
         </div>
-      </>
+      </ProtectedRoute>
     );
   }
 
   if (error) {
     return (
-      <div className="flex h-[80vh] w-full flex-col items-center justify-center">
-        <p>Error fetching road advisory</p>
-      </div>
+      <ProtectedRoute>
+        <div className="flex h-[80vh] w-full flex-col items-center justify-center">
+          <p>Error fetching road advisory</p>
+        </div>
+      </ProtectedRoute>
     );
   }
 
   return (
-    <div>
-      <div className="flex h-14 items-center justify-between px-8">
-        <div className="flex items-center gap-8">
-          <SortDropdown
-            value={sortBy}
-            onChange={(value) => setSortBy(value as SortBy)}
-            options={[
-              {
-                label: "Default",
-                value: "default",
-              },
-              {
-                label: "Title",
-                value: "title",
-              },
-              {
-                label: "Added by",
-                value: "added_by",
-              },
-              {
-                label: "Status",
-                value: "status",
-              },
-              {
-                label: "Date & Time",
-                value: "dateTime",
-              },
-            ]}
-          />
+    <ProtectedRoute>
+      <div>
+        <div className="flex h-14 items-center justify-between px-8">
+          <div className="flex items-center gap-8">
+            <SortDropdown
+              value={sortBy}
+              onChange={(value) => setSortBy(value as SortBy)}
+              options={[
+                {
+                  label: "Default",
+                  value: "default",
+                },
+                {
+                  label: "Title",
+                  value: "title",
+                },
+                {
+                  label: "Added by",
+                  value: "added_by",
+                },
+                {
+                  label: "Status",
+                  value: "status",
+                },
+                {
+                  label: "Date & Time",
+                  value: "dateTime",
+                },
+              ]}
+            />
 
-          <FilteringRoad
-            selectedBrgy={filterBrgy}
-            onBrgyChange={setFilterBrgy}
-            selectedDate={filterDate}
-            onDateChange={setFilterDate}
-            selectedStatus={filterStatus}
-            onStatusChange={setFilterStatus}
+            <FilteringRoad
+              selectedBrgy={filterBrgy}
+              onBrgyChange={setFilterBrgy}
+              selectedDate={filterDate}
+              onDateChange={setFilterDate}
+              selectedStatus={filterStatus}
+              onStatusChange={setFilterStatus}
+            />
+          </div>
+
+          <SearchInput
+            value={searchText}
+            onchange={(e) => setSearchText(e.target.value)}
+            placeholder="Search by title..."
+            classname="min-w-[300px]"
           />
         </div>
-
-        <SearchInput
-          value={searchText}
-          onchange={(e) => setSearchText(e.target.value)}
-          placeholder="Search by title..."
-          classname="min-w-[300px]"
-        />
+        <div className="scrollBar grid max-h-[80vh] grid-cols-3 gap-7 overflow-auto px-8 pt-5 pb-20">
+          {data?.length === 0 ? (
+            <div className="absolute top-1/2 left-1/2 flex w-full -translate-1/2 flex-col items-center justify-center gap-2">
+              <AiFillFolderOpen className="text-dark-blue text-4xl" />
+              <p>No Road Advisory Found</p>
+              <Link
+                href={"road-advisory/add-road-form"}
+                className="text-dark-blue cursor-pointer text-sm underline underline-offset-8 transition-all duration-300 hover:opacity-80"
+              >
+                Add Road Advisory
+              </Link>
+            </div>
+          ) : filteredAndSorted && filteredAndSorted.length > 0 ? (
+            filteredAndSorted.map((item) => (
+              <RoadCards
+                key={item.id}
+                status={item.status}
+                id={item.id}
+                title={item.title}
+                desc={item.details}
+                addedBy={item.added_by}
+                dateTime={item.date_time}
+                currentUser={currentUser ?? ""}
+              />
+            ))
+          ) : (
+            <p className="absolute top-1/2 left-1/2 -translate-1/2 text-sm text-gray-500">
+              No results found.
+            </p>
+          )}
+        </div>
       </div>
-      <div className="scrollBar grid max-h-[80vh] grid-cols-3 gap-7 overflow-auto px-8 pt-5 pb-20">
-        {data?.length === 0 ? (
-          <div className="absolute top-1/2 left-1/2 flex w-full -translate-1/2 flex-col items-center justify-center gap-2">
-            <AiFillFolderOpen className="text-dark-blue text-4xl" />
-            <p>No Road Advisory Found</p>
-            <Link
-              href={"road-advisory/add-road-form"}
-              className="text-dark-blue cursor-pointer text-sm underline underline-offset-8 transition-all duration-300 hover:opacity-80"
-            >
-              Add Road Advisory
-            </Link>
-          </div>
-        ) : filteredAndSorted && filteredAndSorted.length > 0 ? (
-          filteredAndSorted.map((item) => (
-            <RoadCards
-              key={item.id}
-              status={item.status}
-              id={item.id}
-              title={item.title}
-              desc={item.details}
-              addedBy={item.added_by}
-              dateTime={item.date_time}
-              currentUser={currentUser ?? ""}
-            />
-          ))
-        ) : (
-          <p className="absolute top-1/2 left-1/2 -translate-1/2 text-sm text-gray-500">
-            No results found.
-          </p>
-        )}
-      </div>
-    </div>
+    </ProtectedRoute>
   );
 }

@@ -1,6 +1,6 @@
 import { Metadata } from "next";
-
-import NavbarSuperAdmin from "@/components/(navigation)/navBar_super";
+import ClientSuperAdminLayout from "./client-layout";
+import ProtectedRoute from "@/components/ProtectedRoutes";
 
 export const metadata: Metadata = {
   title: {
@@ -16,11 +16,8 @@ export default function SuperAdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
-      <div className="flex">
-        <NavbarSuperAdmin />
-        {children}
-      </div>
-    </>
+    <ProtectedRoute>
+      <ClientSuperAdminLayout>{children}</ClientSuperAdminLayout>
+    </ProtectedRoute>
   );
 }

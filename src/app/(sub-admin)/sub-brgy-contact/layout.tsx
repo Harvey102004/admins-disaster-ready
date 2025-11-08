@@ -1,5 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
+import ProtectedRoute from "@/components/ProtectedRoutes";
 
 export const metadata: Metadata = {
   title: "Contact Information",
@@ -11,7 +12,7 @@ export default function SubBrgyContactLayout({
   children: React.ReactNode;
 }) {
   return (
-    <>
+    <ProtectedRoute>
       <div className="relative h-screen w-full overflow-auto px-8 pt-4 transition-all duration-300">
         <div className="flex items-center justify-center gap-3 border-b pb-4">
           <h1 className="text-dark-blue text-lg font-bold">
@@ -20,6 +21,6 @@ export default function SubBrgyContactLayout({
         </div>
         {children}
       </div>
-    </>
+    </ProtectedRoute>
   );
 }

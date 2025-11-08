@@ -1,28 +1,23 @@
-  import NavbarSubAdmin from "@/components/(navigation)/navBar_sub";
-  import { Metadata } from "next";
-  import FaviconUpdater from "@/components/favIcon-updater";
+import { Metadata } from "next";
+import ClientSuperAdminLayout from "./client-layout";
+import ProtectedRoute from "@/components/ProtectedRoutes";
 
-  export const metadata: Metadata = {
-    title: {
-      default: "Disaster Ready",
-      template: "%s | Disaster Ready",
-    },
-    icons: {
-      icon: "/logos/no-logo.png",
-    },
-  };
-  export default function SubAdminLayout({
-    children,
-  }: {
-    children: React.ReactNode;
-  }) {
-    return (
-      <>
-        <FaviconUpdater />
-        <div className="flex gap-5">
-          <NavbarSubAdmin />
-          {children}
-        </div>
-      </>
-    );
-  }
+export const metadata: Metadata = {
+  title: {
+    default: "DisasterReady",
+    template: "%s | DisasterReady",
+  },
+  icons: { icon: "/logos/lb-logo.png" },
+};
+
+export default function SubAdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <ProtectedRoute>
+      <ClientSuperAdminLayout>{children}</ClientSuperAdminLayout>
+    </ProtectedRoute>
+  );
+}

@@ -178,7 +178,7 @@ export default function Login() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/public/login.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/login.php",
         {
           username: formData.username,
           password: formData.password,
@@ -292,7 +292,7 @@ export default function Login() {
       const data = response.data;
 
       if (data.success) {
-        successToast("Verification Successful", data.message, () => {
+        successToast("Verification Successful ", data.message, () => {
           setShowVerification(false);
           setIsLoginForm(true);
         });

@@ -1,5 +1,5 @@
 "use client";
-import { IoCloseCircleSharp } from "react-icons/io5";
+import { IoClose, IoCloseCircleSharp } from "react-icons/io5";
 import { AiFillDelete } from "react-icons/ai";
 import { LiaEditSolid } from "react-icons/lia";
 
@@ -136,7 +136,7 @@ export default function DisasterUpdatesDetailModal() {
                   onClick={() => router.back()}
                   className={`${isToastOpen ? "pointer-events-none opacity-80" : "hover:text-red-500"} absolute top-3 right-3 text-2xl transition-all duration-300`}
                 >
-                  <IoCloseCircleSharp />
+                  <IoClose />
                 </CardAction>
               </CardHeader>
 
@@ -187,7 +187,7 @@ export default function DisasterUpdatesDetailModal() {
                         ?.toLowerCase()
                         .normalize("NFD")
                         .replace(/[\u0300-\u036f]/g, "")
-                        .includes("municipality of los banos")
+                        .includes("municipal of los banos")
                         ? "lb-logo.png"
                         : data?.added_by
                             ?.toLowerCase()

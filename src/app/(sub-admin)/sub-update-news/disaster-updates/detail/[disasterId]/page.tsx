@@ -1,5 +1,5 @@
 "use client";
-import { IoCloseCircleSharp } from "react-icons/io5";
+import { IoClose, IoCloseCircleSharp } from "react-icons/io5";
 import { AiFillDelete } from "react-icons/ai";
 import { LiaEditSolid } from "react-icons/lia";
 
@@ -26,6 +26,7 @@ import Image from "next/image";
 import { HiOutlineArrowsExpand, HiOutlineX } from "react-icons/hi";
 import NoIdFound from "@/components/NoIdFound";
 import DateTimeDisplay from "@/components/DateConvertion";
+import ProtectedRoute from "@/components/ProtectedRoutes";
 
 export default function DisasterUpdatesDetail() {
   const router = useRouter();
@@ -80,14 +81,20 @@ export default function DisasterUpdatesDetail() {
 
   if (isLoading || isRefetching) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-        <Loader />
-      </div>
+      <ProtectedRoute>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <Loader />
+        </div>
+      </ProtectedRoute>
     );
   }
 
   if (error) {
-    return <p>{error.message}</p>;
+    return (
+      <ProtectedRoute>
+        <p>{error.message}</p>
+      </ProtectedRoute>
+    );
   }
 
   if (
@@ -100,7 +107,7 @@ export default function DisasterUpdatesDetail() {
   }
 
   return (
-    <>
+    <ProtectedRoute>
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
         <Card className="relative max-h-[80vh] w-[70vw] py-10">
           <div className="flex justify-between">
@@ -136,7 +143,7 @@ export default function DisasterUpdatesDetail() {
                   onClick={() => router.back()}
                   className={`${isToastOpen ? "pointer-events-none opacity-80" : "hover:text-red-500"} absolute top-3 right-3 text-2xl transition-all duration-300`}
                 >
-                  <IoCloseCircleSharp />
+                  <IoClose />
                 </CardAction>
               </CardHeader>
 
@@ -187,7 +194,7 @@ export default function DisasterUpdatesDetail() {
                         ?.toLowerCase()
                         .normalize("NFD")
                         .replace(/[\u0300-\u036f]/g, "")
-                        .includes("municipality of los banos")
+                        .includes("municipal of los banos")
                         ? "lb-logo.png"
                         : data?.added_by
                             ?.toLowerCase()
@@ -225,6 +232,6 @@ export default function DisasterUpdatesDetail() {
           />
         </div>
       )}
-    </>
+    </ProtectedRoute>
   );
 }

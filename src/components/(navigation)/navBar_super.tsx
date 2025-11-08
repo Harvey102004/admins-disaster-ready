@@ -20,6 +20,16 @@ import axios from "axios";
 import { toast } from "sonner";
 import ProtectedRoute from "../ProtectedRoutes";
 
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+
 export default function NavbarSuperAdmin() {
   const pathname = usePathname();
   const [isLogout, setIsLogout] = useState(false);
@@ -153,26 +163,34 @@ export default function NavbarSuperAdmin() {
 
         {isLogout && (
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/10"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
             onClick={() => setIsLogout(false)}
           >
             <div
-              className="dark:bg-light-black rounded bg-white p-7 shadow-md"
+              className="dark:bg-light-black relative w-full max-w-sm rounded-2xl bg-white p-6 shadow-lg"
               onClick={(e) => e.stopPropagation()}
             >
-              <p className="mb-5 font-medium">
-                Are you sure you want to logout?
+              {/* Title */}
+              <h3 className="mb-3 text-center text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Confirm Logout
+              </h3>
+
+              {/* Message */}
+              <p className="mb-6 text-center text-sm text-gray-600 dark:text-gray-300">
+                Are you sure you want to logout? You will need to login again to
+                access your account.
               </p>
 
-              <div className="mx-auto flex items-center justify-center gap-5 text-sm text-white">
+              {/* Buttons */}
+              <div className="flex justify-center gap-3">
                 <button
-                  className="bg-dark-blue rounded px-6 py-2"
+                  className="rounded-md border border-gray-300 bg-white px-4 py-2 text-xs text-gray-700 transition hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
                   onClick={() => setIsLogout(false)}
                 >
-                  No
+                  Cancel
                 </button>
                 <button
-                  className="rounded bg-red-500 px-6 py-2 text-white"
+                  className="rounded-md bg-red-600 px-4 py-2 text-xs text-white transition hover:bg-red-700"
                   onClick={async () => {
                     try {
                       await axios.get(
@@ -181,7 +199,6 @@ export default function NavbarSuperAdmin() {
                           withCredentials: true,
                         },
                       );
-
                       toast.success("Logged out successfully");
                     } catch (error) {
                       console.error(
@@ -196,7 +213,7 @@ export default function NavbarSuperAdmin() {
                     }
                   }}
                 >
-                  Yes
+                  Logout
                 </button>
               </div>
             </div>

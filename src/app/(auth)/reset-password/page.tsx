@@ -40,7 +40,7 @@ export default function ResetPasswordPage() {
 
     try {
       const res = await axios.post(
-        "http://localhost/Disaster-backend/public/resetPass.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/resetPass.php",
         {
           token,
           password: form.password,
