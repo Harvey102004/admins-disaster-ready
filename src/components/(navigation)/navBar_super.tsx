@@ -194,7 +194,7 @@ export default function NavbarSuperAdmin() {
                   onClick={async () => {
                     try {
                       await axios.get(
-                        "http://localhost:3001/public/logout.php",
+                        "https://greenyellow-lion-623632.hostingersite.com/public/logout.php",
                         {
                           withCredentials: true,
                         },

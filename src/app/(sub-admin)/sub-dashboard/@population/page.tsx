@@ -31,7 +31,7 @@ export default function PopulationPage() {
     queryKey: ["barangayContacts"],
     queryFn: async () => {
       const res = await axios.get(
-        "http://localhost/Disaster-backend/public/barangayContact.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/barangayContact.php",
       );
       return res.data;
     },

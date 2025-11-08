@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_GET_DONATIONS = "http://localhost:3001/public/fetchDonations.php";
+const API_GET_DONATIONS =
+  "https://greenyellow-lion-623632.hostingersite.com/public/fetchDonations.php";
 
 export const getAllDonations = async () => {
   try {

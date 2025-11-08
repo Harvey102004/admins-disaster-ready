@@ -40,7 +40,8 @@ export const toggleUserStatus = async ({
   return response.data;
 };
 
-const API_GET_ARCHIVED = "http://localhost:3001/public/fetchArchivedUser.php";
+const API_GET_ARCHIVED =
+  "https://greenyellow-lion-623632.hostingersite.com/public/fetchArchivedUser.php";
 
 export const getArchivedUsers = async () => {
   try {
@@ -55,7 +56,7 @@ export const getArchivedUsers = async () => {
 };
 
 const API_GET_PENDING_USERS =
-  "http://localhost:3001/public/fetchPendingAccount.php";
+  "https://greenyellow-lion-623632.hostingersite.com/public/fetchPendingAccount.php";
 
 export const getPendingUsers = async () => {
   try {
@@ -70,7 +71,7 @@ export const getPendingUsers = async () => {
 };
 
 const API_GET_BLOCKED_USERS =
-  "http://localhost:3001/public/fetchBlockedEmails.php";
+  "https://greenyellow-lion-623632.hostingersite.com/public/fetchBlockedEmails.php";
 
 export const getBlockedUsers = async () => {
   try {

@@ -158,7 +158,7 @@ export default function ReliefGoods() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/public/reliefDistribution.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/reliefDistribution.php",
         payload,
         {
           headers: { "Content-Type": "application/json" },

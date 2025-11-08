@@ -27,7 +27,7 @@ export default function RiskMappingOverview() {
     async function fetchData() {
       try {
         const res = await axios.get(
-          "http://localhost:3001/public/disasterMapping.php",
+          "https://greenyellow-lion-623632.hostingersite.com/public/disasterMapping.php",
           {
             withCredentials: true,
           },

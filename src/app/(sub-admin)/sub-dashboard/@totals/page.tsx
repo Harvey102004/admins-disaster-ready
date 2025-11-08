@@ -64,7 +64,7 @@ export default function TotalsPage() {
     queryKey: ["incidentReports"],
     queryFn: async () => {
       const res = await axios.get(
-        "http://localhost:3001/public/getIncidents.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/getIncidents.php",
         {
           withCredentials: true,
         },
@@ -78,7 +78,7 @@ export default function TotalsPage() {
     queryKey: ["barangayContacts"],
     queryFn: async () => {
       const res = await axios.get(
-        "http://localhost:3001/public/barangayContact.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/barangayContact.php",
         {
           withCredentials: true,
         },
@@ -92,7 +92,7 @@ export default function TotalsPage() {
     queryKey: ["evacuationCenters"],
     queryFn: async () => {
       const res = await axios.get(
-        "http://localhost:3001/public/evacuationCenter.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/evacuationCenter.php",
         {
           withCredentials: true,
         },

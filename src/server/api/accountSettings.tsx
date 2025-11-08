@@ -3,7 +3,7 @@ import z from "zod";
 import { updateProfileSchema } from "@/lib/schema/accountSettings";
 
 const API_ACCOUNT_SETTING =
-  "http://localhost/Disaster-backend/public/AccountSettings.php";
+  "https://greenyellow-lion-623632.hostingersite.com/public/AccountSettings.php";
 
 export type UserProfile = z.infer<typeof updateProfileSchema>;
 

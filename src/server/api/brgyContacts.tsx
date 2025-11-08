@@ -4,7 +4,8 @@ import { brgyContactSchema } from "@/lib/schema/brgyContacts";
 
 export type BrgyContactFormData = z.infer<typeof brgyContactSchema>;
 
-const API_CONTACT = "http://localhost:3001/public/barangayContact.php";
+const API_CONTACT =
+  "https://greenyellow-lion-623632.hostingersite.com/public/barangayContact.php";
 
 export const addBrgyContact = async (data: BrgyContactFormData) => {
   try {

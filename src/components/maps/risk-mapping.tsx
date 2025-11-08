@@ -167,7 +167,7 @@ export default function RiskMappingMap() {
     (async () => {
       try {
         const res = await axios.get(
-          "http://localhost:3001/public/disasterMapping.php",
+          "https://greenyellow-lion-623632.hostingersite.com/public/disasterMapping.php",
           {
             withCredentials: true,
           },
@@ -215,7 +215,7 @@ export default function RiskMappingMap() {
 
     try {
       const res = await axios.post(
-        "http://localhost:3001/public/disasterMapping.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/disasterMapping.php",
         {
           type: selectedType,
           lat: latlng.lat,
@@ -378,7 +378,7 @@ export default function RiskMappingMap() {
 
                             try {
                               const res = await axios.delete(
-                                `http://localhost:3001/public/disasterMapping.php?id=${encodeURIComponent(
+                                `https://greenyellow-lion-623632.hostingersite.com/public/disasterMapping.php?id=${encodeURIComponent(
                                   m.id,
                                 )}`,
                                 {

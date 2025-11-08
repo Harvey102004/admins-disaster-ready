@@ -17,15 +17,16 @@ import {
 // FETCH ADVISORIES
 
 const API_URL_WEATHER =
-  "http://localhost:3001/public/getAdvisories.php?type=weather";
+  "https://greenyellow-lion-623632.hostingersite.com/public/getAdvisories.php?type=weather";
 
-const API_URL_ROAD = "http://localhost:3001/public/getAdvisories.php?type=road";
+const API_URL_ROAD =
+  "https://greenyellow-lion-623632.hostingersite.com/public/getAdvisories.php?type=road";
 
 const API_URL_DISASTER =
-  "http://localhost:3001/public/getAdvisories.php?type=disaster";
+  "https://greenyellow-lion-623632.hostingersite.com/public/getAdvisories.php?type=disaster";
 
 const API_URL_COMMUNITY =
-  "http://localhost:3001/public/getAdvisories.php?type=community";
+  "https://greenyellow-lion-623632.hostingersite.com/public/getAdvisories.php?type=community";
 
 export const getWeather = async (): Promise<TWeatherAdvisory[]> => {
   try {
@@ -97,7 +98,7 @@ export const getCommunity = async (): Promise<TCommunity[]> => {
 export const getWeatherDetails = async ({ id }: { id: string }) => {
   try {
     const response = await axios.get<TWeatherAdvisory>(
-      `http://localhost:3001/public/getAdvisories.php?type=weather&id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/getAdvisories.php?type=weather&id=${id}`,
       {
         withCredentials: true,
       },
@@ -113,7 +114,7 @@ export const getWeatherDetails = async ({ id }: { id: string }) => {
 export const getRoadDetails = async ({ id }: { id: string }) => {
   try {
     const response = await axios.get<TRoadAdvisory>(
-      `http://localhost:3001/public/getAdvisories.php?type=road&id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/getAdvisories.php?type=road&id=${id}`,
       {
         withCredentials: true,
       },
@@ -129,7 +130,7 @@ export const getRoadDetails = async ({ id }: { id: string }) => {
 export const getDisasterDetails = async ({ id }: { id: string }) => {
   try {
     const response = await axios.get<TDisasterAdvisory>(
-      `http://localhost:3001/public/getAdvisories.php?type=disaster&id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/getAdvisories.php?type=disaster&id=${id}`,
       {
         withCredentials: true,
       },
@@ -145,7 +146,7 @@ export const getDisasterDetails = async ({ id }: { id: string }) => {
 export const getCommunityDetails = async ({ id }: { id: string }) => {
   try {
     const response = await axios.get<TWeatherAdvisory>(
-      `http://localhost:3001/public/getAdvisories.php?type=community&id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/getAdvisories.php?type=community&id=${id}`,
       {
         withCredentials: true,
       },
@@ -166,7 +167,7 @@ export const deleteWeather = async ({ id }: { id: string }) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:3001/public/deleteAdvisory.php?type=weather&id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/deleteAdvisory.php?type=weather&id=${id}`,
       formData,
       {
         withCredentials: true,
@@ -185,7 +186,7 @@ export const deleteRoad = async ({ id }: { id: string }) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:3001/public/deleteAdvisory.php?type=road&id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/deleteAdvisory.php?type=road&id=${id}`,
       formData,
       {
         withCredentials: true,
@@ -204,7 +205,7 @@ export const deleteDisaster = async ({ id }: { id: string }) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:3001/public/deleteAdvisory.php?type=disaster&id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/deleteAdvisory.php?type=disaster&id=${id}`,
       formData,
       {
         withCredentials: true,
@@ -223,7 +224,7 @@ export const deleteCommunity = async ({ id }: { id: string }) => {
 
   try {
     const response = await axios.post(
-      `http://localhost:3001/public/deleteAdvisory.php?type=community&id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/deleteAdvisory.php?type=community&id=${id}`,
       formData,
       { withCredentials: true },
     );
@@ -237,16 +238,16 @@ export const deleteCommunity = async ({ id }: { id: string }) => {
 // ADD  ADVISORIES
 
 const API_URL_ADD_WEATHER =
-  "http://localhost:3001/public/postAdvisory.php?type=weather";
+  "https://greenyellow-lion-623632.hostingersite.com/public/postAdvisory.php?type=weather";
 
 const API_URL_ADD_ROAD =
-  "http://localhost:3001/public/postAdvisory.php?type=road";
+  "https://greenyellow-lion-623632.hostingersite.com/public/postAdvisory.php?type=road";
 
 const API_URL_ADD_DISASTER =
-  "http://localhost:3001/public/postAdvisory.php?type=disaster";
+  "https://greenyellow-lion-623632.hostingersite.com/public/postAdvisory.php?type=disaster";
 
 const API_URL_ADD_COMMUNITY =
-  "http://localhost:3001/public/postAdvisory.php?type=community";
+  "https://greenyellow-lion-623632.hostingersite.com/public/postAdvisory.php?type=community";
 
 export type WeatherType = z.infer<typeof weatherAdvisorySchema>;
 export type RoadType = z.infer<typeof roadAdvisorySchema>;
@@ -370,7 +371,7 @@ export const editWeatherAdvisory = async ({
 }) => {
   try {
     const response = await axios.post(
-      `http://localhost:3001/public/updateAdvisory.php?type=weather&id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/updateAdvisory.php?type=weather&id=${id}`,
       {
         title: data.title,
         details: data.details,
@@ -401,7 +402,7 @@ export const editRoadAvisory = async ({
 }) => {
   try {
     const response = await axios.post(
-      `http://localhost:3001/public/updateAdvisory.php?type=road&id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/updateAdvisory.php?type=road&id=${id}`,
       {
         title: data.title,
         details: data.details,
@@ -446,7 +447,7 @@ export const editDisasterUpdates = async ({
     formData.append("added_by", data.added_by ?? "");
 
     const response = await axios.post(
-      `http://localhost:3001/public/updateAdvisory.php?type=disaster&id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/updateAdvisory.php?type=disaster&id=${id}`,
       formData,
       { withCredentials: true },
     );
@@ -469,7 +470,7 @@ export const editCommunityNotice = async ({
 }) => {
   try {
     const response = await axios.post(
-      `http://localhost:3001/public/updateAdvisory.php?type=community&id=${id}`,
+      `https://greenyellow-lion-623632.hostingersite.com/public/updateAdvisory.php?type=community&id=${id}`,
       {
         title: data.title,
         details: data.details,

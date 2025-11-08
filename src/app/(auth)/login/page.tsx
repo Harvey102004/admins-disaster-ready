@@ -234,7 +234,7 @@ export default function Login() {
 
     try {
       const res = await axios.post(
-        "http://localhost/Disaster-backend/public/accountRequest.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/accountRequest.php",
         {
           username: createData.username,
           email: createData.email,
@@ -279,7 +279,7 @@ export default function Login() {
 
     try {
       const response = await axios.post(
-        "http://localhost/Disaster-backend/public/accountVerification.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/accountVerification.php",
         {
           email: createData.email,
           code: verificationCode,
@@ -339,7 +339,7 @@ export default function Login() {
 
     try {
       const res = await axios.post(
-        "http://localhost:3001/public/forgotPass.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/forgotPass.php",
         { email: forgotEmail },
         { withCredentials: true },
       );

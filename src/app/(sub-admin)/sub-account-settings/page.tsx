@@ -90,7 +90,7 @@ export default function SubAdminAccountSettings() {
 
                 try {
                   const res = await axios.post(
-                    "http://localhost:3001/public/AccountSettings.php",
+                    "https://greenyellow-lion-623632.hostingersite.com/public/AccountSettings.php",
                     body, // ✅ send body directly
                     {
                       headers: { "Content-Type": "application/json" },

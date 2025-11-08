@@ -56,7 +56,7 @@ export default function NotificationPage() {
     const fetchReports = async () => {
       try {
         const res = await axios.get(
-          "http://localhost:3001/public/getIncidents.php",
+          "https://greenyellow-lion-623632.hostingersite.com/public/getIncidents.php",
           {
             withCredentials: true,
           },
@@ -112,7 +112,7 @@ export default function NotificationPage() {
           reports.map((r) => (
             <RecentCards
               key={r.id}
-              image={`http://localhost/Disaster-backend/uploads/${r.media}`}
+              image={`https://greenyellow-lion-623632.hostingersite.com/uploads/${r.media}`}
               name={r.reporter_name}
               description={r.description}
               date={new Date(r.created_at).toLocaleString()}

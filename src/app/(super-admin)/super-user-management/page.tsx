@@ -145,7 +145,7 @@ export default function SuperAdminUserManagement() {
       };
 
       const response = await axios.post(
-        "http://localhost:3001/public/userController.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/userController.php",
         JSON.stringify(payload),
         {
           headers: {
@@ -241,7 +241,7 @@ export default function SuperAdminUserManagement() {
       };
 
       const response = await axios.post(
-        "http://localhost:3001/public/acceptRequest.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/acceptRequest.php",
         payload,
         {
           headers: { "Content-Type": "application/json" },
@@ -285,7 +285,7 @@ export default function SuperAdminUserManagement() {
       };
 
       const response = await axios.post(
-        "http://localhost:3001/public/acceptRequest.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/acceptRequest.php",
         payload,
         {
           headers: { "Content-Type": "application/json" },
@@ -329,7 +329,7 @@ export default function SuperAdminUserManagement() {
       };
 
       const response = await axios.post(
-        "http://localhost:3001/public/acceptRequest.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/acceptRequest.php",
         payload,
         {
           headers: { "Content-Type": "application/json" },
@@ -367,7 +367,7 @@ export default function SuperAdminUserManagement() {
       };
 
       const response = await axios.post(
-        "http://localhost:3001/public/acceptRequest.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/acceptRequest.php",
         payload,
         {
           headers: { "Content-Type": "application/json" },

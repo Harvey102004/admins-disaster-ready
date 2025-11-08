@@ -1,8 +1,9 @@
 import axios from "axios";
 
-const API_GET_RELIEFS = "http://localhost:3001/public/fetchRelief.php";
+const API_GET_RELIEFS =
+  "https://greenyellow-lion-623632.hostingersite.com/public/fetchRelief.php";
 const API_GET_RELIEFS_HISTORY =
-  "http://localhost:3001/public/fetchBarangayReceivedPacks.php";
+  "https://greenyellow-lion-623632.hostingersite.com/public/fetchBarangayReceivedPacks.php";
 
 export const getReliefs = async () => {
   try {
@@ -34,7 +35,8 @@ interface AddReliefProps {
   date_input: string;
 }
 
-const API_ADD_RELIEF = "http://localhost:3001/public/reliefDistribution.php";
+const API_ADD_RELIEF =
+  "https://greenyellow-lion-623632.hostingersite.com/public/reliefDistribution.php";
 
 export const addRelief = async ({
   description,

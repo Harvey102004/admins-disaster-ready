@@ -45,7 +45,7 @@ export default function IncidentReports() {
   const fetchIncidents = async () => {
     try {
       const res = await axios.get(
-        "http://localhost:3001/public/getIncidents.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/getIncidents.php",
         {
           withCredentials: true,
         },
@@ -93,7 +93,7 @@ export default function IncidentReports() {
 
     try {
       const response = await axios.post(
-        "http://localhost:3001/public/updateIncident.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/updateIncident.php",
         {
           id,
           status,
@@ -432,7 +432,7 @@ export default function IncidentReports() {
                       className="relative h-[320px] w-[320px] cursor-zoom-in overflow-hidden rounded-lg shadow-md"
                     >
                       <Image
-                        src={`http://localhost/Disaster-backend/uploads/${selectedIncident.media}`}
+                        src={`https://greenyellow-lion-623632.hostingersite.com/public/uploads/${selectedIncident.media}`}
                         alt="Incident Photo"
                         fill
                         className="object-cover object-center transition-all duration-200 hover:scale-105 hover:brightness-75"
@@ -456,7 +456,7 @@ export default function IncidentReports() {
             </button>
 
             <img
-              src={`http://localhost/Disaster-backend/uploads/${selectedIncident.media}`}
+              src={`https://greenyellow-lion-623632.hostingersite.com/uploads/${selectedIncident.media}`}
               alt="Incident Photo"
               className="max-h-[90vh] max-w-[90vw] cursor-zoom-out object-contain transition-all duration-200 hover:brightness-90"
               onClick={() => setImageModalOpen(false)}
