@@ -7,17 +7,14 @@ export const metadata: Metadata = {
 
 export default function UpdateNewsLayout({
   children,
-  modal,
 }: {
   children: React.ReactNode;
-  modal: React.ReactNode;
 }) {
   return (
     <div className="relative w-full pl-8 transition-all duration-300">
       <UpdateNewsNavSub />
 
       {children}
-      {modal}
     </div>
   );
 }

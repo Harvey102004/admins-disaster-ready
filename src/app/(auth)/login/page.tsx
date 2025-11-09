@@ -26,7 +26,7 @@ import {
 } from "@/components/ui/input-otp";
 import { toast } from "sonner";
 
-export function successToast(
+function successToast(
   message: string,
   description?: string | ReactNode,
   onConfirm?: () => void,
@@ -404,7 +404,7 @@ export default function Login() {
             <button
               className="bg-itim text text-light dark:text-itim dark:bg-puti w-max cursor-pointer rounded-md border px-8 py-3 text-sm font-medium hover:opacity-90"
               onClick={() => {
-                setIsLoginForm(true), handleFocus;
+                (setIsLoginForm(true), handleFocus);
               }}
             >
               Login Now

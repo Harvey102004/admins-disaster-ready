@@ -8,10 +8,8 @@ export const metadata: Metadata = {
 
 export default function UpdateNewsLayout({
   children,
-  modal,
 }: {
   children: React.ReactNode;
-  modal: React.ReactNode;
 }) {
   return (
     <ProtectedRoute>
@@ -19,7 +17,6 @@ export default function UpdateNewsLayout({
         <UpdateNewsNavSuper />
 
         {children}
-        {modal}
       </div>
     </ProtectedRoute>
   );
