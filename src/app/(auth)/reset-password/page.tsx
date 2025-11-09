@@ -1,5 +1,7 @@
 import ResetPasswordForm from "./ResetPasswordForm";
 
+export const dynamic = "force-dynamic";
+
 export default function ResetPasswordPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4 dark:bg-neutral-900">
