@@ -418,9 +418,7 @@ export default function Login() {
           {IsLoginForm ? (
             <div className="ml-5 h-5/6 w-3/4">
               <div className="text-center">
-                <h2 className="text-xl font-bold">
-                  Administrator SAMPLE KUNG GAGANA
-                </h2>
+                <h2 className="text-xl font-bold">Administrator Access</h2>
                 <p className="mt-7 text-sm">
                   Access is restricted to authorized administrators only.
                 </p>
