@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_GET_USERS = "http://localhost:3001/public/fetchUser.php";
+const API_GET_USERS =
+  "https://greenyellow-lion-623632.hostingersite.com/public/fetchUser.php";
 
 export const getUsers = async () => {
   try {
@@ -14,7 +15,8 @@ export const getUsers = async () => {
   }
 };
 
-const API_USER_ACTION = "http://localhost:3001/public/userController.php";
+const API_USER_ACTION =
+  "https://greenyellow-lion-623632.hostingersite.com/public/userController.php";
 
 export const toggleUserStatus = async ({
   userId,
