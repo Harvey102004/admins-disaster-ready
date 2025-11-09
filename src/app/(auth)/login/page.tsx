@@ -202,7 +202,7 @@ export default function Login() {
         }, 1500);
       } else {
         setLoginMessage(
-          response.data.message || "❌ Invalid username or password.",
+          response.data.message || " Invalid username or password.",
         );
 
         if (
@@ -219,8 +219,8 @@ export default function Login() {
         }
       }
     } catch (error) {
-      console.error("❌ Login error:", error);
-      setLoginMessage("⚠️ Server error. Please try again later.");
+      console.error(" Login error:", error);
+      setLoginMessage(" Server error. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -418,7 +418,9 @@ export default function Login() {
           {IsLoginForm ? (
             <div className="ml-5 h-5/6 w-3/4">
               <div className="text-center">
-                <h2 className="text-xl font-bold">Administrator Access</h2>
+                <h2 className="text-xl font-bold">
+                  Administrator SAMPLE KUNG GAGANA
+                </h2>
                 <p className="mt-7 text-sm">
                   Access is restricted to authorized administrators only.
                 </p>
