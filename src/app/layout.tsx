@@ -47,7 +47,7 @@ export default function RootLayout({
           </QueryProvider>
         </div>
 
-        <div className="flex h-screen flex-col items-center justify-center gap-5 lg:hidden">
+        <div className="flex h-screen flex-col items-center justify-center gap-3 lg:hidden">
           <FaComputer className="text-4xl" />
           <p className="text-center text-sm text-gray-500">
             This website works on desktop only.

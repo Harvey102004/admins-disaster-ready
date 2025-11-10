@@ -41,7 +41,7 @@ export default function ResetPasswordForm() {
 
     try {
       const res = await axios.post(
-        "http://localhost:3001/public/resetPass.php",
+        "https://greenyellow-lion-623632.hostingersite.com/public/resetPass.php",
         {
           token,
           password: form.password,
@@ -70,7 +70,7 @@ export default function ResetPasswordForm() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-100 px-4 dark:bg-neutral-900">
-      <div className="w-full max-w-lg rounded-2xl p-10 transition-all dark:bg-neutral-800 dark:text-white">
+      <div className="w-full max-w-lg rounded-2xl p-10 transition-all dark:text-white">
         <IoIosKey className="bg-dark-blue mx-auto mb-5 h-16 w-16 overflow-visible rounded-full p-4 text-3xl text-white" />
         <h1 className="mb-3 text-center text-2xl font-bold text-gray-800 dark:text-white">
           Set New Password
