@@ -94,7 +94,7 @@ export default function SuperAdminDonationManagement() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <RiCoinsFill className="text-2xl" />
-            <h2 className="text-xl font-semibold">Donations Management</h2>
+            <h2 className="text-xl font-semibold">Donations</h2>
           </div>
 
           {/* ✅ Filters Section */}

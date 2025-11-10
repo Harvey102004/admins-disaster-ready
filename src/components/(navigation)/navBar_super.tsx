@@ -78,8 +78,8 @@ export default function NavbarSuperAdmin() {
       icon: <MdAnnouncement />,
     },
     {
-      name: "Donation Management",
-      path: "/super-donation-management",
+      name: "Donations ",
+      path: "/super-donations",
       icon: <RiCoinsFill />,
     },
     {

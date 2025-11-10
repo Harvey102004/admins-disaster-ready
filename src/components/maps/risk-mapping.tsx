@@ -327,7 +327,7 @@ export default function RiskMappingMap() {
         center={[14.17, 121.2436]}
         zoom={13}
         minZoom={14}
-        maxZoom={20}
+        maxZoom={19}
         zoomControl={false}
         zoomSnap={1}
         zoomDelta={1}
@@ -341,6 +341,8 @@ export default function RiskMappingMap() {
         <TileLayer
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           attribution="&copy; OpenStreetMap contributors"
+          maxZoom={19}
+          maxNativeZoom={19}
         />
         <MapClickHandler onClick={handleMapClick} />
 

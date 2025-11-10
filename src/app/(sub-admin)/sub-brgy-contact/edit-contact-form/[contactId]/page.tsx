@@ -233,7 +233,7 @@ export default function AddContactForm() {
               <div className="flex w-1/2 flex-col gap-5">
                 <NumberInput
                   name="total_male"
-                  label="Total Male (Optional)"
+                  label="Total Male"
                   placeholder="0"
                   register={register}
                   errors={errors}
@@ -241,7 +241,7 @@ export default function AddContactForm() {
 
                 <NumberInput
                   name="total_female"
-                  label="Total Female (Optional)"
+                  label="Total Female"
                   placeholder="0"
                   register={register}
                   errors={errors}

@@ -219,7 +219,7 @@ export default function SubAdminAccountSettings() {
                   autoComplete="off"
                   name="email"
                   defaultValue={user.email}
-                  className="focus:border-dark-blue w-full rounded border border-gray-300 px-4 py-3 focus:ring-0 focus:outline-none"
+                  className="focus:border-dark-blue w-full rounded border border-gray-300 px-4 py-3 focus:ring-0 focus:outline-none dark:border-gray-300/50"
                 />
               </div>
 
@@ -233,11 +233,11 @@ export default function SubAdminAccountSettings() {
                     name="password"
                     autoComplete="off"
                     placeholder="Enter current password"
-                    className="focus:border-dark-blue w-full rounded border border-gray-300 px-4 py-3 pr-14 focus:ring-0 focus:outline-none"
+                    className="focus:border-dark-blue w-full rounded border border-gray-300 px-4 py-3 pr-14 focus:ring-0 focus:outline-none dark:border-gray-300/50"
                   />
                   <div
                     onClick={() => togglePassword("profilePassword")}
-                    className="text-light-black absolute top-1/2 right-5 -translate-y-1/2 cursor-pointer text-lg dark:text-zinc-300"
+                    className="text-light-black absolute top-1/2 right-5 -translate-y-1/2 cursor-pointer text-lg dark:border-gray-300/50 dark:text-zinc-300"
                   >
                     {showPassword.profilePassword ? (
                       <RiEyeFill />
