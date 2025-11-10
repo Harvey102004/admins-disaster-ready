@@ -40,14 +40,10 @@ export default function DonationSection() {
 
   return (
     <div className="border-dark-blue/50 rounded-xl border bg-gradient-to-tr from-blue-700 to-sky-500 p-6 shadow-lg dark:brightness-90">
-      <div className="flex items-center justify-between">
+      <div>
         <h1 className="mb-6 ml-4 flex items-center gap-4 text-lg font-semibold text-white">
           <FaDonate /> Recently Received Donations
         </h1>
-
-        <div className="mb-4 text-white">
-          <strong>Total Donations:</strong> ₱ {totalCash.toLocaleString()}
-        </div>
       </div>
 
       <div className="scrollBar max-h-[200px] overflow-auto pr-3">
