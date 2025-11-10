@@ -206,7 +206,7 @@ export default function SubAdminAccountSettings() {
                   autoComplete="off"
                   name="username"
                   defaultValue={user.username}
-                  className="focus:border-dark-blue w-full rounded border border-gray-300 px-4 py-3 focus:ring-0 focus:outline-none"
+                  className="focus:border-dark-blue w-full rounded border border-gray-300 px-4 py-3 focus:ring-0 focus:outline-none dark:border-gray-300/50"
                 />
               </div>
 
@@ -273,7 +273,7 @@ export default function SubAdminAccountSettings() {
                   name="currentPassword"
                   autoComplete="off"
                   placeholder="Enter current password"
-                  className="focus:border-dark-blue w-full rounded border border-gray-300 px-4 py-3 pr-14 focus:ring-0 focus:outline-none"
+                  className="focus:border-dark-blue w-full rounded border border-gray-300 px-4 py-3 pr-14 focus:ring-0 focus:outline-none dark:border-gray-300/50"
                 />
                 <div
                   onClick={() => togglePassword("currentPassword")}
@@ -296,7 +296,7 @@ export default function SubAdminAccountSettings() {
                   name="newPassword"
                   autoComplete="off"
                   placeholder="Enter new password"
-                  className="focus:border-dark-blue w-full rounded border border-gray-300 px-4 py-3 pr-14 focus:ring-0 focus:outline-none"
+                  className="focus:border-dark-blue w-full rounded border border-gray-300 px-4 py-3 pr-14 focus:ring-0 focus:outline-none dark:border-gray-300/50"
                 />
                 <div
                   onClick={() => togglePassword("newPassword")}
@@ -315,7 +315,7 @@ export default function SubAdminAccountSettings() {
                   name="confirmPassword"
                   autoComplete="off"
                   placeholder="Confirm password"
-                  className="focus:border-dark-blue w-full rounded border border-gray-300 px-4 py-3 pr-14 focus:ring-0 focus:outline-none"
+                  className="focus:border-dark-blue w-full rounded border border-gray-300 px-4 py-3 pr-14 focus:ring-0 focus:outline-none dark:border-gray-300/50"
                 />
                 <div
                   onClick={() => togglePassword("confirmPassword")}
