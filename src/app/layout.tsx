@@ -48,8 +48,8 @@ export default function RootLayout({
         </div>
 
         <div className="flex h-screen flex-col items-center justify-center gap-5 lg:hidden">
-          <FaComputer className="text-5xl" />
-          <p className="text-center text-gray-500">
+          <FaComputer className="text-4xl" />
+          <p className="text-center text-sm text-gray-500">
             This website works on desktop only.
           </p>
         </div>
