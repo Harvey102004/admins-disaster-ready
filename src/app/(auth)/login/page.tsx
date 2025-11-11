@@ -118,7 +118,6 @@ export default function Login() {
   const [isVerifying, setIsVerifying] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
   const [serverMessage, setServerMessage] = useState("");
-  const [captcha, setCaptcha] = useState<string | null>(null);
 
   const [loginMessage, setLoginMessage] = useState("");
   const [cooldown, setCooldown] = useState(0);
@@ -249,7 +248,7 @@ export default function Login() {
           password: createData.password,
           confirm_password: createData.confirm_password,
           barangay: createData.barangay,
-          captcha,
+          captcha: createData.captcha,
         },
         { withCredentials: true },
       );
@@ -677,10 +676,11 @@ export default function Login() {
                     </SelectContent>
                   </Select>
                 </div>
-
                 <ReCAPTCHA
                   sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-                  onChange={(value: string | null) => setCaptcha(value)}
+                  onChange={(value: string | null) =>
+                    setCreateData((prev) => ({ ...prev, captcha: value || "" }))
+                  }
                 />
 
                 {/* Submit Button */}
