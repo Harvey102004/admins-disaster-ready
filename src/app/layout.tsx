@@ -8,6 +8,7 @@ import { Toaster } from "sonner";
 
 import { Metadata } from "next";
 import { FaComputer } from "react-icons/fa6";
+import SessionHandler from "@/components/SessionHandler";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
@@ -31,6 +32,7 @@ export default function RootLayout({
         <div className="hidden lg:block">
           <QueryProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              <SessionHandler />
               <Toaster
                 position="top-center"
                 richColors
