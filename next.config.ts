@@ -6,7 +6,6 @@ const nextConfig: NextConfig = {
   },
 
   webpack(config) {
-    // ✅ Disable Webpack's built-in minification to prevent TypeError
     config.optimization.minimize = false;
     return config;
   },

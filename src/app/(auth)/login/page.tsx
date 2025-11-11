@@ -10,6 +10,7 @@ import { MdEmail } from "react-icons/md";
 import { GoHomeFill } from "react-icons/go";
 import { ReactNode } from "react";
 import { CheckCircle2 } from "lucide-react";
+import ReCAPTCHA from "react-google-recaptcha";
 
 import {
   Select,
@@ -110,12 +111,14 @@ export default function Login() {
     password: "",
     confirm_password: "",
     barangay: "",
+    captcha: "",
   });
 
   const [verificationCode, setVerificationCode] = useState("");
   const [isVerifying, setIsVerifying] = useState(false);
   const [showVerification, setShowVerification] = useState(false);
   const [serverMessage, setServerMessage] = useState("");
+  const [captcha, setCaptcha] = useState<string | null>(null);
 
   const [loginMessage, setLoginMessage] = useState("");
   const [cooldown, setCooldown] = useState(0);
@@ -232,6 +235,11 @@ export default function Login() {
     setIsLoading(true);
     setServerMessage("");
 
+    if (!createData.captcha) {
+      toast.error("Please verify that you are not a robot.");
+      return;
+    }
+
     try {
       const res = await axios.post(
         "https://greenyellow-lion-623632.hostingersite.com/public/accountRequest.php",
@@ -241,6 +249,7 @@ export default function Login() {
           password: createData.password,
           confirm_password: createData.confirm_password,
           barangay: createData.barangay,
+          captcha,
         },
         { withCredentials: true },
       );
@@ -305,6 +314,7 @@ export default function Login() {
             password: "",
             confirm_password: "",
             barangay: "",
+            captcha: "",
           });
           setServerMessage("");
           setVerificationCode("");
@@ -404,7 +414,7 @@ export default function Login() {
             <button
               className="bg-itim text text-light dark:text-itim dark:bg-puti w-max cursor-pointer rounded-md border px-8 py-3 text-sm font-medium hover:opacity-90"
               onClick={() => {
-                (setIsLoginForm(true), handleFocus);
+                setIsLoginForm(true), handleFocus;
               }}
             >
               Login Now
@@ -667,6 +677,11 @@ export default function Login() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <ReCAPTCHA
+                  sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+                  onChange={(value: string | null) => setCaptcha(value)}
+                />
 
                 {/* Submit Button */}
                 <button
