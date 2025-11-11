@@ -71,6 +71,7 @@ export default function Login() {
   const [IsLoginForm, setIsLoginForm] = useState(true);
 
   const [verifyMessage, setVerifyMessage] = useState("");
+  const recaptchaRef = useRef<ReCAPTCHA | null>(null);
 
   const [isShowPass, setIsShowPass] = useState({
     loginPass: false,
@@ -234,11 +235,13 @@ export default function Login() {
     setIsLoading(true);
     setServerMessage("");
 
+    recaptchaRef.current?.execute();
+
     if (!createData.captcha) {
       toast.error("Please verify that you are not a robot.");
+      setIsLoading(false);
       return;
     }
-
     try {
       const res = await axios.post(
         "https://greenyellow-lion-623632.hostingersite.com/public/accountRequest.php",
@@ -274,6 +277,8 @@ export default function Login() {
       }
     } finally {
       setIsLoading(false);
+      recaptchaRef.current?.reset();
+      setCreateData((prev) => ({ ...prev, captcha: "" }));
     }
   };
 
@@ -678,8 +683,10 @@ export default function Login() {
                 </div>
                 <ReCAPTCHA
                   sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-                  onChange={(value: string | null) =>
-                    setCreateData((prev) => ({ ...prev, captcha: value || "" }))
+                  size="invisible"
+                  ref={recaptchaRef}
+                  onChange={(token) =>
+                    setCreateData((prev) => ({ ...prev, captcha: token || "" }))
                   }
                 />
 
