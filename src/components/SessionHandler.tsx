@@ -7,10 +7,13 @@ export default function SessionHandler() {
   useEffect(() => {
     async function sendHeartbeat() {
       try {
-        await fetch("/session.php", {
-          method: "GET",
-          credentials: "include",
-        });
+        await fetch(
+          "https://greenyellow-lion-623632.hostingersite.com/public/session.php",
+          {
+            method: "GET",
+            credentials: "include",
+          },
+        );
       } catch (err) {
         console.error("Failed to refresh session:", err);
       }
