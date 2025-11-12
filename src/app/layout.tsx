@@ -32,7 +32,6 @@ export default function RootLayout({
         <div className="hidden lg:block">
           <QueryProvider>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              <SessionHandler />
               <Toaster
                 position="top-center"
                 richColors
