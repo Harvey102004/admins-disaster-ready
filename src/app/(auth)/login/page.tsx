@@ -681,14 +681,20 @@ export default function Login() {
                     </SelectContent>
                   </Select>
                 </div>
-                <ReCAPTCHA
-                  sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
-                  size="invisible"
-                  ref={recaptchaRef}
-                  onChange={(token) =>
-                    setCreateData((prev) => ({ ...prev, captcha: token || "" }))
-                  }
-                />
+
+                <div className="absolute h-0">
+                  <ReCAPTCHA
+                    sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY!}
+                    size="invisible"
+                    ref={recaptchaRef}
+                    onChange={(token) =>
+                      setCreateData((prev) => ({
+                        ...prev,
+                        captcha: token || "",
+                      }))
+                    }
+                  />
+                </div>
 
                 {/* Submit Button */}
                 <button
