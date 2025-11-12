@@ -235,9 +235,14 @@ export default function Login() {
     setIsLoading(true);
     setServerMessage("");
 
-    recaptchaRef.current?.execute();
-
     try {
+      const token = await recaptchaRef.current?.executeAsync();
+
+      if (!token) {
+        setServerMessage("Captcha verification failed. Please try again.");
+        setIsLoading(false);
+        return;
+      }
       const res = await axios.post(
         "https://greenyellow-lion-623632.hostingersite.com/public/accountRequest.php",
         {
@@ -246,7 +251,7 @@ export default function Login() {
           password: createData.password,
           confirm_password: createData.confirm_password,
           barangay: createData.barangay,
-          captcha: createData.captcha,
+          captcha: token,
         },
         { withCredentials: true },
       );
