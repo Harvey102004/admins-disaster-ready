@@ -237,11 +237,6 @@ export default function Login() {
 
     recaptchaRef.current?.execute();
 
-    if (!createData.captcha) {
-      toast.error("Please verify that you are not a robot.");
-      setIsLoading(false);
-      return;
-    }
     try {
       const res = await axios.post(
         "https://greenyellow-lion-623632.hostingersite.com/public/accountRequest.php",
