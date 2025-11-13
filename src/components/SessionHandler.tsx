@@ -1,9 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { toast } from "sonner";
 
 export default function SessionHandler() {
+  const heartbeatInterval = useRef<NodeJS.Timeout | null>(null);
+  const idleTimer = useRef<NodeJS.Timeout | null>(null);
+
   useEffect(() => {
     async function sendHeartbeat() {
       try {
@@ -19,8 +22,8 @@ export default function SessionHandler() {
       }
     }
 
-    let idleTimer: NodeJS.Timeout;
     const MAX_IDLE_TIME = 60 * 60 * 1000; // 1 hour
+    const HEARTBEAT_INTERVAL = 5 * 60 * 1000; // 5 minutes
 
     function handleSessionExpired() {
       toast.error("Your session has expired due to inactivity.");
@@ -28,21 +31,48 @@ export default function SessionHandler() {
       setTimeout(() => {
         localStorage.clear();
         window.location.href = "/login";
-      }, 3000); // 3-second delay para makita ang toast
+      }, 3000);
     }
 
     function resetIdleTimer() {
-      clearTimeout(idleTimer);
-      sendHeartbeat();
-
-      idleTimer = setTimeout(handleSessionExpired, MAX_IDLE_TIME);
+      if (idleTimer.current) clearTimeout(idleTimer.current);
+      idleTimer.current = setTimeout(handleSessionExpired, MAX_IDLE_TIME);
     }
 
-    ["click", "mousemove", "keydown", "scroll", "touchstart"].forEach((event) =>
-      window.addEventListener(event, resetIdleTimer),
-    );
+    function startHeartbeat() {
+      // Prevent duplicate intervals
+      if (heartbeatInterval.current) clearInterval(heartbeatInterval.current);
 
-    resetIdleTimer();
+      // send first heartbeat immediately
+      sendHeartbeat();
+
+      // then repeat every 5 minutes
+      heartbeatInterval.current = setInterval(
+        sendHeartbeat,
+        HEARTBEAT_INTERVAL,
+      );
+    }
+
+    // Only start if logged in (optional check)
+    const isLoggedIn =
+      !!localStorage.getItem("token") || !!localStorage.getItem("user");
+    if (isLoggedIn) {
+      startHeartbeat();
+      resetIdleTimer();
+
+      ["click", "mousemove", "keydown", "scroll", "touchstart"].forEach(
+        (event) => window.addEventListener(event, resetIdleTimer),
+      );
+    }
+
+    return () => {
+      if (idleTimer.current) clearTimeout(idleTimer.current);
+      if (heartbeatInterval.current) clearInterval(heartbeatInterval.current);
+
+      ["click", "mousemove", "keydown", "scroll", "touchstart"].forEach(
+        (event) => window.removeEventListener(event, resetIdleTimer),
+      );
+    };
   }, []);
 
   return null;
