@@ -432,7 +432,7 @@ export default function IncidentReports() {
                       className="relative h-[320px] w-[320px] cursor-zoom-in overflow-hidden rounded-lg shadow-md"
                     >
                       <Image
-                        src={`https://greenyellow-lion-623632.hostingersite.com/public/uploads/${selectedIncident.media}`}
+                        src={`https://greenyellow-lion-623632.hostingersite.com/uploads/${selectedIncident.media}`}
                         alt="Incident Photo"
                         fill
                         className="object-cover object-center transition-all duration-200 hover:scale-105 hover:brightness-75"
