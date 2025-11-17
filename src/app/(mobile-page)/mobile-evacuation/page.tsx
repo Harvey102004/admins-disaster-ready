@@ -8,7 +8,7 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { FaBuildingShield, FaPowerOff } from "react-icons/fa6";
+import { FaBuildingShield } from "react-icons/fa6";
 import { EvacuationCenterProps } from "../../../../types";
 import axios from "axios";
 import { successToast, errorToast } from "@/components/toast";
@@ -24,6 +24,7 @@ import { editEvacuationCenter } from "@/server/api/evacuation";
 import { useRouter } from "next/navigation";
 import { HiddenInput } from "@/components/Inputs";
 import { LuMinus, LuPlus } from "react-icons/lu";
+import { RiLogoutCircleRLine } from "react-icons/ri";
 
 export default function MobileEvacPage() {
   const [evacList, setEvacList] = useState<EvacuationCenterProps[]>([]);
@@ -246,7 +247,7 @@ export default function MobileEvacPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col gap-5 p-4">
-      <FaPowerOff
+      <RiLogoutCircleRLine
         onClick={() => setIsLogout(true)}
         className="absolute top-5 right-5 text-xl dark:text-white"
       />
