@@ -8,17 +8,23 @@ export default function DeviceGuard({
 }: {
   children: React.ReactNode;
 }) {
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+  const [isMobileDevice, setIsMobileDevice] = useState<boolean | null>(null);
 
   useEffect(() => {
     const ua = navigator.userAgent || navigator.vendor || "";
-    const mobile = /Mobi|Android/i.test(ua);
-    setIsMobile(mobile);
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(ua);
+    setIsMobileDevice(isMobile);
   }, []);
 
-  if (isMobile === null) return null; // Loading state habang checking
+  if (isMobileDevice === null) return null; // while detecting
 
-  if (isMobile) {
+  // 👉 MOBILE DEVICES → ALLOW EVERYTHING
+  if (isMobileDevice) {
+    return <>{children}</>;
+  }
+
+  // 👉 DESKTOP BUT SMALL WIDTH → SHOW WARNING
+  if (typeof window !== "undefined" && window.innerWidth < 1024) {
     return (
       <div className="flex h-screen flex-col items-center justify-center gap-3">
         <FaComputer className="text-4xl" />
@@ -29,5 +35,6 @@ export default function DeviceGuard({
     );
   }
 
+  // 👉 DESKTOP WITH NORMAL WIDTH → ALLOW
   return <>{children}</>;
 }
