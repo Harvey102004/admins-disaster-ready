@@ -62,15 +62,14 @@ export default function AddContactForm() {
       }
     }
   }, [setValue]);
-
-  const { mutate, isPending } = useMutation({
+  const { mutate, mutateAsync, isPending } = useMutation({
     mutationFn: async (data: BrgyContactForm) => {
-      await toast.promise(addBrgyContact(data), {
-        loading: "Adding barangay contact...",
-        success: () => "Barangay contact added successfully!",
-        error: (error: any) => error?.message || "Something went wrong",
-        position: "top-center",
-      });
+      const res = await addBrgyContact(data);
+
+      // Check backend error
+      if (res.error) throw new Error(res.error);
+
+      return res;
     },
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ["brgyContacts"] });
@@ -85,7 +84,6 @@ export default function AddContactForm() {
 
     if (data.contact_number) {
       const cleaned = data.contact_number.replace(/\D/g, "");
-
       if (cleaned.startsWith("0")) {
         data.contact_number = "63" + cleaned.substring(1);
       } else if (!cleaned.startsWith("63")) {
@@ -95,7 +93,12 @@ export default function AddContactForm() {
       }
     }
 
-    mutate(data);
+    toast.promise(mutateAsync(data), {
+      loading: "Adding barangay contact...",
+      success: "Barangay contact added successfully!",
+      error: (err: any) => err?.message || "Something went wrong",
+      position: "top-center",
+    });
   };
 
   return (

@@ -22,14 +22,12 @@ const createSchema = () => {
     captain_name: z
       .string()
       .trim()
-      .min(1, "Barangay Captain name is required")
       .min(5, "Must be at least 5 characters long")
       .max(100, "Maximum of 100 characters only"),
 
     secretary_name: z
       .string()
       .trim()
-      .min(1, "Barangay Secretary name is required")
       .min(5, "Must be at least 5 characters long")
       .max(100, "Maximum of 100 characters only"),
 
@@ -39,12 +37,32 @@ const createSchema = () => {
       .min(1, "Barangay contact number is required")
       .regex(/^09\d{9}$/, "Contact number must start with 09 and be 11 digits"),
 
-    landline: z.string().trim().optional(),
+    landline: z
+      .string()
+      .trim()
+      .min(1, "Landline is required")
+      .regex(
+        /^[0-9\s-]+$/,
+        "Landline can only contain numbers, spaces, or dashes",
+      ),
 
-    facebook_page: z.string().trim().optional(),
+    facebook_page: z
+      .string()
+      .trim()
+      .min(1, "Facebook page is required")
+      .url("Must be a valid URL")
+      .refine(
+        (val) => val.startsWith("https://www.facebook.com/"),
+        'Facebook page must start with "https://www.facebook.com/"',
+      ),
 
-    lat: z.number(),
-    long: z.number(),
+    lat: z
+      .number({ invalid_type_error: "Latitude is required" })
+      .refine((val) => !isNaN(val), "Latitude must be a valid number"),
+
+    long: z
+      .number({ invalid_type_error: "Longitude is required" })
+      .refine((val) => !isNaN(val), "Longitude must be a valid number"),
 
     total_male: z
       .string()
