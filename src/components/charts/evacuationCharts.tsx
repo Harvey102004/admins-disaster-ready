@@ -279,3 +279,48 @@ export const EvacuationPolarAreaChart: FC<EvacuationChartProps> = ({
     </div>
   );
 };
+
+export const MobileEvacuationLineChart: FC<EvacuationChartProps> = ({
+  capacity,
+  evacuees,
+}) => {
+  const vacancy = capacity - evacuees;
+
+  const data = {
+    labels: ["Capacity", "Vacancy", "Evacuees"],
+    datasets: [
+      {
+        data: [capacity, vacancy, evacuees],
+        fill: true,
+        borderColor: "#2563eb",
+        backgroundColor: "rgba(59, 130, 246, 0.08)",
+        tension: 0.4,
+        pointRadius: 2,
+        pointHoverRadius: 4,
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  const options = {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      title: { display: false },
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        max: capacity,
+        ticks: { display: false }, // hide Y-axis labels
+        grid: { display: false }, // hide Y-axis grid lines
+      },
+      x: {
+        ticks: { display: false }, // hide X-axis labels
+        grid: { display: false }, // hide X-axis grid lines
+      },
+    },
+  };
+
+  return <Line data={data} options={options} />;
+};

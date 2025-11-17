@@ -3,15 +3,15 @@
 import { FieldErrors, UseFormRegister } from "react-hook-form";
 import { FiSearch } from "react-icons/fi";
 
-  type InputType = {
-    name: string;
-    label?: string;
-    icon?: React.ReactNode;
-    placeholder?: string;
-    register: UseFormRegister<any>;
-    errors: FieldErrors<any>;
-    classname?: string;
-  };
+type InputType = {
+  name: string;
+  label?: string;
+  icon?: React.ReactNode;
+  placeholder?: string;
+  register: UseFormRegister<any>;
+  errors: FieldErrors<any>;
+  classname?: string;
+};
 
 interface SearchProps {
   value: string;

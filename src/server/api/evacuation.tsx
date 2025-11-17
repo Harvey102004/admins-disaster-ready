@@ -115,7 +115,7 @@ export const editEvacuationCenter = async ({
 }) => {
   try {
     const response = await axios.put(
-      `https://greenyellow-lion-623632.hostingersite.com/public/evacuationCenter.php?id=${id}`,
+      `http://localhost:3001/public/evacuationCenter.php?id=${id}`,
       {
         evac_name: data.name,
         evac_location: data.location,

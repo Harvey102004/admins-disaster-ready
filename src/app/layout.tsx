@@ -37,7 +37,7 @@ export default function RootLayout({
                 position="top-center"
                 richColors
                 toastOptions={{
-                  className: `${poppins.className} !w-max !absolute !left-1/2 !-translate-x-1/2`,
+                  className: `${poppins.className} !w-max !absolute !left-[46%] !-translate-x-1/2 `,
                   classNames: {
                     description: "text-nowrap",
                     actionButton: "!bg-transparent !hover:none",

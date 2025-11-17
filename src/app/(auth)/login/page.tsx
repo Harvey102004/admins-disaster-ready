@@ -428,7 +428,7 @@ export default function Login() {
         </div>
 
         {/* ---------- RIGHT SIDE (LOGIN FORM) ---------- */}
-        <div className="flex w-[500px] items-center justify-center rounded-l-4xl rounded-r-2xl border bg-black/10 px-10 py-8 shadow-2xl backdrop-blur-xl dark:bg-white/10">
+        <div className="flex w-[500px] items-center justify-center rounded-4xl border bg-black/10 px-10 py-8 shadow-2xl backdrop-blur-xl dark:bg-white/10">
           {IsLoginForm ? (
             <div className="ml-5 h-5/6 w-3/4">
               <div className="text-center">
