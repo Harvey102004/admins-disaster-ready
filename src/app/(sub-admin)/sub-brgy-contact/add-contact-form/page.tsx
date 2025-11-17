@@ -80,9 +80,21 @@ export default function AddContactForm() {
   });
 
   const onSubmit = (data: BrgyContactForm) => {
-    // Ensure lat/long are numbers
     data.lat = Number(data.lat);
     data.long = Number(data.long);
+
+    if (data.contact_number) {
+      const cleaned = data.contact_number.replace(/\D/g, "");
+
+      if (cleaned.startsWith("0")) {
+        data.contact_number = "63" + cleaned.substring(1);
+      } else if (!cleaned.startsWith("63")) {
+        data.contact_number = "63" + cleaned;
+      } else {
+        data.contact_number = cleaned;
+      }
+    }
+
     mutate(data);
   };
 
