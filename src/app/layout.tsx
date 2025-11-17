@@ -7,7 +7,6 @@ import "leaflet/dist/leaflet.css";
 import { Toaster } from "sonner";
 
 import { Metadata } from "next";
-import { FaComputer } from "react-icons/fa6";
 import SessionHandler from "@/components/SessionHandler";
 import DeviceGuard from "@/components/DeviceGuard";
 const poppins = Poppins({
@@ -30,31 +29,25 @@ export default function RootLayout({
   return (
     <html lang="en" className={poppins.className} suppressHydrationWarning>
       <body>
-        <div className="hidden lg:block">
-          <DeviceGuard>
-            <QueryProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="system"
-                enableSystem
-              >
-                <SessionHandler />
-                <Toaster
-                  position="top-center"
-                  richColors
-                  toastOptions={{
-                    className: `${poppins.className} !w-max !absolute !left-[46%] !-translate-x-1/2 `,
-                    classNames: {
-                      description: "text-nowrap",
-                      actionButton: "!bg-transparent !hover:none",
-                    },
-                  }}
-                />
-                {children}
-              </ThemeProvider>
-            </QueryProvider>
-          </DeviceGuard>
-        </div>
+        <DeviceGuard>
+          <QueryProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              <SessionHandler />
+              <Toaster
+                position="top-center"
+                richColors
+                toastOptions={{
+                  className: `${poppins.className} !w-max !absolute !left-[46%] !-translate-x-1/2 `,
+                  classNames: {
+                    description: "text-nowrap",
+                    actionButton: "!bg-transparent !hover:none",
+                  },
+                }}
+              />
+              {children}
+            </ThemeProvider>
+          </QueryProvider>
+        </DeviceGuard>
       </body>
     </html>
   );
