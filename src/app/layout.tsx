@@ -5,39 +5,33 @@ import QueryProvider from "@/components/QueryProvider";
 import "leaflet/dist/leaflet.css";
 
 import { Toaster } from "sonner";
+
+import { Metadata } from "next";
 import { FaComputer } from "react-icons/fa6";
 import SessionHandler from "@/components/SessionHandler";
-import { headers } from "next/headers";
-
+import DeviceGuard from "@/components/DeviceGuard";
 const poppins = Poppins({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700", "800", "900"],
 });
 
-export default async function RootLayout({
+export const metadata: Metadata = {
+  title: {
+    default: "DisasterReady",
+    template: "%s | DisasterReady",
+  },
+};
+
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const hdrs = await headers();
-
-  const ua = hdrs.get("user-agent") || "";
-  const pathname = hdrs.get("x-invoke-path") || "";
-
-  const isMobile = /Mobi|Android/i.test(ua);
-
-  const mobileAllowedRoutes = ["/mobile-login"];
-  const isMobileAllowed = mobileAllowedRoutes.some((route) =>
-    pathname.startsWith(route),
-  );
-
-  const allowRender = !isMobile || isMobileAllowed;
-
   return (
     <html lang="en" className={poppins.className} suppressHydrationWarning>
       <body>
-        {allowRender ? (
-          <div className="block">
+        <div className="hidden lg:block">
+          <DeviceGuard>
             <QueryProvider>
               <ThemeProvider
                 attribute="class"
@@ -59,15 +53,8 @@ export default async function RootLayout({
                 {children}
               </ThemeProvider>
             </QueryProvider>
-          </div>
-        ) : (
-          <div className="flex h-screen flex-col items-center justify-center gap-3 lg:hidden">
-            <FaComputer className="text-4xl" />
-            <p className="text-center text-sm text-gray-500">
-              This website works on desktop only.
-            </p>
-          </div>
-        )}
+          </DeviceGuard>
+        </div>
       </body>
     </html>
   );
