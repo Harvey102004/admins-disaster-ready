@@ -47,6 +47,7 @@ export default function IncidentReports() {
     try {
       const res = await axios.get(
         "https://greenyellow-lion-623632.hostingersite.com/public/getIncidents.php",
+        { withCredentials: true },
       );
 
       const data = res.data || [];
