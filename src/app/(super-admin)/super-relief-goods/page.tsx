@@ -182,6 +182,7 @@ export default function ReliefGoods() {
         setSelectedBrgys([]);
         setManualAllocations({});
         queryClient.invalidateQueries({ queryKey: ["reliefs"] });
+        queryClient.invalidateQueries({ queryKey: ["reliefHistory"] });
       } else {
         toast.error(errorMsg);
       }

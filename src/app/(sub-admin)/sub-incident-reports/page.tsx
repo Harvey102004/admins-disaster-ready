@@ -42,17 +42,39 @@ export default function IncidentReports() {
   const [filterStatus, setFilterStatus] = useState<string>("All");
   const [sortOrder, setSortOrder] = useState<string>("Newest");
 
+  const [prevPendingCount, setPrevPendingCount] = useState(0);
+
   const fetchIncidents = async () => {
     try {
       const res = await axios.get(
         "https://greenyellow-lion-623632.hostingersite.com/public/getIncidents.php",
-        {
-          withCredentials: true,
-        },
       );
-      setIncidents(res.data || []);
+
+      const data = res.data || [];
+
+      const pendingReports = data.filter(
+        (item: any) => item.status?.toLowerCase() === "pending",
+      );
+
+      const currentPending = pendingReports.length;
+
+      // Prevent toast firing on first load
+      if (prevPendingCount !== 0 && currentPending > prevPendingCount) {
+        const newPending = currentPending - prevPendingCount;
+
+        toast.success(`You have ${newPending} pending report(s)`, {
+          style: { marginLeft: "160px" },
+        });
+      }
+
+      // Only update when changed (avoids unnecessary state changes)
+      if (currentPending !== prevPendingCount) {
+        setPrevPendingCount(currentPending);
+      }
+
+      setIncidents(data);
     } catch (error) {
-      console.error("Error fetching incidents:", error);
+      console.error("Error fetching incidents");
     } finally {
       setLoading(false);
     }
@@ -60,6 +82,8 @@ export default function IncidentReports() {
 
   useEffect(() => {
     fetchIncidents();
+    const interval = setInterval(fetchIncidents, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const filteredIncidents = incidents
