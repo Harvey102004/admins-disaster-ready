@@ -41,40 +41,18 @@ export default function IncidentReports() {
   const [filterSeverity, setFilterSeverity] = useState<string>("All");
   const [filterStatus, setFilterStatus] = useState<string>("All");
   const [sortOrder, setSortOrder] = useState<string>("Newest");
-  const [prevPendingCount, setPrevPendingCount] = useState(0);
 
   const fetchIncidents = async () => {
     try {
       const res = await axios.get(
         "https://greenyellow-lion-623632.hostingersite.com/public/getIncidents.php",
-        { withCredentials: true },
+        {
+          withCredentials: true,
+        },
       );
-
-      const data = res.data || [];
-
-      const pendingReports = data.filter(
-        (item: any) => item.status?.toLowerCase() === "pending",
-      );
-
-      const currentPending = pendingReports.length;
-
-      // Prevent toast firing on first load
-      if (prevPendingCount !== 0 && currentPending > prevPendingCount) {
-        const newPending = currentPending - prevPendingCount;
-
-        toast.success(`You have ${newPending} pending report(s)`, {
-          style: { marginLeft: "160px" },
-        });
-      }
-
-      // Only update when changed (avoids unnecessary state changes)
-      if (currentPending !== prevPendingCount) {
-        setPrevPendingCount(currentPending);
-      }
-
-      setIncidents(data);
+      setIncidents(res.data || []);
     } catch (error) {
-      console.error("Error fetching incidents");
+      console.error("Error fetching incidents:", error);
     } finally {
       setLoading(false);
     }
@@ -145,13 +123,17 @@ export default function IncidentReports() {
     }
   };
 
-  const formatDate = (dateString: string) => {
+  const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("en-US", {
+    const options: Intl.DateTimeFormatOptions = {
       month: "short",
       day: "numeric",
       year: "numeric",
-    });
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    };
+    return date.toLocaleString("en-US", options).replace(",", " at");
   };
 
   return (
@@ -325,7 +307,7 @@ export default function IncidentReports() {
 
                     <td className="p-3 text-[13px]">
                       {incident.created_at
-                        ? formatDate(incident.created_at)
+                        ? formatDateTime(incident.created_at)
                         : "—"}
                     </td>
                   </tr>
@@ -373,7 +355,7 @@ export default function IncidentReports() {
 
                 <p className="absolute top-[7%] right-[8%] text-sm">
                   {selectedIncident.created_at
-                    ? formatDate(selectedIncident.created_at)
+                    ? formatDateTime(selectedIncident.created_at)
                     : "—"}
                 </p>
 
