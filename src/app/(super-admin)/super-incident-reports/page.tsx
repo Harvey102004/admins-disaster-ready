@@ -30,8 +30,9 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { RiFilter2Fill } from "react-icons/ri";
 import ProtectedRoute from "@/components/ProtectedRoutes";
+import { IoSearchOutline } from "react-icons/io5";
 
-export default function IncidentReports() {
+export default function SuperIncidentReports() {
   const [incidents, setIncidents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedIncident, setSelectedIncident] = useState<any | null>(null);
@@ -41,6 +42,10 @@ export default function IncidentReports() {
   const [filterSeverity, setFilterSeverity] = useState<string>("All");
   const [filterStatus, setFilterStatus] = useState<string>("All");
   const [sortOrder, setSortOrder] = useState<string>("Newest");
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [tableView, setTableView] = useState<
+    "active" | "resolved" | "dismissed"
+  >("active");
 
   const fetchIncidents = async () => {
     try {
@@ -65,11 +70,33 @@ export default function IncidentReports() {
   }, []);
 
   const filteredIncidents = incidents
-    .filter(
-      (incident) =>
-        (filterSeverity === "All" || incident.severity === filterSeverity) &&
-        (filterStatus === "All" || incident.status === filterStatus),
-    )
+    // 1. Filter by table view
+    .filter((incident) => {
+      if (tableView === "active")
+        return ["Pending", "Ongoing"].includes(incident.status);
+      if (tableView === "resolved") return incident.status === "Resolved";
+      if (tableView === "dismissed") return incident.status === "Dismissed";
+      return false;
+    })
+    // 2. Filter by selected STATUS (only for active)
+    .filter((incident) => {
+      if (tableView !== "active") return true;
+      if (filterStatus === "All") return true;
+      return incident.status === filterStatus;
+    })
+    // 3. Filter by SEVERITY
+    .filter((incident) => {
+      if (filterSeverity === "All") return true;
+      return incident.severity === filterSeverity;
+    })
+    // 4. Filter by reporter name only
+    .filter((incident) => {
+      if (!searchQuery.trim()) return true;
+      return incident.reporter_name
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase());
+    })
+    // 5. Sort
     .sort((a, b) => {
       const dateA = new Date(a.created_at).getTime();
       const dateB = new Date(b.created_at).getTime();
@@ -125,15 +152,18 @@ export default function IncidentReports() {
 
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
+
+    const month = date.toLocaleString("en-US", { month: "short" });
+    const day = date.getDate();
+    const year = date.getFullYear();
+
+    const time = date.toLocaleString("en-US", {
       hour: "numeric",
       minute: "2-digit",
       hour12: true,
-    };
-    return date.toLocaleString("en-US", options).replace(",", " at");
+    });
+
+    return `${month} ${day} ${year}  at ${time}`;
   };
 
   return (
@@ -141,7 +171,7 @@ export default function IncidentReports() {
       <div className="relative h-screen w-full overflow-auto px-10 py-8 transition-all duration-300">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div className="mb-3 flex items-center gap-2">
+          <div className="flex items-center gap-2">
             <IoIosPaper className="text-2xl" />
             <h2 className="text-2xl font-semibold">Incident Reports</h2>
           </div>
@@ -151,6 +181,7 @@ export default function IncidentReports() {
           <div>
             <div className="flex items-center justify-end gap-4">
               {/* Severity Filter */}
+
               <div>
                 <Select
                   value={filterSeverity}
@@ -168,20 +199,21 @@ export default function IncidentReports() {
                 </Select>
               </div>
 
-              {/* Status Filter */}
-              <div>
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger className="text-xs">
-                    <SelectValue placeholder="Select Status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="All">All Status</SelectItem>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="Ongoing">Ongoing</SelectItem>
-                    <SelectItem value="Resolved">Resolved</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Status Filter — only show when ACTIVE table */}
+              {tableView === "active" && (
+                <div>
+                  <Select value={filterStatus} onValueChange={setFilterStatus}>
+                    <SelectTrigger className="text-xs">
+                      <SelectValue placeholder="Select Status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="All">All Status</SelectItem>
+                      <SelectItem value="Pending">Pending</SelectItem>
+                      <SelectItem value="Ongoing">Ongoing</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
 
               {/* Sorting */}
               <div>
@@ -198,6 +230,57 @@ export default function IncidentReports() {
 
               <RiFilter2Fill className="text-2xl" />
             </div>
+          </div>
+        </div>
+
+        <div className="relative mt-4 flex w-full justify-between">
+          <div className="flex gap-3">
+            <button
+              onClick={() => setTableView("active")}
+              className={`rounded-md px-4 py-2 text-xs ${
+                tableView === "active"
+                  ? "bg-dark-blue text-white"
+                  : "border border-gray-400/50 bg-transparent"
+              }`}
+            >
+              Pending & Ongoing
+            </button>
+
+            <button
+              onClick={() => setTableView("resolved")}
+              className={`rounded-md px-4 py-2 text-xs ${
+                tableView === "resolved"
+                  ? "bg-dark-blue text-white"
+                  : "border border-gray-400/50 bg-transparent"
+              }`}
+            >
+              Resolved
+            </button>
+
+            <button
+              onClick={() => setTableView("dismissed")}
+              className={`rounded-md px-4 py-2 text-xs ${
+                tableView === "dismissed"
+                  ? "bg-dark-blue text-white"
+                  : "border border-gray-400/50 bg-transparent"
+              }`}
+            >
+              Dismissed
+            </button>
+          </div>
+
+          <div className="relative w-1/2 max-w-[450px]">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search incidents by name..."
+              className="w-full rounded-full border border-gray-300/50 px-10 py-2.5 text-xs outline-none"
+            />
+            <IoSearchOutline
+              className="absolute top-1/2 left-3 -translate-y-1/2 cursor-pointer text-gray-400"
+              onClick={() => console.log("Search clicked!")}
+            />
           </div>
         </div>
 
@@ -284,21 +367,28 @@ export default function IncidentReports() {
                       className="p-3 text-[13px]"
                       onClick={(e) => e.stopPropagation()}
                     >
-                      <Select
-                        value={incident.status}
-                        onValueChange={(value) =>
-                          handleStatusChange(incident.id, value)
-                        }
-                      >
-                        <SelectTrigger className="h-8 w-[120px] text-[12px]">
-                          <SelectValue placeholder="Select Status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="Pending">Pending</SelectItem>
-                          <SelectItem value="Ongoing">Ongoing</SelectItem>
-                          <SelectItem value="Resolved">Resolved</SelectItem>
-                        </SelectContent>
-                      </Select>
+                      {tableView === "active" ? (
+                        <Select
+                          value={incident.status}
+                          onValueChange={(value) =>
+                            handleStatusChange(incident.id, value)
+                          }
+                        >
+                          <SelectTrigger className="h-8 w-[120px] text-[12px]">
+                            <SelectValue placeholder="Select Status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Pending">Pending</SelectItem>
+                            <SelectItem value="Ongoing">Ongoing</SelectItem>
+                            <SelectItem value="Resolved">Resolved</SelectItem>
+                            <SelectItem value="Dismissed">Dismissed</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <span className="text-xs text-gray-600">
+                          {incident.status}
+                        </span>
+                      )}
                     </td>
 
                     <td className="p-3 text-[13px]">
