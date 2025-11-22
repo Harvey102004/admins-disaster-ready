@@ -49,8 +49,8 @@ export default function ReliefGoods() {
   const [manualAllocations, setManualAllocations] = useState<{
     [key: string]: number;
   }>({});
-  const [basedOn, setBasedOn] = useState<"population" | "families">(
-    "population",
+  const [basedOn, setBasedOn] = useState<"population" | "families" | undefined>(
+    undefined,
   );
 
   const [isHistory, setIsHistory] = useState(false);
@@ -445,7 +445,7 @@ export default function ReliefGoods() {
                 </div>
               </div>
 
-              <form className="flex pb-20">
+              <form className="flex">
                 <input
                   type="hidden"
                   name="relief_pack_id"
@@ -457,50 +457,68 @@ export default function ReliefGoods() {
                   value={selectedBrgys}
                 />
 
-                <div className="scrollBar mt-10 flex h-[400px] w-[40%] flex-col gap-8 overflow-auto">
+                <div className="mt-8 flex h-[500px] w-[40%] flex-col gap-8 overflow-hidden rounded-3xl border border-gray-300 p-6 dark:border-none dark:bg-[#1b1c29]">
+                  <p className="text-center text-sm font-semibold">
+                    Choose a Barangay Recipient
+                  </p>
+
                   {isLoadingBrgyContacts ? (
                     <p className="text-xs text-gray-500">
                       Loading barangays...
                     </p>
                   ) : brgyContacts && brgyContacts.length > 0 ? (
-                    brgyContacts.map((brgy: any) => (
-                      <div key={brgy.id}>
-                        <label className="flex items-center gap-2 text-sm capitalize">
-                          <input
-                            type="checkbox"
-                            value={brgy.id}
-                            checked={selectedBrgys.includes(brgy.id)}
-                            onChange={() => handleBrgySelection(brgy.id)}
-                            className="h-4 w-4"
-                          />
+                    <div className="reliefScroll flex flex-col gap-7 overflow-y-auto">
+                      {brgyContacts.map((brgy: any) => (
+                        <div
+                          key={brgy.id}
+                          className="flex cursor-pointer items-center gap-4"
+                          onClick={() => handleBrgySelection(brgy.id)}
+                        >
+                          <label className="flex items-center gap-2 text-sm capitalize">
+                            <input
+                              type="checkbox"
+                              value={brgy.id}
+                              checked={selectedBrgys.includes(brgy.id)}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                handleBrgySelection(brgy.id);
+                              }}
+                              className="h-4 w-4"
+                            />
+                          </label>
 
-                          <Image
-                            src={`/logos/${brgy.barangay_name
-                              ?.toLowerCase()
-                              .normalize("NFD")
-                              .replace(/[\u0300-\u036f]/g, "")
-                              .replace(/\s+/g, "-")}-logo.png`}
-                            alt={`${brgy.barangay_name} logo`}
-                            width={20}
-                            height={20}
-                            className="ml-2 h-5 w-5 object-contain"
-                            onError={(e) => {
-                              e.currentTarget.style.display = "none";
-                            }}
-                          />
+                          <div className="flex items-center gap-4">
+                            <Image
+                              src={`/logos/${brgy.barangay_name
+                                ?.toLowerCase()
+                                .normalize("NFD")
+                                .replace(/[\u0300-\u036f]/g, "")
+                                .replace(/\s+/g, "-")}-logo.png`}
+                              alt={`${brgy.barangay_name} logo`}
+                              width={20}
+                              height={20}
+                              className="h-10 w-10 object-contain"
+                              onError={(e) => {
+                                e.currentTarget.style.display = "none";
+                              }}
+                            />
 
-                          {brgy.barangay_name}
-                        </label>
-
-                        <span className="mt-3 ml-7 flex items-center gap-2 text-xs">
-                          <span>Total Families: {brgy.total_families}</span>
-                          <span>
-                            Total Population:{" "}
-                            {brgy.total_female + brgy.total_male}
-                          </span>
-                        </span>
-                      </div>
-                    ))
+                            <div className="flex flex-col">
+                              <p className="mb-1 text-sm capitalize">
+                                Barangay {brgy.barangay_name}
+                              </p>
+                              <span className="flex items-center gap-2 text-[10px]">
+                                <span>Families: {brgy.total_families}</span>
+                                <span>
+                                  Population:{" "}
+                                  {brgy.total_female + brgy.total_male}
+                                </span>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   ) : (
                     <p className="col-span-4 text-center text-sm text-nowrap text-gray-500">
                       No barangays found.
@@ -508,77 +526,131 @@ export default function ReliefGoods() {
                   )}
                 </div>
 
-                <div className="scrollBar mt-10 flex h-[400px] w-[60%] flex-col gap-4 overflow-auto px-8">
-                  <div className="flex w-full flex-col gap-5">
-                    <p className="text-center text-sm">Allocation Mode :</p>
+                <div className="relative mt-10 flex h-[500px] w-[60%] flex-col gap-3 overflow-hidden pr-4 pl-8">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm">List of Selected Barangay's : </p>
 
-                    <div className="flex justify-center gap-5">
-                      <label className="flex items-center gap-2 text-sm">
-                        <input
-                          type="radio"
-                          checked={allocationMode === "automatic"}
-                          onChange={() => setAllocationMode("automatic")}
-                        />
-                        Automatic
-                      </label>
+                    {allocationMode === "manual" && (
+                      <div className="flex items-center justify-center">
+                        <button
+                          type="button"
+                          onClick={handleDistributeEqually}
+                          className="bg-dark-blue mx-auto cursor-pointer rounded-lg px-4 py-2 text-center text-[10px] text-white transition-opacity duration-300 hover:opacity-80"
+                        >
+                          Allocate equally
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <div className="">
+                    <div className="absolute bottom-24 flex flex-col gap-3">
+                      <p className="text-sm">Allocation Mode :</p>
 
-                      <label className="flex items-center gap-2 text-sm">
-                        <input
-                          type="radio"
-                          checked={allocationMode === "manual"}
-                          onChange={() => setAllocationMode("manual")}
-                        />
-                        Manual
-                      </label>
+                      <div className="flex justify-center gap-5">
+                        <label className="flex items-center gap-2 text-sm">
+                          <input
+                            type="radio"
+                            checked={allocationMode === "automatic"}
+                            onChange={() => setAllocationMode("automatic")}
+                          />
+                          Automatic
+                        </label>
+
+                        <label className="flex items-center gap-2 text-sm">
+                          <input
+                            type="radio"
+                            checked={allocationMode === "manual"}
+                            onChange={() => setAllocationMode("manual")}
+                          />
+                          Manual
+                        </label>
+                      </div>
                     </div>
                   </div>
 
                   <div className="">
                     {/* ✅ Dropdown when AUTOMATIC selected */}
                     {allocationMode === "automatic" && (
-                      <div className="mt-14 flex flex-col items-center gap-4">
-                        <p className="mb-1 text-sm">Based On :</p>
-                        <Select
-                          value={basedOn}
-                          onValueChange={(value: "population" | "families") =>
-                            setBasedOn(value)
-                          }
-                        >
-                          <SelectTrigger className="w-48 text-sm">
-                            <SelectValue placeholder="Select an option" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="population">
-                              Population
-                            </SelectItem>
-                            <SelectItem value="families">Families</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
+                      <>
+                        <div className="mt-5">
+                          {selectedBrgys.length === 0 ? (
+                            <p className="absolute top-[40%] left-1/2 -translate-1/2 text-center text-xs text-gray-500">
+                              No Barangay selected
+                            </p>
+                          ) : (
+                            <div className="reliefScroll grid max-h-[250px] grid-cols-2 gap-y-10 overflow-auto overflow-x-hidden">
+                              {selectedBrgys.map((id) => {
+                                const brgy = brgyContacts.find(
+                                  (b: any) => b.id === id,
+                                );
+                                return (
+                                  <div
+                                    key={id}
+                                    className="flex items-center gap-3 text-sm"
+                                  >
+                                    <Image
+                                      src={`/logos/${brgy.barangay_name
+                                        ?.toLowerCase()
+                                        .normalize("NFD")
+                                        .replace(/[\u0300-\u036f]/g, "")
+                                        .replace(/\s+/g, "-")}-logo.png`}
+                                      alt={`${brgy.barangay_name} logo`}
+                                      width={20}
+                                      height={20}
+                                      className="h-10 w-10 object-contain"
+                                      onError={(e) => {
+                                        e.currentTarget.style.display = "none";
+                                      }}
+                                    />
+                                    <div className="flex flex-col">
+                                      <p className="mb-1 text-sm capitalize">
+                                        Barangay {brgy.barangay_name}
+                                      </p>
+                                      <span className="flex items-center gap-2 text-[10px]">
+                                        <span>
+                                          Families: {brgy.total_families}
+                                        </span>
+                                        <span>
+                                          Population:{" "}
+                                          {brgy.total_female + brgy.total_male}
+                                        </span>
+                                      </span>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                        </div>
+                        <div className="absolute right-0 bottom-24">
+                          <Select
+                            value={basedOn}
+                            onValueChange={(value: "population" | "families") =>
+                              setBasedOn(value)
+                            }
+                          >
+                            <SelectTrigger className="w-[280px] text-sm">
+                              <SelectValue placeholder="Select Distribution Basis" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="population">
+                                Population
+                              </SelectItem>
+                              <SelectItem value="families">Families</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </>
                     )}
                     {/* ✅ Display extra inputs if manual mode */}
                     {allocationMode === "manual" && (
                       <div className="mt-5">
-                        <div className="flex items-center justify-center">
-                          <button
-                            type="button"
-                            onClick={handleDistributeEqually}
-                            className="bg-dark-blue mx-auto mb-3 rounded-full px-4 py-2 text-center text-[10px] text-white"
-                          >
-                            Distribute equally
-                          </button>
-                        </div>
-
-                        <p className="mb-2 text-center text-xs">
-                          Enter Manual Allocation per Barangay:
-                        </p>
-
                         {selectedBrgys.length === 0 ? (
-                          <p className="my-10 text-center text-xs text-gray-500">
+                          <p className="absolute top-[40%] left-1/2 -translate-1/2 text-center text-xs text-gray-500">
                             No Barangay selected
                           </p>
                         ) : (
-                          <div className="mt-7 grid grid-cols-2 gap-5">
+                          <div className="reliefScroll grid max-h-[250px] grid-cols-2 gap-y-10 overflow-auto overflow-x-hidden">
                             {selectedBrgys.map((id) => {
                               const brgy = brgyContacts.find(
                                 (b: any) => b.id === id,
@@ -588,22 +660,41 @@ export default function ReliefGoods() {
                                   key={id}
                                   className="flex items-center gap-3 text-sm"
                                 >
-                                  <span className="w-28 text-xs capitalize">
-                                    {brgy?.barangay_name}
-                                  </span>
-                                  <input
-                                    type="number"
-                                    min={0}
-                                    className="w-full rounded border p-2 px-4"
-                                    value={manualAllocations[id] || ""}
-                                    onChange={(e) =>
-                                      handleManualAllocationChange(
-                                        id,
-                                        Number(e.target.value),
-                                      )
-                                    }
-                                    placeholder="Qty"
+                                  <Image
+                                    src={`/logos/${brgy.barangay_name
+                                      ?.toLowerCase()
+                                      .normalize("NFD")
+                                      .replace(/[\u0300-\u036f]/g, "")
+                                      .replace(/\s+/g, "-")}-logo.png`}
+                                    alt={`${brgy.barangay_name} logo`}
+                                    width={20}
+                                    height={20}
+                                    className="h-10 w-10 object-contain"
+                                    onError={(e) => {
+                                      e.currentTarget.style.display = "none";
+                                    }}
                                   />
+                                  <div className="flex flex-col">
+                                    <span className="w-max text-sm capitalize">
+                                      Barangay {brgy?.barangay_name}
+                                    </span>
+                                    <div className="flex items-center">
+                                      <p className="text-[11px]">Allocated:</p>
+                                      <input
+                                        type="number"
+                                        min={0}
+                                        className="p-1 px-4 text-[11px] outline-none"
+                                        value={manualAllocations[id] || ""}
+                                        onChange={(e) =>
+                                          handleManualAllocationChange(
+                                            id,
+                                            Number(e.target.value),
+                                          )
+                                        }
+                                        placeholder="Enter Allocation Qty"
+                                      />
+                                    </div>
+                                  </div>
                                 </div>
                               );
                             })}
@@ -612,15 +703,14 @@ export default function ReliefGoods() {
                       </div>
                     )}
                   </div>
+                  <button
+                    type="button"
+                    onClick={handleDistribute}
+                    className="bg-dark-blue absolute bottom-0 left-1/2 ml-3 w-[95%] -translate-1/2 rounded-md py-3 text-sm text-white duration-300 hover:opacity-85"
+                  >
+                    Distribute Now
+                  </button>
                 </div>
-
-                <button
-                  type="button"
-                  onClick={handleDistribute}
-                  className="bg-dark-blue absolute bottom-0 left-1/2 w-[95%] -translate-1/2 rounded-md py-3 text-sm text-white duration-300 hover:opacity-85"
-                >
-                  Distribute Now
-                </button>
               </form>
             </div>
           </div>

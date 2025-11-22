@@ -84,6 +84,8 @@
   --sidebar-accent-foreground: oklch(0.21 0.034 264.665);
   --sidebar-border: oklch(0.928 0.006 264.531);
   --sidebar-ring: oklch(0.707 0.022 261.325);
+  --scrollbar-track: #f1f1f1;
+  --scrollbar-thumb: #2563eb;
 }
 
 .dark {
@@ -118,6 +120,8 @@
   --sidebar-accent-foreground: oklch(0.985 0.002 247.839);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.551 0.027 264.364);
+  --scrollbar-track: #1b1c29;
+  --scrollbar-thumb: #cccccc;
 }
 
 @layer base {
@@ -165,4 +169,18 @@
   display: table;
   width: 100%;
   border-collapse: collapse;
+}
+
+.reliefScroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.reliefScroll::-webkit-scrollbar-track {
+  background-color: var(--background);
+  border-radius: 100px;
+}
+
+.reliefScroll::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 10px;
 }
