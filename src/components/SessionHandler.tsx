@@ -10,13 +10,20 @@ export default function SessionHandler() {
   useEffect(() => {
     async function sendHeartbeat() {
       try {
-        await fetch(
+        const res = await fetch(
           "https://greenyellow-lion-623632.hostingersite.com/public/session.php",
           {
             method: "GET",
             credentials: "include",
           },
         );
+
+        // OPTIONAL: detect expired session from backend
+        // If your session.php returns { expired: true }
+        try {
+          const data = await res.json();
+          if (data?.expired) handleSessionExpired();
+        } catch (_) {}
       } catch (err) {
         console.error("Failed to refresh session:", err);
       }
@@ -34,40 +41,55 @@ export default function SessionHandler() {
       }, 3000);
     }
 
-    function resetIdleTimer() {
-      if (idleTimer.current) clearTimeout(idleTimer.current);
-      idleTimer.current = setTimeout(handleSessionExpired, MAX_IDLE_TIME);
+    function stopHeartbeat() {
+      if (heartbeatInterval.current) {
+        clearInterval(heartbeatInterval.current);
+        heartbeatInterval.current = null;
+      }
     }
 
     function startHeartbeat() {
-      // Prevent duplicate intervals
-      if (heartbeatInterval.current) clearInterval(heartbeatInterval.current);
+      stopHeartbeat(); // prevent duplicates
 
       // send first heartbeat immediately
       sendHeartbeat();
 
-      // then repeat every 5 minutes
+      // repeat heartbeat every 5 minutes
       heartbeatInterval.current = setInterval(
         sendHeartbeat,
         HEARTBEAT_INTERVAL,
       );
     }
 
-    // Only start if logged in (optional check)
+    function resetIdleTimer() {
+      // restart heartbeat ONLY when user interacts
+      startHeartbeat();
+
+      // reset idle timer
+      if (idleTimer.current) clearTimeout(idleTimer.current);
+
+      idleTimer.current = setTimeout(() => {
+        stopHeartbeat(); // stop heartbeat so session expires
+        handleSessionExpired();
+      }, MAX_IDLE_TIME);
+    }
+
+    // Check if user is logged in
     const isLoggedIn =
       !!localStorage.getItem("token") || !!localStorage.getItem("user");
-    if (isLoggedIn) {
-      startHeartbeat();
-      resetIdleTimer();
 
+    if (isLoggedIn) {
+      resetIdleTimer(); // initialize
+
+      // user activities that reset idle timer
       ["click", "mousemove", "keydown", "scroll", "touchstart"].forEach(
         (event) => window.addEventListener(event, resetIdleTimer),
       );
     }
 
     return () => {
+      stopHeartbeat();
       if (idleTimer.current) clearTimeout(idleTimer.current);
-      if (heartbeatInterval.current) clearInterval(heartbeatInterval.current);
 
       ["click", "mousemove", "keydown", "scroll", "touchstart"].forEach(
         (event) => window.removeEventListener(event, resetIdleTimer),
