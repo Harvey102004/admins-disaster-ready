@@ -139,7 +139,11 @@ export default function SuperIncidentReports() {
 
   const handleStatusChange = (id: number, status: string, incident: any) => {
     const user = JSON.parse(localStorage.getItem("user") || "null");
-    const respondedBy = user?.barangay ? `Brgy. ${user.barangay}` : null;
+    const respondedBy = user?.barangay
+      ? user.barangay.includes("Municipal")
+        ? user.barangay
+        : `Brgy. ${user.barangay}`
+      : null;
 
     // 🚫 Prevent multiple ongoing
     if (status === "Ongoing") {
@@ -272,7 +276,11 @@ export default function SuperIncidentReports() {
 
   const handleSeverityChange = async (id: number, severity: string) => {
     const user = JSON.parse(localStorage.getItem("user") || "null");
-    const respondedBy = user?.barangay ? `Brgy. ${user.barangay}` : null;
+    const respondedBy = user?.barangay
+      ? user.barangay.includes("Municipal")
+        ? user.barangay
+        : `Brgy. ${user.barangay}`
+      : null;
 
     try {
       const incident = incidents.find((inc) => inc.id === id);
