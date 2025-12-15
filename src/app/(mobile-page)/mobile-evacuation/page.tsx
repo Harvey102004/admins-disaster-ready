@@ -21,10 +21,8 @@ import {
 } from "@/lib/schema/evacuation";
 import { useMutation } from "@tanstack/react-query";
 import { editEvacuationCenter } from "@/server/api/evacuation";
-import { useRouter } from "next/navigation";
 import { HiddenInput } from "@/components/Inputs";
 import { LuMinus, LuPlus } from "react-icons/lu";
-import { RiLogoutCircleRLine } from "react-icons/ri";
 
 export default function MobileEvacPage() {
   const [evacList, setEvacList] = useState<EvacuationCenterProps[]>([]);
@@ -32,7 +30,6 @@ export default function MobileEvacPage() {
   const [selectedEvac, setSelectedEvac] =
     useState<EvacuationCenterProps | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isLogout, setIsLogout] = useState(false);
   const [operation, setOperation] = useState<"add" | "deduct">("add");
   const [showConfirm, setShowConfirm] = useState(false);
   const [pendingFormData, setPendingFormData] =
@@ -40,8 +37,7 @@ export default function MobileEvacPage() {
 
   const [isMobile, setIsMobile] = useState(true);
 
-  const router = useRouter();
-
+  /*
   useEffect(() => {
     if (typeof navigator !== "undefined") {
       const ua = navigator.userAgent || navigator.vendor || "";
@@ -54,6 +50,8 @@ export default function MobileEvacPage() {
       }
     }
   }, [router]);
+
+  */
 
   const [inputNumber, setInputNumber] = useState<string>("");
 
@@ -247,11 +245,6 @@ export default function MobileEvacPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col gap-5 p-4">
-      <RiLogoutCircleRLine
-        onClick={() => setIsLogout(true)}
-        className="absolute top-5 right-5 text-xl dark:text-white"
-      />
-
       {filteredList.length === 0 ? (
         <div className="flex min-h-screen items-center justify-center p-6">
           <p className="text-center text-sm text-gray-600 dark:text-gray-500">
@@ -259,7 +252,7 @@ export default function MobileEvacPage() {
           </p>
         </div>
       ) : (
-        <div className="mt-16">
+        <div className="mt-6">
           <h2 className="mb-5 text-center text-sm font-semibold">
             Your Evacuation Center
           </h2>
@@ -475,61 +468,6 @@ export default function MobileEvacPage() {
                 }}
               >
                 Yes
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Logout modal */}
-      {isLogout && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
-          onClick={() => setIsLogout(false)}
-        >
-          <div
-            className="dark:bg-light-black relative w-[80%] rounded-2xl bg-white p-6 shadow-lg"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="mb-3 text-center text-sm font-semibold text-gray-900 dark:text-gray-100">
-              Confirm Logout
-            </h3>
-            <p className="mb-6 text-center text-[10px] text-gray-600 dark:text-gray-300">
-              Are you sure you want to logout? You will need to login again to
-              access your account.
-            </p>
-            <div className="flex justify-center gap-3">
-              <button
-                className="rounded-md border border-gray-300 bg-white px-4 py-1.5 text-[10px] text-gray-700 transition hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
-                onClick={() => setIsLogout(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="rounded-md bg-red-600 px-4 py-1.5 text-[10px] text-white transition hover:bg-red-700"
-                onClick={async () => {
-                  try {
-                    await axios.get(
-                      "https://greenyellow-lion-623632.hostingersite.com/public/logout.php",
-                      {
-                        withCredentials: true,
-                      },
-                    );
-                    successToast("Success!", "Logout completed successfully");
-                  } catch (error) {
-                    console.error(
-                      "Logout failed (maybe already logged out):",
-                      error,
-                    );
-                  } finally {
-                    localStorage.removeItem("user");
-                    setIsLogout(false);
-                    router.push("/mobile-login");
-                    router.refresh();
-                  }
-                }}
-              >
-                Logout
               </button>
             </div>
           </div>

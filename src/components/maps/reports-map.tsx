@@ -6,6 +6,7 @@ import L from "leaflet";
 import { useEffect, useState } from "react";
 import { MdMyLocation } from "react-icons/md";
 import axios from "axios";
+import { IoClose } from "react-icons/io5";
 
 const MapContainer = dynamic(
   () => import("react-leaflet").then((mod) => mod.MapContainer),
@@ -37,7 +38,7 @@ export default function MapModal({ open, onClose, position }: MapModalProps) {
     if (!position) return;
 
     const icon = L.icon({
-      iconUrl: "/icons/gps.png",
+      iconUrl: "/icons/gps_red.png",
       iconSize: [40, 40],
       iconAnchor: [20, 40],
       popupAnchor: [0, -35],
@@ -101,14 +102,12 @@ export default function MapModal({ open, onClose, position }: MapModalProps) {
   return (
     <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-black/40 backdrop-blur-xs">
       <div className="relative w-[90%] max-w-4xl rounded-lg bg-white p-4 shadow-lg dark:bg-neutral-900">
-        <button
+        <IoClose
           onClick={onClose}
-          className="pointer-events-auto absolute top-3 right-4 z-[10000] text-2xl font-bold text-gray-500 hover:text-gray-700"
-        >
-          ×
-        </button>
+          className="pointer-events-auto absolute top-3 right-4 z-[10000] text-2xl text-gray-500 hover:text-gray-700"
+        />
 
-        <h2 className="mb-3 flex items-center gap-3 text-lg font-semibold">
+        <h2 className="mb-5 flex items-center gap-2 text-sm">
           <MdMyLocation />
           Incident Location
         </h2>

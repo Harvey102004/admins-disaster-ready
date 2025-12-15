@@ -22,7 +22,7 @@ export default function MobileLoginPage() {
     confirmPass: false,
   });
 
-  //     Mobile detection redirect back to desktop (optional)
+  /*     Mobile detection redirect back to desktop (optional)
   useEffect(() => {
     if (typeof navigator !== "undefined") {
       const ua = navigator.userAgent || navigator.vendor || "";
@@ -32,6 +32,8 @@ export default function MobileLoginPage() {
       }
     }
   }, [router]);
+
+  */
 
   /* ---------- HANDLE INPUT ---------- */
   const handleChangeValue = (e: any) => {
@@ -113,7 +115,7 @@ export default function MobileLoginPage() {
         setLoginMessage(" Login successful! Redirecting...");
 
         setTimeout(() => {
-          router.push("/mobile-evacuation");
+          router.push("/mobile-reports");
           setLoginMessage("");
         }, 1500);
       } else {

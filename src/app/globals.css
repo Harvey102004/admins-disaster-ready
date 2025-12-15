@@ -139,6 +139,7 @@
 
 .scrollBar::-webkit-scrollbar {
   width: 4px;
+  height: 4px;
 }
 .scrollBar::-webkit-scrollbar-track {
   background-color: transparent;
@@ -180,7 +181,15 @@
   border-radius: 100px;
 }
 
-.reliefScroll::-webkit-scrollbar-thumb {
-  background: var(--scrollbar-thumb);
-  border-radius: 10px;
+.reliefScroll {
+  overflow-y: hidden;
+  overflow-x: auto;
+
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.reliefScroll::-webkit-scrollbar {
+  width: 0; /* Chrome, Safari, Edge */
+  height: 8px; /* optional horizontal scrollbar height */
 }
