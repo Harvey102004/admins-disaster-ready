@@ -75,6 +75,7 @@ export default function SubEditEvacForm() {
 
   const onSubmit = (formData: EditEvacuationCenterSchema) => {
     const unchanged =
+      Number(formData.capacity) === Number(data?.capacity) &&
       Number(formData.current_evacuees) === Number(data?.current_evacuees) &&
       formData.contact_person.trim() === data?.contact_person.trim() &&
       formData.contact_number.trim() === data?.contact_number.trim();
@@ -112,14 +113,14 @@ export default function SubEditEvacForm() {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="bg-transparent-blue border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex w-[600px] flex-col gap-8 rounded-xl border px-10 py-8 backdrop-blur-sm"
+        className="bg-background border-dark-blue/50 dark:border-puti/10 dark:bg-light-black flex w-[600px] flex-col gap-8 rounded-xl border px-10 py-8 backdrop-blur-sm"
       >
-        <p className="text-dark-blue/70 dark:text-puti/60 mb-3 text-center text-sm">
-          Only Evacuees, Contact Person, and Contact Number are editable.
+        <p className="text-light-black dark:text-puti/60 mb-3 text-center text-sm">
+          Only Capacity, Evacuees, Contact Person, and Contact Number are
+          editable.
         </p>
         {/* Hidden inputs */}
         <HiddenInput name="name" register={register} errors={errors} />
-        <HiddenInput name="capacity" register={register} errors={errors} />
         <HiddenInput name="location" register={register} errors={errors} />
         <HiddenInput name="lat" register={register} errors={errors} />
         <HiddenInput name="long" register={register} errors={errors} />
@@ -129,6 +130,14 @@ export default function SubEditEvacForm() {
           errors={errors}
         />{" "}
         {/* ✅ preserve */}
+        <NumberInput
+          name="capacity"
+          icon={<FaUsers />}
+          label="Capacity"
+          register={register}
+          errors={errors}
+          placeholder="Enter capacity..."
+        />
         <NumberInput
           name="current_evacuees"
           icon={<FaUsers />}

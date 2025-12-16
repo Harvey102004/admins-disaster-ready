@@ -1,32 +1,21 @@
 "use client";
 
-import { Line } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
-  LineElement,
+  BarElement,
   CategoryScale,
   LinearScale,
-  PointElement,
   Tooltip,
   Legend,
-  Filler,
   ChartOptions,
 } from "chart.js";
 import { useQuery } from "@tanstack/react-query";
 import { getEvacuationCenters } from "@/server/api/evacuation";
 
-ChartJS.register(
-  LineElement,
-  CategoryScale,
-  LinearScale,
-  PointElement,
-  Tooltip,
-  Legend,
-  Filler,
-);
+ChartJS.register(BarElement, CategoryScale, LinearScale, Tooltip, Legend);
 
 export default function EvacuationPage() {
-  // ✅ Fetch evacuation data from DB
   const {
     data = [],
     isLoading,
@@ -36,7 +25,6 @@ export default function EvacuationPage() {
     queryFn: getEvacuationCenters,
   });
 
-  // ✅ Prepare chart data dynamically
   const labels = data.map((item) => item.name || "Unnamed Center");
   const evacueesData = data.map((item) => item.current_evacuees || 0);
 
@@ -46,19 +34,16 @@ export default function EvacuationPage() {
       {
         label: "Number of Evacuees",
         data: evacueesData,
+        backgroundColor: "rgba(255, 255, 255, 0.6)",
         borderColor: "rgba(255, 255, 255, 0.9)",
-        backgroundColor: "rgba(255, 255, 255, 0.2)",
-        fill: true,
-        tension: 0.4,
-        pointRadius: 3,
-        pointBackgroundColor: "white",
-        pointBorderColor: "rgba(255, 255, 255, 0.8)",
         borderWidth: 1.5,
+        borderRadius: 6,
+        barThickness: 28,
       },
     ],
   };
 
-  const options: ChartOptions<"line"> = {
+  const options: ChartOptions<"bar"> = {
     responsive: true,
     plugins: {
       legend: { display: false },
@@ -79,6 +64,7 @@ export default function EvacuationPage() {
           maxRotation: 60,
           minRotation: 40,
         },
+        grid: { display: false },
       },
       y: {
         ticks: {
@@ -98,7 +84,6 @@ export default function EvacuationPage() {
     },
   };
 
-  // ✅ Handle loading & error states
   if (isLoading)
     return (
       <div className="flex h-full w-full items-center justify-center text-white">
@@ -120,7 +105,7 @@ export default function EvacuationPage() {
       </h1>
 
       <div className="mx-auto flex h-full w-full items-end justify-center rounded-xl p-6 backdrop-blur-sm">
-        <Line data={chartData} options={options} />
+        <Bar data={chartData} options={options} />
       </div>
     </div>
   );
