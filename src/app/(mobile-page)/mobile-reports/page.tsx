@@ -856,7 +856,7 @@ export default function SuperIncidentReports() {
             {/* Modal Content */}
             <div className="relative z-10 mt-10 w-full overflow-hidden rounded-lg bg-white shadow-lg">
               {/* Header */}
-              <div className="flex items-center justify-between border-b px-4 py-3">
+              <div className="mt-10 flex items-center justify-between border-b px-4 py-3">
                 <h2 className="text-sm font-semibold">Directions</h2>
                 <IoClose
                   onClick={() => setDirectionsModalOpen(false)}
